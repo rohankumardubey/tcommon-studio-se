@@ -1874,9 +1874,12 @@ public class DatabaseForm extends AbstractForm {
                 metastorePort.hide();
                 metastoreHost.hide();
             } else {
+                GridData layoutData = (GridData) hiveMetastoreGroup.getLayoutData();
+                layoutData.exclude = false;
                 hiveMetastoreUrisTxt.hide();
                 metastorePort.show();
                 metastoreHost.show();
+                hiveMetastoreGroup.getParent().layout();
             }
         } else {
             hiveMetastoreGroup.setVisible(false);
