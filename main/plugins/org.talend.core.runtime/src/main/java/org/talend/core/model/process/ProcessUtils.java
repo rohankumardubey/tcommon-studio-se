@@ -60,6 +60,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IProxyRepositoryFactory;
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * DOC bqian class global comment. Detailled comment
@@ -1011,4 +1012,9 @@ public final class ProcessUtils {
         }
         return false;
     }
+
+	public static String escapeJava(String input) {
+        return StringEscapeUtils.escapeJava(input);
+    }
+
 }
