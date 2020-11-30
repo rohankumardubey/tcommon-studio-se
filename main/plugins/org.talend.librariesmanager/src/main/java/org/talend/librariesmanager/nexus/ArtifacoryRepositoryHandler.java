@@ -29,6 +29,7 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 import org.eclipse.m2e.core.MavenPlugin;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.network.TalendProxySelector.IProxySelectorProvider;
 import org.talend.core.nexus.HttpClientTransport;
@@ -38,6 +39,9 @@ import org.talend.core.nexus.NexusServerUtils;
 import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.designer.maven.aether.RepositorySystemFactory;
+import org.talend.librariesmanager.i18n.Messages;
+import org.talend.librariesmanager.nexus.utils.ShareLibrariesUtil;
+import org.talend.utils.sugars.TypedReturnCode;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -118,6 +122,11 @@ public class ArtifacoryRepositoryHandler extends AbstractArtifactRepositoryHandl
     @Override
     public List<MavenArtifact> search(String groupIdToSearch, String artifactId, String versionToSearch, boolean fromRelease,
             boolean fromSnapshot) throws Exception {
+        return requestSearch(groupIdToSearch, artifactId, versionToSearch, fromRelease, fromSnapshot, false);
+    }
+
+    protected List<MavenArtifact> requestSearch(String groupIdToSearch, String artifactId, String versionToSearch,
+            boolean fromRelease, boolean fromSnapshot, boolean useSnapshotVersion) throws Exception {
         String serverUrl = serverBean.getServer();
         if (!serverUrl.endsWith("/")) { //$NON-NLS-1$
             serverUrl = serverUrl + "/"; //$NON-NLS-1$
@@ -197,9 +206,21 @@ public class ArtifacoryRepositoryHandler extends AbstractArtifactRepositoryHandl
                         }
                         if (type != null) {
                             MavenArtifact artifact = new MavenArtifact();
-                            String v = split[split.length - 2];
-                            String a = split[split.length - 3];
                             String g = ""; //$NON-NLS-1$
+                            String a = split[split.length - 3];
+                            String v = split[split.length - 2];
+                            if (fromSnapshot && useSnapshotVersion) {
+                                String jarName = split[split.length - 1];
+                                if (jarName.contains("-")) {
+                                    v = jarName.substring(jarName.indexOf("-") + 1);
+                                    v = v.substring(0, v.lastIndexOf("."));
+                                } else {
+                                    if (CommonsPlugin.isDebugMode()) {
+                                        ExceptionHandler
+                                                .process(new Exception("the jar name is not the usual style: " + jarName));
+                                    }
+                                }
+                            }
                             for (int j = 1; j < split.length - 3; j++) {
                                 if ("".equals(g)) { //$NON-NLS-1$
                                     g = split[j];
@@ -212,6 +233,9 @@ public class ArtifacoryRepositoryHandler extends AbstractArtifactRepositoryHandl
                             artifact.setVersion(v);
                             artifact.setType(type);
                             artifact.setLastUpdated(lastUpdated);
+                            String regex = a + "-" + v;
+                            String classifier = ShareLibrariesUtil.getMavenClassifier(artifactPath, regex, type);
+                            artifact.setClassifier(classifier);
                             fillChecksumData(jsonObject, artifact);
                             resultList.add(artifact);
                         }
