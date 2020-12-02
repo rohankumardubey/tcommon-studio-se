@@ -84,7 +84,7 @@ public interface IProcess extends IElement {
 
     public List<? extends INode> getNodesOfType(String componentName);
 
-    public boolean checkPresenceNodeOfType(String componentName);
+    public boolean checkPresenceGraphicalNodeOfType(String componentName);
     /**
      * Comment method "getAllConnections".
      *
