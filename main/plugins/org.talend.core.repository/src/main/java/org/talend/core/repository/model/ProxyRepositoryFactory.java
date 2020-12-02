@@ -2205,6 +2205,14 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                     TimeMeasurePerformance.step("logOnProject", "Sync components libraries"); //$NON-NLS-1$
                 }
 
+                try {
+                    // for new added mapping file, sync to project mapping folder
+                    MetadataTalendType.syncNewMappingFileToProject();
+                } catch (SystemException e) {
+                    // ignore
+                    ExceptionHandler.process(e);
+                }
+
                 currentMonitor = subMonitor.newChild(1, SubMonitor.SUPPRESS_NONE);
                 currentMonitor.beginTask("Execute before logon migrations tasks", 1); //$NON-NLS-1$
                 ProjectManager.getInstance().getMigrationRecords().clear();
@@ -2306,8 +2314,6 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                         // set the project mappings url
                         System.setProperty("talend.mappings.url", url.toString()); // $NON-NLS-1$
                     }
-                    // for new added mapping file, sync to project mapping folder
-                    MetadataTalendType.syncNewMappingFileToProject();
                 } catch (SystemException e) {
                     // ignore
                     ExceptionHandler.process(e);
