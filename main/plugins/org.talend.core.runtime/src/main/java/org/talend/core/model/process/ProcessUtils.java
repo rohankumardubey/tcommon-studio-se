@@ -1007,7 +1007,7 @@ public final class ProcessUtils {
     
     public static boolean isChildRouteProcess(IProcess process) {
         if (process != null)   {
-            return process.checkPresenceNodeOfType("tRouteInput");
+            return process.checkPresenceGraphicalNodeOfType("tRouteInput");
         }
         return false;
     }
