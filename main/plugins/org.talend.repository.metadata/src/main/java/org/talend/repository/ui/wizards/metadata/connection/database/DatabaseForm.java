@@ -6336,8 +6336,6 @@ public class DatabaseForm extends AbstractForm {
         updateCheckButtonStatus();
     }
 
-    private static String DEFAULT_HIVE_METASTORE_HOST = "localhost";//$NON-NLS-1$
-
     private static String DEFAULT_HIVE_METASTORE_PORT = "9083";//$NON-NLS-1$
 
     /**
@@ -6505,8 +6503,14 @@ public class DatabaseForm extends AbstractForm {
                     metastorePort.setText(DEFAULT_HIVE_METASTORE_PORT);
                 }
                 String metastorehost = getConnection().getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HIVE_THRIFTHOST);
+
                 if (metastorehost == null || "".equals(metastorehost)) {
-                    metastoreHost.setText(DEFAULT_HIVE_METASTORE_HOST);
+
+                    String serverName = getConnection().getServerName();
+                    if (serverName == null || "".equals(serverName)) { //$NON-NLS-1$
+                        serverName = EDatabaseConnTemplate.HIVE.getDefaultServer(EDatabaseVersion4Drivers.HIVE);
+                    }
+                    metastoreHost.setText(serverName);
                 }
             }
             // schemaText.hide();
