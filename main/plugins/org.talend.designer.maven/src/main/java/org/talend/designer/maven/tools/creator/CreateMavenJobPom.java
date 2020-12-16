@@ -662,7 +662,7 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
         Set<JobInfo> childrenJobInfo = processor.getBuildChildrenJobs().stream().filter(j -> !j.isTestContainer())
                 .collect(Collectors.toSet());
         if (!hasLoopDependency()) {
-            childrenJobInfo.forEach(j -> jobCoordinate.add(getJobCoordinate(j.getProcessItem().getProperty())));
+            childrenJobInfo.forEach(j -> jobCoordinate.add(getChildrenJobCoordinate(j.getProcessItem().getProperty())));
         }
 
         // talend libraries and codes
@@ -821,6 +821,13 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
 
     protected String getJobCoordinate(Property property) {
         return getCoordinate(PomIdsHelper.getJobGroupId(property), PomIdsHelper.getJobArtifactId(property),
+                MavenConstants.PACKAGING_JAR, PomIdsHelper.getJobVersion(property), null);
+    }
+    
+    protected String getChildrenJobCoordinate(Property property) {
+        return getCoordinate(PomIdsHelper.getJobGroupId(property), 
+        		"OSGI".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))? 
+        				PomIdsHelper.getJobArtifactId(property) + "-bundle" : PomIdsHelper.getJobArtifactId(property),
                 MavenConstants.PACKAGING_JAR, PomIdsHelper.getJobVersion(property), null);
     }
 
