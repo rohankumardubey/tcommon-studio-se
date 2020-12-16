@@ -15,7 +15,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 public class PropertyComponentFilterTest {
 
     @Test
-    public void testAcceptEquals() {
+    public void testAccept() {
         String componentName = "MyComponent'";
         String paramName = "ParamName";
         String paramValue = "ParamValue";
