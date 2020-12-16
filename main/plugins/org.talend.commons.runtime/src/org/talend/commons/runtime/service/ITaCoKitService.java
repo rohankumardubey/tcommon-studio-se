@@ -44,6 +44,8 @@ public interface ITaCoKitService {
 
     boolean isTaCoKitType(Object repoType);
 
+    void updateComponentsCache() throws Exception;
+
     public static ITaCoKitService getInstance() throws Exception {
         BundleContext bc = FrameworkUtil.getBundle(ITaCoKitService.class).getBundleContext();
         Collection<ServiceReference<ITaCoKitService>> tacokitServices = Collections.emptyList();

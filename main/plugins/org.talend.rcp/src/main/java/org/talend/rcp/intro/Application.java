@@ -44,6 +44,7 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.helper.LocalComponentInstallHelper;
 import org.talend.commons.runtime.helper.PatchComponentHelper;
 import org.talend.commons.runtime.service.ComponentsInstallComponent;
+import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.commons.runtime.service.PatchComponent;
 import org.talend.commons.ui.runtime.update.PreferenceKeys;
 import org.talend.commons.ui.swt.dialogs.ErrorDialogWidthDetailArea;
@@ -577,9 +578,26 @@ public class Application implements IApplication {
     }
 
     private boolean logUserOnProject(Shell shell) {
+        startTacokitInBackground();
         IRepositoryService service =
                 (IRepositoryService) GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
         return service.openLoginDialog(shell);
+    }
+
+    private void startTacokitInBackground() {
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    ITaCoKitService.getInstance().start();
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+        }, "Starting tacokit...") {
+
+        }.start();
     }
 
     @Override

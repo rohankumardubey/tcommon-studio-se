@@ -2248,6 +2248,11 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                 executeMigrations(project, false, currentMonitor);
                 ProjectManager.getInstance().getMigrationRecords().clear();
                 TimeMeasurePerformance.step("logOnProject", "executeMigrations(afterLogonTasks)"); //$NON-NLS-1$ //$NON-NLS-2$
+                try {
+                    ITaCoKitService.getInstance().updateComponentsCache();
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
                 if (monitor != null && monitor.isCanceled()) {
                     throw new OperationCanceledException(""); //$NON-NLS-1$
                 }
