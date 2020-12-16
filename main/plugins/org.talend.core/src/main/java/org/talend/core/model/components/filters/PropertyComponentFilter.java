@@ -23,9 +23,44 @@ import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
  */
 public class PropertyComponentFilter extends NameComponentFilter implements IComponentFilter {
 
+    private interface AcceptOperator {
+
+        public boolean evaluate(String param1, String param2);
+
+    }
+
+    private static  class EqualityOperator implements AcceptOperator {
+
+        @Override
+        public boolean evaluate(String param1, String param2) {
+            if (param1 != null) {
+                return param1.equals(param2);
+            } else {
+                return false;
+            }
+        }
+    }
+
+    private static class ContainsOperator implements AcceptOperator {
+
+        @Override
+        public boolean evaluate(String param1, String param2) {
+            if (param1 != null) {
+                return param1.contains(param2);
+            } else {
+                return false;
+            }
+        }
+    }
+
+    public static AcceptOperator equalsOperator = new EqualityOperator();
+    public static AcceptOperator containsOperator = new ContainsOperator();
+    
     private String property;
 
     private String value;
+
+    private AcceptOperator operator = new EqualityOperator();
 
     public PropertyComponentFilter(String name, String property, String value) {
         super(name);
@@ -33,13 +68,19 @@ public class PropertyComponentFilter extends NameComponentFilter implements ICom
         this.value = value;
     }
 
+    public PropertyComponentFilter(String name, String property, String value, AcceptOperator operator) {
+        super(name);
+        this.property = property;
+        this.value = value;
+        this.operator = operator;
+    }
+
     @Override
     public boolean accept(NodeType node) {
         boolean toReturn = (name == null ? true : super.accept(node));
         if (toReturn) {
             String pValue = ComponentUtilities.getNodePropertyValue(node, property);
-            // toReturn = pValue.startsWith(value);
-            toReturn = (pValue != null) && (pValue.equals(value));
+            toReturn = operator.evaluate(pValue, value);
         }
         return toReturn;
     }
