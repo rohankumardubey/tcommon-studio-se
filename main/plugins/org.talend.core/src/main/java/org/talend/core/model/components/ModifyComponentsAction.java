@@ -59,22 +59,33 @@ public class ModifyComponentsAction {
 
     public static void searchAndModify(Item item, ProcessType processType, IComponentFilter filter,
             List<IComponentConversion> conversions) throws PersistenceException {
+        searchAndModify(item, processType, Arrays.asList(filter), conversions);
+    }
+
+    public static void searchAndModify(Item item, ProcessType processType, List<IComponentFilter> filters,
+            List<IComponentConversion> conversions) throws PersistenceException {
+        searchAndModify(item, processType, filters, conversions, true);
+    }
+    
+    public static boolean searchAndModify(Item item, ProcessType processType, List<IComponentFilter> filters,
+            List<IComponentConversion> conversions, boolean autoSave) throws PersistenceException {
         if (processType == null) {
-            return;
+            return false;
         }
         IRepositoryService service = (IRepositoryService) GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
         IProxyRepositoryFactory factory = service.getProxyRepositoryFactory();
         boolean modified = false;
         for (Object o : processType.getNode()) {
-            if (searchAndModify((NodeType) o, filter, conversions)) {
+            if (searchAndModify((NodeType) o, filters, conversions)) {
                 modified = true;
             }
         }
-        if (modified) {
+        if (modified && autoSave) {
             factory.save(item, true);
         }
+        return modified;
     }
-
+    
     public static void searchAndModify(IComponentFilter filter, List<IComponentConversion> conversions)
             throws PersistenceException, IOException, CoreException {
         IRepositoryService service = (IRepositoryService) GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
@@ -92,11 +103,24 @@ public class ModifyComponentsAction {
     }
 
     public static boolean searchAndModify(NodeType node, IComponentFilter filter, List<IComponentConversion> conversions) {
-        if (node == null || filter == null || conversions == null) {
+       return searchAndModify(node, Arrays.asList(filter), conversions);
+    }
+    
+    public static boolean searchAndModify(NodeType node, List<IComponentFilter> filters, List<IComponentConversion> conversions) {
+        if (node == null || filters == null || conversions == null) {
             return false;
         }
         boolean modified = false;
-        if (filter.accept(node)) {
+        boolean toConvert = true; // Should current component be converted
+        // Applying filters
+        for (IComponentFilter filter : filters) {
+            if (!filter.accept(node)) {
+                toConvert = false;
+                break;
+            }
+        }
+        
+        if (toConvert) {
             for (IComponentConversion conversion : conversions) {
                 conversion.transform(node);
                 modified = true;
