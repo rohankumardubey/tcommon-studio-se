@@ -18,21 +18,22 @@ import java.util.List;
 import org.talend.core.model.repository.ERepositoryObjectType;
 
 /**
- * Base class for  Spark jobs migration tasks  
- * 
- * @author lbourgeois
+ * Base class for Spark jobs migration tasks
  *
+ * @author lbourgeois
  */
 public abstract class AbstractSparkJobMigrationTask extends AbstractJobMigrationTask {
 
-	@Override
+    @Override
     public List<ERepositoryObjectType> getTypes() {
-	    // Spark batch
-	    List<ERepositoryObjectType> types =  Arrays.asList(ERepositoryObjectType.PROCESS_MR, ERepositoryObjectType.SPARK_JOBLET, ERepositoryObjectType.TEST_CONTAINER);
-	    // Spark streaming
-	    if (ERepositoryObjectType.PROCESS_STORM != null) {
-	        types.addAll(Arrays.asList(ERepositoryObjectType.PROCESS_STORM,ERepositoryObjectType.SPARK_STREAMING_JOBLET));
-	    }
+        // Spark batch
+        List<ERepositoryObjectType> types = Arrays.asList(ERepositoryObjectType.PROCESS_MR,
+                ERepositoryObjectType.SPARK_JOBLET, ERepositoryObjectType.TEST_CONTAINER);
+        // Spark streaming
+        if (ERepositoryObjectType.PROCESS_STORM != null) {
+            types.addAll(
+                    Arrays.asList(ERepositoryObjectType.PROCESS_STORM, ERepositoryObjectType.SPARK_STREAMING_JOBLET));
+        }
         return types;
     }
 }

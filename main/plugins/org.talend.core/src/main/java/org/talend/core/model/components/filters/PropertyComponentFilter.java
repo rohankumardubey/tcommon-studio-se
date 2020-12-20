@@ -16,20 +16,17 @@ import org.talend.core.model.components.ComponentUtilities;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 
 /**
- * Filter components by name, property and value.<br/>
- *
+ * Filter components by name, property and value.<br>
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ven., 29 sept. 2006) nrousseau $
- *
  */
 public class PropertyComponentFilter extends NameComponentFilter implements IComponentFilter {
 
     private interface AcceptOperator {
 
         public boolean evaluate(String param1, String param2);
-
     }
 
-    private static  class EqualityOperator implements AcceptOperator {
+    private static class EqualityOperator implements AcceptOperator {
 
         @Override
         public boolean evaluate(String param1, String param2) {
@@ -55,7 +52,7 @@ public class PropertyComponentFilter extends NameComponentFilter implements ICom
 
     public static AcceptOperator equalsOperator = new EqualityOperator();
     public static AcceptOperator containsOperator = new ContainsOperator();
-    
+
     private String property;
 
     private String value;
@@ -84,5 +81,4 @@ public class PropertyComponentFilter extends NameComponentFilter implements ICom
         }
         return toReturn;
     }
-
 }
