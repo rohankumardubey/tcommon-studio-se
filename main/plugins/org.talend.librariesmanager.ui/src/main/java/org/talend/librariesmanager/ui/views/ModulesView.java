@@ -32,6 +32,7 @@ import org.talend.librariesmanager.ui.actions.ExportCustomSettingsAction;
 import org.talend.librariesmanager.ui.actions.ImportCustomSettingsAction;
 import org.talend.librariesmanager.ui.actions.ImportExternalJarAction;
 import org.talend.librariesmanager.ui.actions.RemoveExternalJarAction;
+import org.talend.librariesmanager.ui.actions.ShareLibsAction;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
@@ -124,6 +125,10 @@ public class ModulesView extends ViewPart {
     }
 
     private void fillLocalToolBar(IToolBarManager manager) {
+
+        ShareLibsAction shareAction = new ShareLibsAction();
+        manager.add(shareAction);
+
         manager.add(checkAction);
         ImportCustomSettingsAction importSettingAction = new ImportCustomSettingsAction();
         manager.add(importSettingAction);
