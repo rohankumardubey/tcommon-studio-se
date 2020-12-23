@@ -36,8 +36,10 @@ public class ShareLibsSynchronizer implements IStartup {
      */
     @Override
     public void earlyStartup() {
-        ShareLibsJob job = new ShareLibsJob();
-        job.schedule();
+        if (shareLibsAtStartup()) {
+            ShareLibsJob job = new ShareLibsJob();
+            job.schedule();
+        }
     }
 
     public boolean shareLibsAtStartup() {
