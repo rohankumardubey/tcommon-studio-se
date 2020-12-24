@@ -36,6 +36,11 @@ public class ShareLibsSynchronizer implements IStartup {
      */
     @Override
     public void earlyStartup() {
+
+        // share ci jars anyway
+        ShareCILibsJob ciJob = new ShareCILibsJob();
+        ciJob.schedule();
+
         if (shareLibsAtStartup()) {
             ShareLibsJob job = new ShareLibsJob();
             job.schedule();
