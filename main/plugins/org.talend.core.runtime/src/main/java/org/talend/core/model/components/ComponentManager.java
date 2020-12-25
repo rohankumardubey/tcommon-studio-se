@@ -32,7 +32,7 @@ import org.talend.core.model.general.ILibrariesService;
  */
 public class ComponentManager {
 
-    private static ComponentsCache cache;
+    private static ComponentsCache cache = ComponentCacheFactory.eINSTANCE.createComponentsCache();
 
     private static final String TALEND_COMPONENT_CACHE = "ComponentsCache.";
 
@@ -41,9 +41,6 @@ public class ComponentManager {
     private static boolean modified = false;
 
     public static ComponentsCache getComponentCache() {
-        if (cache == null) {
-            cache = ComponentCacheFactory.eINSTANCE.createComponentsCache();
-        }
         return cache;
     }
 
@@ -56,16 +53,6 @@ public class ComponentManager {
                 EmfHelper.saveResource(cache.eResource());
             } catch (PersistenceException e1) {
                 ExceptionHandler.process(e1);
-            }
-            ILibraryManagerService repositoryBundleService = (ILibraryManagerService) GlobalServiceRegister.getDefault()
-                    .getService(ILibraryManagerService.class);
-            repositoryBundleService.clearCache();
-            if (GlobalServiceRegister.getDefault().isServiceRegistered(ILibrariesService.class)) {
-                ILibrariesService libService = (ILibrariesService) GlobalServiceRegister.getDefault().getService(
-                        ILibrariesService.class);
-                if (libService != null) {
-                    libService.syncLibraries();
-                }
             }
             setModified(false);
         }
