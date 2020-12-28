@@ -12,7 +12,12 @@
 // ============================================================================
 package org.talend.librariesmanager.ui.actions;
 
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.librariesmanager.ui.i18n.Messages;
@@ -38,7 +43,48 @@ public class ShareLibsAction extends Action {
      */
     @Override
     public void run() {
+
         ShareLibsJob job = new ShareLibsJob();
+        job.addJobChangeListener(new IJobChangeListener() {
+
+            @Override
+            public void scheduled(IJobChangeEvent event) {
+                ShareLibsAction.this.setEnabled(false);
+            }
+
+            @Override
+            public void running(IJobChangeEvent event) {
+                ShareLibsAction.this.setEnabled(false);
+            }
+
+            @Override
+            public void done(IJobChangeEvent event) {
+                ShareLibsAction.this.setEnabled(true);
+                Display.getDefault().asyncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        MessageDialog.open(MessageDialog.INFORMATION, Display.getDefault().getActiveShell(), "",
+                                Messages.getString("Module.view.sharelibsAction.info"), SWT.NONE);
+                    }
+                });
+            }
+
+            @Override
+            public void awake(IJobChangeEvent event) {
+                ShareLibsAction.this.setEnabled(false);
+            }
+
+            @Override
+            public void aboutToRun(IJobChangeEvent event) {
+                ShareLibsAction.this.setEnabled(false);
+            }
+
+            @Override
+            public void sleeping(IJobChangeEvent event) {
+                ShareLibsAction.this.setEnabled(false);
+            }
+        });
         job.schedule();
     }
 
