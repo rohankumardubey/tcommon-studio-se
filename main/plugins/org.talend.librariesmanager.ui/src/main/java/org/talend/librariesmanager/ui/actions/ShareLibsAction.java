@@ -28,7 +28,7 @@ public class ShareLibsAction extends Action {
         super();
         this.setText(Messages.getString("Module.view.sharelibsAction.title")); //$NON-NLS-1$
         this.setDescription(Messages.getString("Module.view.sharelibsAction.title")); //$NON-NLS-1$
-        this.setImageDescriptor(ImageProvider.getImageDesc(ECoreImage.IMPORT_JAR));
+        this.setImageDescriptor(ImageProvider.getImageDesc(ECoreImage.SHARE_LIBS));
     }
 
     /*
