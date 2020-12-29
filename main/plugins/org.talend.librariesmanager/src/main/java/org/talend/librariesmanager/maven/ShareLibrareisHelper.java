@@ -95,10 +95,13 @@ public abstract class ShareLibrareisHelper {
             seachArtifacts(monitor, customerRepHandler, snapshotArtifactMap, releaseArtifactMap, snapshotGroupIdSet,
                     releaseGroupIdSet);
 
-            // search from proxy artifact repository if any
-            seachArtifacts(monitor, proxyArtifactHandler, snapshotArtifactMap, releaseArtifactMap, snapshotGroupIdSet,
-                    releaseGroupIdSet);
-
+            try {
+                // search from proxy artifact repository if any
+                seachArtifacts(monitor, proxyArtifactHandler, snapshotArtifactMap, releaseArtifactMap, snapshotGroupIdSet,
+                        releaseGroupIdSet);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
             checkCancel(monitor);
 
             Iterator<ModuleNeeded> iterator = filesToShare.keySet().iterator();

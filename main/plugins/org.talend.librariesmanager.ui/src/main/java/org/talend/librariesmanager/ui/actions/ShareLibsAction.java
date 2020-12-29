@@ -20,6 +20,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.core.nexus.ArtifactRepositoryBean;
+import org.talend.core.nexus.IRepositoryArtifactHandler;
+import org.talend.core.nexus.RepositoryArtifactHandlerManager;
+import org.talend.core.nexus.TalendLibsServerManager;
 import org.talend.librariesmanager.ui.i18n.Messages;
 import org.talend.librariesmanager.ui.startup.ShareLibsJob;
 
@@ -86,6 +90,21 @@ public class ShareLibsAction extends Action {
             }
         });
         job.schedule();
+    }
+
+    public boolean show() {
+        boolean ret = false;
+        try {
+            ArtifactRepositoryBean customNexusServer = TalendLibsServerManager.getInstance().getCustomNexusServer();
+            IRepositoryArtifactHandler customerRepHandler = RepositoryArtifactHandlerManager
+                    .getRepositoryHandler(customNexusServer);
+            if (customerRepHandler != null) {
+                ret = customerRepHandler.checkConnection();
+            }
+        } catch (Exception e) {
+
+        }
+        return ret;
     }
 
 }
