@@ -195,12 +195,7 @@ public class LibrariesIndexManager {
     public Map<String, String> getAllStudioLibsFromIndex() {
         this.studioLibLock.readLock().lock();
         try {
-            Map<String, String> ret = new HashMap<String, String>();
-            Set<Entry<String, String>> entries = this.studioLibIndex.getJarsToRelativePath().entrySet();
-            for (Entry<String, String> entry : entries) {
-                ret.put(entry.getKey(), entry.getValue());
-            }
-            return Collections.unmodifiableMap(ret);
+            return Collections.unmodifiableMap(this.studioLibIndex.getJarsToRelativePath().map());
         } finally {
             this.studioLibLock.readLock().unlock();
         }
@@ -224,12 +219,7 @@ public class LibrariesIndexManager {
     public Map<String, String> getAllMavenLibsFromIndex() {
         this.mavenLibLock.readLock().lock();
         try {
-            Map<String, String> ret = new HashMap<String, String>();
-            Set<Entry<String, String>> entries = this.mavenLibIndex.getJarsToRelativePath().entrySet();
-            for (Entry<String, String> entry : entries) {
-                ret.put(entry.getKey(), entry.getValue());
-            }
-            return Collections.unmodifiableMap(ret);
+            return Collections.unmodifiableMap(this.mavenLibIndex.getJarsToRelativePath().map());
         } finally {
             this.mavenLibLock.readLock().unlock();
         }

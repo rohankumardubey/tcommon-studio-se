@@ -1,20 +1,26 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
-Bundle-SymbolicName: org.talend.model.edit; singleton:=true
+Bundle-SymbolicName: org.talend.model.edit;singleton:=true
+Automatic-Module-Name: org.talend.model.edit
 Bundle-Version: 7.4.1.qualifier
 Bundle-ClassPath: .
-Bundle-Activator: org.talend.designer.business.model.business.provider.BusinessEditPlugin$Implementation
+Bundle-Activator: org.talend.core.model.component_cache.provider.component_cacheEditPlugin$Implementation
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.talend.core.model.metadata.builder.connection.provider,
  org.talend.cwm.relational.provider,
  org.talend.cwm.softwaredeployment.provider,
  org.talend.cwm.xml.provider,
- org.talend.designer.business.model.business.provider
+ org.talend.designer.business.model.business.provider,
+ org.talend.core.model.component_cache.provider
 Require-Bundle: org.eclipse.core.runtime,
  org.talend.cwm.mip.edit,
- org.talend.model,
+ org.talend.model;visibility:=reexport,
+ org.eclipse.emf.edit;visibility:=reexport,
+ org.talend.model.edit;visibility:=reexport,
  org.talend.common.ui.runtime,
  org.eclipse.jface
 Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
