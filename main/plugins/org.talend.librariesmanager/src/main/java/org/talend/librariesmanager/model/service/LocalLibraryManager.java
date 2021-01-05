@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.xml.bind.DatatypeConverter;
@@ -1263,16 +1264,7 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IComponentsService.class)) {
             service = GlobalServiceRegister.getDefault().getService(IComponentsService.class);
         }
-        // if (service != null) {
-        // for (IComponent component : service.getComponentsFactory().readComponents()) {
-        // try {
-        // modules.addAll(component.getModulesNeeded());
-        // } catch (Exception e) {
-        // ExceptionHandler.process(e);
-        // continue;
-        // }
-        // }
-        // }
+
         calculateModulesIndex(modules, platformURLMap, duplicateLocationJar, mavenURIMap, duplicateMavenUri);
 
         calculateModulesIndexFromExtension(platformURLMap, duplicateLocationJar, mavenURIMap, duplicateMavenUri);
@@ -1290,6 +1282,7 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
             calculateModulesIndexFromComponentFolder(service, platformURLMap);
         }
 
+        // all of contents will be inside
         saveMavenIndex(mavenURIMap, monitorWrap);
         savePlatfromURLIndex(platformURLMap, monitorWrap);
         
@@ -1576,10 +1569,13 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
     @Override
     public void savePlatfromURLIndex(Map<String, String> libsToRelativePath, IProgressMonitor... monitorWrap) {
         boolean modified = false;
-        for (String key : libsToRelativePath.keySet()) {
-            if (checkJarInstalledFromPlatform(libsToRelativePath.get(key))) {
-                LibrariesIndexManager.getInstance().AddStudioLibs(key, libsToRelativePath.get(key));
-                modified = true;
+        Set<Entry<String, String>> entries = libsToRelativePath.entrySet();
+        for (Entry<String, String> entry : entries) {
+            if (!LibrariesIndexManager.getInstance().containsStudioLibs(entry.getKey())) {
+                if (checkJarInstalledFromPlatform(entry.getValue())) {
+                    LibrariesIndexManager.getInstance().AddStudioLibs(entry.getKey(), entry.getValue());
+                    modified = true;
+                }
             }
         }
         if (modified) {

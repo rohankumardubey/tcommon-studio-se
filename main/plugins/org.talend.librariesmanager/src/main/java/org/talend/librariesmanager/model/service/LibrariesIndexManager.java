@@ -214,6 +214,18 @@ public class LibrariesIndexManager {
     }
 
     /**
+     * whether contains key
+     */
+    public boolean containsStudioLibs(String key) {
+        this.studioLibLock.readLock().lock();
+        try {
+            return this.studioLibIndex.getJarsToRelativePath().containsKey(key);
+        } finally {
+            this.studioLibLock.readLock().unlock();
+        }
+    }
+
+    /**
      * Get all contents inside maven lib index file, return as unmodifiable map
      */
     public Map<String, String> getAllMavenLibsFromIndex() {
