@@ -34,6 +34,7 @@ import org.talend.core.ILibraryManagerService;
 import org.talend.core.database.conn.ConnParameterKeys;
 import org.talend.core.database.conn.template.DbConnStrForHive;
 import org.talend.core.hadoop.BigDataBasicUtil;
+import org.talend.core.hadoop.IHadoopDistributionService;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.IMetadataConnection;
@@ -159,16 +160,20 @@ public class ClassLoaderFactory {
         return classLoader;
     }
 
-    private static void init() {
+    private static void init(String index) {
         File tmpFolder = getTmpFolder();
         if (tmpFolder.exists()) {
             FilesUtils.removeFolder(tmpFolder, true);
         }
-        classLoadersMap = new ConcurrentHashMap<String, DynamicClassLoader>();
+        if (classLoadersMap != null && StringUtils.isNotBlank(index)) {
+            classLoadersMap.remove(index);
+        } else {
+            classLoadersMap = new ConcurrentHashMap<String, DynamicClassLoader>();
+        }
     }
 
     public static IConfigurationElement findIndex(String index) {
-        IConfigurationElement[] elements = getConfigurationElements();
+        IConfigurationElement[] elements = getConfigurationElements(index);
         if (StringUtils.isNotEmpty(index) && elements != null) {
             for (IConfigurationElement current : elements) {
                 String key = current.getAttribute(INDEX_ATTR);
@@ -337,7 +342,7 @@ public class ClassLoaderFactory {
     }
 
     public static String[] getDriverModuleList(String connKeyString) {
-        IConfigurationElement[] elements = getConfigurationElements();
+        IConfigurationElement[] elements = getConfigurationElements(connKeyString);
         if (connKeyString != null && elements != null) {
             for (IConfigurationElement current : elements) {
                 String key = current.getAttribute(INDEX_ATTR);
@@ -365,12 +370,36 @@ public class ClassLoaderFactory {
         return hdClassLoader;
     }
 
-    private static IConfigurationElement[] getConfigurationElements() {
-        checkCache();
+    private static IConfigurationElement[] getConfigurationElements(String index) {
+        checkCache(index);
         return configurationElements;
     }
 
-    private synchronized static void checkCache() {
+    private static String getVersion(String index) {
+        if (StringUtils.isBlank(index)) {
+            return null;
+        }
+        String[] split = index.split(":");
+        if (2 < split.length) {
+            return split[2];
+        } else {
+            return null;
+        }
+    }
+
+    private synchronized static void checkCache(String index) {
+        try {
+            String version = getVersion(index);
+            if (StringUtils.isNotBlank(version)) {
+                IHadoopDistributionService hdService = IHadoopDistributionService.get();
+                if (hdService != null) {
+                    hdService.checkDynamicDistributionExtensions(version);
+                }
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+
         boolean isCacheChanged = false;
         if (configurationElements != null) {
             for (IConfigurationElement configElement : configurationElements) {
@@ -383,13 +412,13 @@ public class ClassLoaderFactory {
             isCacheChanged = true;
         }
         if (isCacheChanged) {
-            init();
+            init(index);
             IExtensionRegistry registry = Platform.getExtensionRegistry();
             configurationElements = registry.getConfigurationElementsFor(EXTENSION_POINT_ID);
             cacheVersion = BigDataBasicUtil.getDynamicDistributionCacheVersion();
         } else {
             if (classLoadersMap == null) {
-                init();
+                init(index);
             }
             if (configurationElements == null) {
                 IExtensionRegistry registry = Platform.getExtensionRegistry();
@@ -399,7 +428,7 @@ public class ClassLoaderFactory {
     }
 
     private static Map<String, DynamicClassLoader> getClassLoaderMap() {
-        checkCache();
+        checkCache(null);
         return classLoadersMap;
     }
 }
