@@ -40,4 +40,7 @@ public interface IDynamicDistributionManager {
     public boolean isUsersDynamicDistribution(String dynamicDistributionId);
 
     public String getDynamicDistributionCacheVersion();
+
+    public String getPluginExtensionCacheVersion();
+
 }
