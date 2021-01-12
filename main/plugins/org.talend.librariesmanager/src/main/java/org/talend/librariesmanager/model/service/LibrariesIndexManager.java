@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.EMap;
@@ -53,6 +54,8 @@ public class LibrariesIndexManager {
     private ReentrantReadWriteLock studioLibLock = new ReentrantReadWriteLock();
 
     private ReentrantReadWriteLock mavenLibLock = new ReentrantReadWriteLock();
+
+    private static final Logger LOGGER = Logger.getLogger(LibrariesIndexManager.class);
 
     private LibrariesIndexManager() {
         loadIndexResources();
@@ -113,9 +116,23 @@ public class LibrariesIndexManager {
         try {
             studioLibLock.writeLock().lock();
             saveResource(studioLibIndex, LIBRARIES_INDEX);
-            studioLibIndex.setInitialized(true);
         } finally {
             studioLibLock.writeLock().unlock();
+        }
+    }
+
+    public void setInitialized(boolean init) {
+        studioLibLock.writeLock().lock();
+        try {
+            studioLibIndex.setInitialized(init);
+        } finally {
+            studioLibLock.writeLock().unlock();
+        }
+        mavenLibLock.writeLock().lock();
+        try {
+            mavenLibIndex.setInitialized(true);
+        } finally {
+            mavenLibLock.writeLock().unlock();
         }
     }
 
@@ -123,7 +140,6 @@ public class LibrariesIndexManager {
         try {
             mavenLibLock.writeLock().lock();
             saveResource(mavenLibIndex, MAVEN_INDEX);
-            mavenLibIndex.setInitialized(true);
         } finally {
             mavenLibLock.writeLock().unlock();
         }

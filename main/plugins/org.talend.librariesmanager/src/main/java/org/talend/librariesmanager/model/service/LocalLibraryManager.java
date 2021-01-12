@@ -153,8 +153,7 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
 
     @Override
     public void setInitialized() {
-        LibrariesIndexManager.getInstance().saveStudioIndexResource();
-        LibrariesIndexManager.getInstance().saveMavenIndexResource();
+        LibrariesIndexManager.getInstance().setInitialized(true);
     }
 
     @Override
@@ -1265,6 +1264,9 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
             service = GlobalServiceRegister.getDefault().getService(IComponentsService.class);
         }
 
+        // we need to invoke this, because some module needed is defined inside component plugin.xml
+        modules.addAll(ModulesNeededProvider.getAllManagedModules());
+
         calculateModulesIndex(modules, platformURLMap, duplicateLocationJar, mavenURIMap, duplicateMavenUri);
 
         calculateModulesIndexFromExtension(platformURLMap, duplicateLocationJar, mavenURIMap, duplicateMavenUri);
@@ -1593,17 +1595,18 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
     public void saveMavenIndex(Map<String, String> libsMavenUriToDeploy, IProgressMonitor... monitorWrap) {
         Map<String, String> jarsToMavenuri = LibrariesIndexManager.getInstance().getAllMavenLibsFromIndex();
         boolean modified = false;
-        for (String key : libsMavenUriToDeploy.keySet()) {
-            String mvnUri = libsMavenUriToDeploy.get(key);
+        Set<Entry<String,String>> entries = libsMavenUriToDeploy.entrySet();
+        for (Entry<String,String> entry : entries) {
+            String key = entry.getKey();
+            String mvnUri = entry.getValue();
             if (!jarsToMavenuri.containsKey(key)
-                    || mvnUri != null && jarsToMavenuri.containsKey(key) && !mvnUri.equals(jarsToMavenuri.get(key))) {
+                    || (mvnUri != null && jarsToMavenuri.containsKey(key) && !mvnUri.equals(jarsToMavenuri.get(key)))) {
                 String valueFromIndex = jarsToMavenuri.get(key);
                 if (valueFromIndex == null) {
                     LibrariesIndexManager.getInstance().AddMavenLibs(key, mvnUri);
                     modified = true;
                 } else {
                     // merge the two mvnuri value if needed
-                    String newUri = mvnUri;
                     final String[] indexUris = valueFromIndex.split(MavenUrlHelper.MVN_INDEX_SPLITER);
                     final String[] toDeployUris = mvnUri.split(MavenUrlHelper.MVN_INDEX_SPLITER);
                     for (String indexUri : indexUris) {
@@ -1617,7 +1620,7 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                             mvnUri = mvnUri + MavenUrlHelper.MVN_INDEX_SEPARATOR + indexUri;
                         }
                     }
-                    LibrariesIndexManager.getInstance().AddMavenLibs(key, newUri);
+                    LibrariesIndexManager.getInstance().AddMavenLibs(key, mvnUri);
                     modified = true;
                 }
             }
