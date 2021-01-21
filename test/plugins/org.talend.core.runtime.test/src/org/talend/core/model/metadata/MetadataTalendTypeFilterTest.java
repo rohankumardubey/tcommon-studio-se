@@ -51,7 +51,8 @@ public class MetadataTalendTypeFilterTest {
         MetadataTalendTypeFilter sparkWithtRowGeneratorfilter = new SparkMetadataTalendTypeFilter("tRowGenerator"); //$NON-NLS-1$
         MetadataTalendTypeFilter sparkWithtFileInputParquetfilter = new SparkMetadataTalendTypeFilter("tFileInputParquet"); //$NON-NLS-1$
         MetadataTalendTypeFilter stormfilter = new StormMetadataTalendTypeFilter(""); //$NON-NLS-1$
-        MetadataTalendTypeFilter sparkWithtJdbcFilter = new SparkMetadataTalendTypeFilter("tJDBCInput"); //$NON-NLS-1$
+        MetadataTalendTypeFilter sparkWithtJdbcInputFilter = new SparkMetadataTalendTypeFilter("tJDBCInput"); //$NON-NLS-1$
+        MetadataTalendTypeFilter sparkWithtJdbcOutputFilter = new SparkMetadataTalendTypeFilter("tJDBCOutput"); //$NON-NLS-1$
 
         types = new String[] { INTEGER, DOCUMENT, STRING, OBJECT, LIST, DOUBLE, SHORT, DYNAMIC, VECTOR };
         assertEquals(Arrays.asList(dummyfilter.filter(types)),
@@ -91,9 +92,10 @@ public class MetadataTalendTypeFilterTest {
         assertEquals(Arrays.asList(sparkWithtRowGeneratorfilter.filter(types)), Arrays.asList(new String[] { LIST, VECTOR }));
         assertEquals(Arrays.asList(sparkWithtFileInputParquetfilter.filter(types)), Arrays.asList(new String[] {}));
         assertEquals(Arrays.asList(stormfilter.filter(types)), Arrays.asList(new String[] { OBJECT, LIST }));
-        assertEquals(Arrays.asList(sparkWithtJdbcFilter.filter(types)),
+        assertEquals(Arrays.asList(sparkWithtJdbcInputFilter.filter(types)),
                 Arrays.asList(new String[] { OBJECT, LIST, DYNAMIC, VECTOR }));
-
+        assertEquals(Arrays.asList(sparkWithtJdbcOutputFilter.filter(types)),
+                Arrays.asList(new String[] { OBJECT, LIST, DYNAMIC, VECTOR }));
     }
 
 }
