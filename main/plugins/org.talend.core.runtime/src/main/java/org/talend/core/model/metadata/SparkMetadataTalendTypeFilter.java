@@ -24,8 +24,11 @@ public class SparkMetadataTalendTypeFilter extends MetadataTalendTypeFilter {
 
     private final static String ROWGENERATOR_COMPONENT_NAME = "tRowGenerator"; //$NON-NLS-1$
 
-    protected final static String INPUTPARQUET_COMPONENT_NAME = "tFileInputParquet", //$NON-NLS-1$
-            INPUTSTREAMPARQUET_COMPONENT_NAME = "tFileStreamInputParquet", OUTPUTPARQUET_COMPONENT_NAME = "tFileOutputParquet"; // ; //$NON-NLS-1$ //$NON-NLS-2$
+    protected final static String INPUTPARQUET_COMPONENT_NAME = "tFileInputParquet"; //$NON-NLS-1$
+
+    protected final static String INPUTSTREAMPARQUET_COMPONENT_NAME = "tFileStreamInputParquet"; //$NON-NLS-1$
+
+    protected final static String OUTPUTPARQUET_COMPONENT_NAME = "tFileOutputParquet"; // ; //$NON-NLS-1$
 
     private final static String INPUTCASSANDRA_COMPONENT_NAME = "tCassandraInput"; //$NON-NLS-1$
 
