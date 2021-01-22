@@ -2229,8 +2229,11 @@ public class ProcessorUtilities {
                         if (processItem != null) {
                             JobInfo jobInfo = new JobInfo(processItem, jobContext);
                             jobInfos.add(jobInfo);
+                            JobInfo jobInfoFromSet = findJobInfo(jobInfos, jobInfo);
+                            boolean hasLoop = hasLoop(jobInfoFromSet);
+                            
                             jobInfo.setFatherJobInfo(parentJobInfo);
-                            if (!firstChildOnly) {
+                            if (!firstChildOnly && !hasLoop) {
                                 getAllJobInfo(processItem.getProcess(), jobInfo, jobInfos, firstChildOnly);
                             }
                         }
@@ -2312,7 +2315,35 @@ public class ProcessorUtilities {
         return jobInfos;
     }
 
-    private static boolean isRouteletNode(NodeType node) {
+    private static JobInfo findJobInfo(Set<JobInfo> jobInfos, JobInfo jobInfoToFind) {
+		for (JobInfo jobInfo : jobInfos) {
+			if (jobInfo.equals(jobInfoToFind)) {
+				return jobInfo;
+			}
+		}
+		return null;
+	}
+
+    private static boolean hasLoop(JobInfo jobInfo) {
+
+        Set<String> jobInfoIds = new HashSet<String>();
+
+        JobInfo jobInfoCurr = jobInfo;
+
+        while(jobInfoCurr != null) {
+            if (jobInfoIds.contains(jobInfoCurr.getJobId())) {
+                return true;
+            }
+
+            jobInfoIds.add(jobInfoCurr.getJobId());
+
+            jobInfoCurr = jobInfoCurr.getFatherJobInfo();
+        }
+
+        return false;
+    }
+
+	private static boolean isRouteletNode(NodeType node) {
         String jobIds = getParameterValue(node.getElementParameter(), "PROCESS_TYPE:PROCESS_TYPE_PROCESS");
         String jobVersion = getParameterValue(node.getElementParameter(), "PROCESS_TYPE:PROCESS_TYPE_VERSION"); //$NON-NLS-1$
         ProcessItem processItem = ItemCacheManager.getProcessItem(jobIds, jobVersion);
