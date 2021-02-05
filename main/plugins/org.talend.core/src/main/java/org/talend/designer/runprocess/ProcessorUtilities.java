@@ -2317,13 +2317,13 @@ public class ProcessorUtilities {
     }
 
     private static JobInfo findJobInfo(Set<JobInfo> jobInfos, JobInfo jobInfoToFind) {
-		for (JobInfo jobInfo : jobInfos) {
-			if (jobInfo.equals(jobInfoToFind)) {
-				return jobInfo;
-			}
-		}
-		return null;
-	}
+        for (JobInfo jobInfo : jobInfos) {
+            if (jobInfo.equals(jobInfoToFind)) {
+                return jobInfo;
+            }
+        }
+        return null;
+    }
 
     private static boolean hasLoop(JobInfo jobInfo) {
 
