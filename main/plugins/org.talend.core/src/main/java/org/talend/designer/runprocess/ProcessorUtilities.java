@@ -2966,7 +2966,9 @@ public class ProcessorUtilities {
         String configFilePath = externalResourcesFolderPath + "/log4j2.xml";
         String jarFilePath = externalResourcesFolderPath + "/talend-studio-log4j2.xml.jar";
         // Create config file
-        ProcessorUtilities.writeLog4j2ConfToFile(new File(configFilePath), Level.getLevel(rootLevel));
+        File confFile = new File(configFilePath);
+        confFile.setWritable(true, false);
+        ProcessorUtilities.writeLog4j2ConfToFile(confFile, Level.getLevel(rootLevel));
         // Put config file into jar
         ProcessorUtilities.addFileToJar(configFilePath, jarFilePath);
         return jarFilePath;
