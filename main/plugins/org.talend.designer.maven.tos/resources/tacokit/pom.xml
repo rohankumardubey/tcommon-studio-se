@@ -52,11 +52,23 @@
 			<groupId>org.talend.components</groupId>
 			<artifactId>couchbase</artifactId>
 			<version>${tacokit.components.version}</version>
-		</dependency>
+			<exclusions>
+				<exclusion>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+			</dependency>
 		<dependency>
 			<groupId>org.talend.components</groupId>
 			<artifactId>cosmosDB</artifactId>
 			<version>${tacokit.components.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

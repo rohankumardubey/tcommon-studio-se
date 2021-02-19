@@ -35,7 +35,8 @@ public class ExternalNodesFactory {
         try {
             listComponents = ExtensionImplementationProvider.getInstance(ExtensionPointFactory.EXTERNAL_COMPONENT, extensionId);
         } catch (IllegalPluginConfigurationException e) {
-            throw new RuntimeException("plugin:" + extensionId + " not found", e); //$NON-NLS-1$ //$NON-NLS-2$
+            // throw new RuntimeException("plugin:" + extensionId + " not found", e); //$NON-NLS-1$ //$NON-NLS-2$
+        	return null; //temporary
         }
         return listComponents.get(0);
     }
