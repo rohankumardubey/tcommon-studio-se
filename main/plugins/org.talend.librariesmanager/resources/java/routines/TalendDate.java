@@ -143,13 +143,12 @@ public class TalendDate {
      *
      * {example} formatDate("yyyy-MM-dd", new Date()) #
      */
-
     public synchronized static String formatDateInUTC(String pattern, java.util.Date date) {
         return formatDateInTimeZone(pattern, date, "UTC");
     }
 
     /**
-     * Formats a Date into a date/time string under the UTC timezone.
+     * Formats a Date into a date/time string under the given timezone.
      *
      * @param pattern the pattern to format.
      * @param date the date to be formatted into a date string.
@@ -166,7 +165,6 @@ public class TalendDate {
      *
      * {example} formatDate("yyyy-MM-dd", new Date()) #
      */
-
     public synchronized static String formatDateInTimeZone(String pattern, java.util.Date date, String zoneId) {
         DateFormat format = FastDateParser.getInstance(pattern);
         TimeZone originalTZ = format.getTimeZone();
