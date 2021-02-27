@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 import routines.system.FastDateParser;
@@ -162,8 +163,10 @@ public class TalendDate {
      * {param} string("yyyy-MM-dd HH:mm:ss") pattern : the pattern to format
      *
      * {param} date(myDate) date : the time value to be formatted into a time string
+     * 
+     * {param] string(zoneId) : id of timezone
      *
-     * {example} formatDate("yyyy-MM-dd", new Date()) #
+     * {example} formatDate("yyyy-MM-dd", new Date(), "Europe/Paris") #
      */
     public synchronized static String formatDateInTimeZone(String pattern, java.util.Date date, String zoneId) {
         DateFormat format = FastDateParser.getInstance(pattern);
@@ -1241,7 +1244,7 @@ public class TalendDate {
 
             @Override
             public void run() {
-                Calendar calendar = Calendar.getInstance();
+                Calendar calendar = GregorianCalendar.getInstance();
                 calendar.set(1979, 2, 23, 12, 30, 40);
                 Date dateCalendar = calendar.getTime();
                 for (int i = 0; i < LOOPS; i++) {
@@ -1260,7 +1263,7 @@ public class TalendDate {
 
             @Override
             public void run() {
-                Calendar calendar = Calendar.getInstance();
+                Calendar calendar = GregorianCalendar.getInstance();
                 calendar.set(1980, 2, 23, 12, 30, 40);
                 Date dateCalendar = calendar.getTime();
                 for (int i = 0; i < LOOPS; i++) {
@@ -1280,7 +1283,7 @@ public class TalendDate {
 
             @Override
             public void run() {
-                Calendar calendar = Calendar.getInstance();
+                Calendar calendar = GregorianCalendar.getInstance();
                 calendar.set(1979, 2, 23, 12, 30, 40);
                 Date dateCalendar = calendar.getTime();
                 for (int i = 0; i < LOOPS; i++) {
@@ -1299,7 +1302,7 @@ public class TalendDate {
 
             @Override
             public void run() {
-                Calendar calendar = Calendar.getInstance();
+                Calendar calendar = GregorianCalendar.getInstance();
                 calendar.set(1980, 2, 23, 12, 30, 40);
                 Date dateCalendar = calendar.getTime();
                 for (int i = 0; i < LOOPS; i++) {
@@ -1319,7 +1322,7 @@ public class TalendDate {
 
             @Override
             public void run() {
-                Calendar calendar = Calendar.getInstance();
+                Calendar calendar = GregorianCalendar.getInstance();
                 calendar.set(1979, 2, 23, 12, 30, 40);
                 Date dateCalendar = calendar.getTime();
                 for (int i = 0; i < LOOPS; i++) {
