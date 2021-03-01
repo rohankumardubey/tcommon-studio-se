@@ -32,7 +32,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -173,7 +175,7 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
         if (file == null || !file.exists()) {
             return;
         }
-        install(file, mavenUri, updateNexusJar, monitorWrap);
+        install(file, mavenUri, updateNexusJar, false, monitorWrap);
     }
 
     /**
@@ -184,7 +186,8 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
      * @param mavenUri snaopshot mvn uri
      * @param monitorWrap
      */
-    private void install(File file, String mavenRUI, boolean updateRemoteJar, IProgressMonitor... monitorWrap) {
+    private void install(File file, String mavenRUI, boolean updateRemoteJar, boolean useReleaseVersion,
+            IProgressMonitor... monitorWrap) {
         try {
             if (file.isDirectory()) {
                 List<File> jarFiles = FilesUtils.getJarFilesFromFolder(file, null);
@@ -192,7 +195,7 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                 if (!jarFiles.isEmpty()) {
                     for (File jarFile : jarFiles) {
                         if (mavenRUI == null) {
-                            guessMavenRUIFromIndex(jarFile, sourceAndMavenUri);
+                            guessMavenRUIFromIndex(jarFile, useReleaseVersion, sourceAndMavenUri);
                         } else {
                             sourceAndMavenUri.put(mavenRUI, jarFile.getAbsolutePath());
                         }
@@ -213,7 +216,7 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
             } else {
                 Map<String, String> sourceAndMavenUri = new HashMap<>();
                 if (mavenRUI == null) {
-                    guessMavenRUIFromIndex(file, sourceAndMavenUri);
+                    guessMavenRUIFromIndex(file, useReleaseVersion, sourceAndMavenUri);
                 } else {
                     sourceAndMavenUri.put(mavenRUI, file.getAbsolutePath());
                 }
@@ -239,6 +242,11 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
     }
 
     public void guessMavenRUIFromIndex(File jarFile, Map<String, String> sourceAndMavenUri) {
+        guessMavenRUIFromIndex(jarFile, false, sourceAndMavenUri);
+
+    }
+
+    public void guessMavenRUIFromIndex(File jarFile, boolean useReleaseVersion, Map<String, String> sourceAndMavenUri) {
         // TODO????? should deploy with all versions
         String urisFromIndex = LibrariesIndexManager.getInstance().getMavenLibIndex().getJarsToRelativePath()
                 .get(jarFile.getName());
@@ -263,7 +271,7 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
         // deploy as defaultMavenUri in case jar name is diffrent from artifactId in mvnuri from
         // index
         if (deployAsDefault) {
-            String defaultMavenUri = MavenUrlHelper.generateMvnUrlForJarName(jarFile.getName());
+            String defaultMavenUri = MavenUrlHelper.generateMvnUrlForJarName(jarFile.getName(), true, !useReleaseVersion);
             String customMavenURI = getCustomMavenURI(defaultMavenUri);
             if (customMavenURI != null) {
                 defaultMavenUri = customMavenURI;
@@ -889,7 +897,7 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                     ExceptionHandler.log("missing jar:" + module.getModuleName());
                 }
                 if (fileToDeploy != null) {
-                    install(fileToDeploy, mavenUri, false, monitorWrap);
+                    install(fileToDeploy, mavenUri, false, false, monitorWrap);
                 }
             }
         }
@@ -1249,9 +1257,9 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                 warnDuplicated(modules, duplicateMavenUri, "Maven Uri:");
             }
         }
-
+        
         if (service != null) {
-            deployLibsFromComponentFolder(service, platformURLMap);
+            calculateModulesIndexFromComponentFolder(service, platformURLMap);
         }
 
         saveMavenIndex(mavenURIMap, monitorWrap);
@@ -1263,82 +1271,75 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
     }
 
     /**
-     *
-     * The old components might use some jars in component folder and theres jars are not configured with platfrom URL
-     *
-     * @param service
-     * @param libsWithoutUri
-     * @param platformURLMap
-     */
-    private void deployLibsFromComponentFolder(IComponentsService service, Map<String, String> platformURLMap) {
-        Set<File> needToDeploy = new HashSet<>();
-        List<ComponentProviderInfo> componentsFolders = service.getComponentsFactory().getComponentsProvidersInfo();
-        for (ComponentProviderInfo providerInfo : componentsFolders) {
-            String contributeID = providerInfo.getContributer();
-            String id = providerInfo.getId();
-            try {
-                File file = new File(providerInfo.getLocation());
-                if ("org.talend.designer.components.model.UserComponentsProvider".equals(id)
-                        || "org.talend.designer.components.exchange.ExchangeComponentsProvider".equals(id)) {
-                    if (file.isDirectory()) {
-                        List<File> jarFiles = FilesUtils.getJarFilesFromFolder(file, null);
-                        if (jarFiles.size() > 0) {
-                            for (File jarFile : jarFiles) {
-                                String name = jarFile.getName();
-                                if (platformURLMap.get(name) != null) {
-                                    continue;
-                                }
-                                needToDeploy.add(jarFile);
-                            }
-                        }
-                    } else {
-                        if (platformURLMap.get(file.getName()) != null) {
-                            continue;
-                        }
-                        needToDeploy.add(file);
-                    }
-                } else {
-                    // for other component provider ,add jars to the platform url index
-                    List<File> jarFiles = FilesUtils.getJarFilesFromFolder(file, null, "ext");
-                    if (jarFiles.size() > 0) {
-                        for (File jarFile : jarFiles) {
-                            String name = jarFile.getName();
-                            String path = platformURLMap.get(name);
-                            int lengthBasePath = new Path(file.getParentFile().getAbsolutePath()).toPortableString().length();
-                            String relativePath = new Path(jarFile.getAbsolutePath()).toPortableString()
-                                    .substring(lengthBasePath);
-                            String moduleLocation = "platform:/plugin/" + contributeID + relativePath;
-                            if (path != null) {
-                                if (path.equals(moduleLocation)) {
-                                    continue;
-                                } else {
-                                    if (CommonsPlugin.isDebugMode()) {
-                                        CommonExceptionHandler
-                                                .warn(name + " is duplicated, locations:" + path + " and:" + moduleLocation);
-                                    }
-                                    continue;
-                                }
-                            }
-                            platformURLMap.put(name, moduleLocation);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                ExceptionHandler.process(e);
-                continue;
-            }
-        }
-    }
+    *
+    * The old components might use some jars in component folder and theres jars are not configured with platfrom URL
+    *
+    * @param service
+    * @param libsWithoutUri
+    * @param platformURLMap
+    */
+   private void calculateModulesIndexFromComponentFolder(IComponentsService service, Map<String, String> platformURLMap) {
+       List<ComponentProviderInfo> componentsFolders = service.getComponentsFactory().getComponentsProvidersInfo();
+       for (ComponentProviderInfo providerInfo : componentsFolders) {
+           String contributeID = providerInfo.getContributer();
+           String id = providerInfo.getId();
+           try {
+               if (!isExtComponentProvider(id)) {
+                   File file = new File(providerInfo.getLocation());
+                   List<File> jarFiles = FilesUtils.getJarFilesFromFolder(file, null, "ext");
+                   if (jarFiles.size() > 0) {
+                       for (File jarFile : jarFiles) {
+                           String name = jarFile.getName();
+                           String path = platformURLMap.get(name);
+                           int lengthBasePath = new Path(file.getParentFile().getAbsolutePath()).toPortableString().length();
+                           String relativePath = new Path(jarFile.getAbsolutePath()).toPortableString()
+                                   .substring(lengthBasePath);
+                           String moduleLocation = "platform:/plugin/" + contributeID + relativePath;
+                           if (path != null) {
+                               if (path.equals(moduleLocation)) {
+                                   continue;
+                               } else {
+                                   if (CommonsPlugin.isDebugMode()) {
+                                       CommonExceptionHandler
+                                               .warn(name + " is duplicated, locations:" + path + " and:" + moduleLocation);
+                                   }
+                                   continue;
+                               }
+                           }
+                           platformURLMap.put(name, moduleLocation);
+                       }
+                   }
+               }
+           } catch (Exception e) {
+               ExceptionHandler.process(e);
+               continue;
+           }
+       }
+   }
+   
+   private boolean isExtComponentProvider(String id) {
+       if ("org.talend.designer.components.model.UserComponentsProvider".equals(id)
+               || "org.talend.designer.codegen.components.model.SharedStudioUserComponentProvider".equals(id)
+               || "org.talend.designer.components.exchange.ExchangeComponentsProvider".equals(id)
+               || "org.talend.designer.components.exchange.SharedStudioExchangeComponentsProvider".equals(id)) {
+           return true;
+       }
+       return false;
+   }
 
     private void deployLibsFromCustomComponents(IComponentsService service, Map<String, String> platformURLMap) {
+        boolean deployToRemote = true;
+        if (!LibrariesManagerUtils.shareLibsAtStartup()) {
+            log.info("Skip deploying libs from custom components");
+            deployToRemote = false;
+        }
         Set<File> needToDeploy = new HashSet<>();
         List<ComponentProviderInfo> componentsFolders = service.getComponentsFactory().getComponentsProvidersInfo();
         for (ComponentProviderInfo providerInfo : componentsFolders) {
             String id = providerInfo.getId();
             try {
                 File file = new File(providerInfo.getLocation());
-                if ("org.talend.designer.components.model.UserComponentsProvider".equals(id)
-                        || "org.talend.designer.components.exchange.ExchangeComponentsProvider".equals(id)) {
+                if (isExtComponentProvider(id)) {
                     if (file.isDirectory()) {
                         List<File> jarFiles = FilesUtils.getJarFilesFromFolder(file, null);
                         if (jarFiles.size() > 0) {
@@ -1362,6 +1363,19 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                 ExceptionHandler.process(e);
                 continue;
             }
+        }
+
+        if (!deployToRemote) {
+            needToDeploy.forEach(libFile -> {
+                try {
+                    // install as release version if can't find mvn url from index
+                    install(libFile, null, false, true);
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            });
+
+            return;
         }
 
         // deploy needed jars for User and Exchange component providers
@@ -1443,7 +1457,7 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
             }
             for (File file : needToDeploy) {
                 try {
-                    deploy(file.toURI());
+                    install(file, null, true, true);
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }
