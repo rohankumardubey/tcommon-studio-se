@@ -12,13 +12,19 @@
 // ============================================================================
 package org.talend.core;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
+import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.utils.VersionUtils;
 
 /**
  * This class can check whether some specific plugins are loaded or not. <br/>
@@ -142,6 +148,8 @@ public class PluginChecker {
 
     public static final String APACHE_CXF_PLUGIN_ID = "org.talend.libraries.apache.cxf"; //$NON-NLS-1$
 
+    private static Boolean isStudioLite;
+
     /**
      * Check if specific plug-in is loaded.
      *
@@ -158,6 +166,23 @@ public class PluginChecker {
 
     public static boolean isTIS() {
         return isJobLetPluginLoaded();
+    }
+
+    public static boolean isStudioLite() {
+        if (isStudioLite == null) {
+            try {
+                File studioConfigFile = VersionUtils.getStudioConfigFile();
+                Properties props = new Properties();
+                try (BufferedReader reader = Files.newBufferedReader(studioConfigFile.toPath())) {
+                    props.load(reader);
+                }
+                isStudioLite = Boolean.valueOf(props.getProperty("talend.studio.lite"));
+            } catch (Exception e) {
+                isStudioLite = false;
+                ExceptionHandler.process(e);
+            }
+        }
+        return isStudioLite;
     }
 
     public static boolean isRefProjectLoaded() {
