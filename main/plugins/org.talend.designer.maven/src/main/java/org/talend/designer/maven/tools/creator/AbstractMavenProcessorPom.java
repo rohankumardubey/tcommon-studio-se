@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -318,7 +318,7 @@ public abstract class AbstractMavenProcessorPom extends CreateMavenBundleTemplat
     @SuppressWarnings("unchecked")
     protected List<Dependency> getCodesJarDependencies() {
         Property property = getJobProcessor().getProperty();
-        if (property != null) {
+        if (property != null && getProcessType() != null && getProcessType().getParameters() != null) {
             return new ArrayList<>(createCodesJarDependencies(getProcessType().getParameters().getRoutinesParameter()));
         }
         return Collections.emptyList();
