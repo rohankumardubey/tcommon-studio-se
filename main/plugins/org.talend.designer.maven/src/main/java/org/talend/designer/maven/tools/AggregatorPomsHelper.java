@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -68,6 +68,7 @@ import org.talend.core.model.relationship.Relation;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ItemResourceUtil;
@@ -167,15 +168,11 @@ public class AggregatorPomsHelper {
         return getProjectPomsFolder().getFolder(DIR_AGGREGATORS);
     }
 
-    public void updateCodeProjects(IProgressMonitor monitor) {
-        updateCodeProjects(monitor, false);
-    }
-
-    public void updateCodeProjects(IProgressMonitor monitor, boolean forceBuild) {
-        updateCodeProjects(monitor, forceBuild, false);
-    }
-
     public void updateCodeProjects(IProgressMonitor monitor, boolean forceBuild, boolean ignoreM2Cache) {
+        updateCodeProjects(monitor, forceBuild, ignoreM2Cache, false);
+    }
+
+    public void updateCodeProjects(IProgressMonitor monitor, boolean forceBuild, boolean ignoreM2Cache, boolean buildIfNoUpdate) {
         RepositoryWorkUnit workUnit = new RepositoryWorkUnit<Object>("update code project") { //$NON-NLS-1$
 
             @Override
@@ -192,6 +189,8 @@ public class AggregatorPomsHelper {
                             MavenProjectUtils.updateMavenProject(monitor, codeProject.getProject());
                             buildAndInstallCodesProject(monitor, codeType, true, forceBuild);
                             CodeM2CacheManager.updateCodeProjectCache(currentProject, codeType);
+                        } else if (buildIfNoUpdate) {
+                            buildAndInstallCodesProject(monitor, codeType, false, true);
                         }
                     }
                 } catch (Exception e) {
@@ -271,6 +270,35 @@ public class AggregatorPomsHelper {
             codeProject.buildModules(monitor, null, argumentsMap);
             BuildCacheManager.getInstance().updateCodeLastBuildDate(codeType);
         }
+    }
+
+    // only compile for global/custom code projects
+    public static void buildCodesProject() {
+        IRunProcessService service = IRunProcessService.get();
+        if (service == null) {
+            return;
+        }
+        IProgressMonitor monitor = new NullProgressMonitor();
+        ERepositoryObjectType.getAllTypesOfCodes().forEach(type -> {
+            try {
+                buildAndInstallCodesProject(monitor, type, false, false);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+        });
+        Set<CodesJarInfo> jarsToUpdate = CodesJarResourceCache.getAllCodesJars().stream()
+                .filter(info -> CodesJarM2CacheManager.needUpdateCodesJarProject(info)).collect(Collectors.toSet());
+        jarsToUpdate.stream().map(info -> service.getTalendCodesJarJavaProject(info)).forEach(p -> {
+            try {
+                p.buildModules(monitor, null, null);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+        });
+        String currentProjectName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
+        jarsToUpdate.stream().filter(info -> !currentProjectName.equals(info.getProjectTechName()))
+                .forEach(info -> service.deleteTalendCodesJarProject(info, false));
+
     }
 
     public void updateRefProjectModules(List<ProjectReference> references, IProgressMonitor monitor) {
@@ -604,6 +632,12 @@ public class AggregatorPomsHelper {
      * Use Function to get the relativePath from property at realtime, since the property may be changed
      */
     public static IFolder getItemPomFolder(Property property, String realVersion, Function<Property, IPath> getItemRelativePath) {
+        return getItemPomFolder(property, ProjectManager.getInstance().getProject(property).getTechnicalLabel(), realVersion,
+                getItemRelativePath);
+    }
+
+    public static IFolder getItemPomFolder(Property property, String projectTechName, String realVersion,
+            Function<Property, IPath> getItemRelativePath) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
             ITestContainerProviderService testContainerService =
                     (ITestContainerProviderService) GlobalServiceRegister.getDefault().getService(
@@ -620,7 +654,6 @@ public class AggregatorPomsHelper {
             }
         }
 
-        String projectTechName = ProjectManager.getInstance().getProject(property).getTechnicalLabel();
         AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
         IPath itemRelativePath = getItemRelativePath.apply(property);
         String version = realVersion == null ? property.getVersion() : realVersion;
@@ -884,7 +917,7 @@ public class AggregatorPomsHelper {
         // codes pom
         monitor.subTask("Synchronize code poms"); //$NON-NLS-1$
         updateCodeProjects(monitor, true, true);
-        CodesJarM2CacheManager.updateCodesJarProject(monitor, true, true);
+        CodesJarM2CacheManager.updateCodesJarProject(monitor, true, true, true);
         monitor.worked(1);
         if (monitor.isCanceled()) {
             return;

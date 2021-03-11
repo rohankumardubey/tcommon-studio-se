@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -1376,8 +1376,12 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
     @Override
     public List<IRepositoryViewObject> getAllInnerCodes(Project project, ERepositoryObjectType codesJarType, Property jarProperty)
             throws PersistenceException {
-        IFolder folder = ResourceUtils.getFolder(ResourceUtils.getProject(project),
-                ERepositoryObjectType.getFolderName(codesJarType) + "/" + jarProperty.getLabel(), true);
+        // empty folder won't be commit in git, create if not exist
+        IFolder folder = ResourceUtils.getProject(project).getFolder(ERepositoryObjectType.getFolderName(codesJarType))
+                .getFolder(jarProperty.getLabel());
+        if (!folder.exists()) {
+            ResourceUtils.createFolder(folder);
+        }
         return repositoryFactoryFromProvider.getAll(project, codesJarType, false, false, folder);
     }
 

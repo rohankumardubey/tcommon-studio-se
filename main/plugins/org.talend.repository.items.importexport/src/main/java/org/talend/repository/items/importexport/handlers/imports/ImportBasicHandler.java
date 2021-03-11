@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -883,7 +883,8 @@ public class ImportBasicHandler extends AbstractImportExecutableHandler {
                 }
 
             } catch (Exception e) {
-                selectedImportItem.addError(selectedImportItem.getItemName() + ";" + e.getMessage() + ";" + path);//$NON-NLS-1$
+                selectedImportItem.addError(selectedImportItem.getItemName() + ";" + e.getMessage() + ";" //$NON-NLS-1$
+                        + ("".equals(path.toFile().getPath()) ? null : path));
                 logError(e);
             }
         }

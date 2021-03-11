@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -112,7 +112,7 @@ public class CreateFolderAction extends AContextualAction {
                         || ERepositoryObjectType.SQLPATTERNS.equals(property)
                         || ERepositoryObjectType.REFERENCED_PROJECTS.equals(property)
                         || ERepositoryObjectType.SVN_ROOT.equals(property) || ERepositoryObjectType.ROUTINESJAR.equals(property)
-                        || ERepositoryObjectType.BEANSJAR.equals(property)) {
+                        || property.equals(ERepositoryObjectType.BEANSJAR)) {
                     canWork = false;
                 } else if (property != null
                         && GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -575,15 +575,20 @@ public class ModulesNeededProvider {
         }
         EList<RoutinesParameterType> routinesParameterTypes = null;
         if (item instanceof ProcessItem) {
-            routinesParameterTypes = ((ProcessItem) item).getProcess().getParameters().getRoutinesParameter();
+            if (((ProcessItem) item).getProcess() != null && ((ProcessItem) item).getProcess().getParameters() != null) {
+                routinesParameterTypes = ((ProcessItem) item).getProcess().getParameters().getRoutinesParameter();
+            }
         } else if (item instanceof JobletProcessItem) {
-            routinesParameterTypes = ((JobletProcessItem) item).getJobletProcess().getParameters().getRoutinesParameter();
+            if (((JobletProcessItem) item).getJobletProcess() != null
+                    && ((JobletProcessItem) item).getJobletProcess().getParameters() != null) {
+                routinesParameterTypes = ((JobletProcessItem) item).getJobletProcess().getParameters().getRoutinesParameter();
+            }
         }
         if (routinesParameterTypes == null) {
             return importNeedsList;
         }
         routinesParameterTypes.stream().filter(r -> r.getType() != null)
-                .map(r -> CodesJarResourceCache.getCodesJarById(r.getId()))
+                .map(r -> CodesJarResourceCache.getCodesJarById(r.getId())).filter(info -> info != null)
                 .forEach(info -> importNeedsList.addAll(createModuleNeededFromCodeItem(info.getProperty().getItem())));
 
         checkInstallStatus(importNeedsList);

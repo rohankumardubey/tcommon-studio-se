@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -265,6 +265,9 @@ public interface IRunProcessService extends IService {
         return null;
     }
 
-    void removeFromCodesJarJavaProjects(CodesJarInfo info);
+    void deleteTalendCodesJarProject(CodesJarInfo info, boolean deleteContent);
+    
+    void deleteTalendCodesJarProject(ERepositoryObjectType type, String projectTechName, String codesJarName,
+            boolean deleteContent);
 
 }
