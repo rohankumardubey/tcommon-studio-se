@@ -294,7 +294,7 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
                 jobInfoProp.getProperty(JobInfoProperties.APPLY_CONTEXY_CHILDREN, Boolean.FALSE.toString()));
         checkPomProperty(properties, "talend.product.version", ETalendMavenVariables.ProductVersion,
                 jobInfoProp.getProperty(JobInfoProperties.COMMANDLINE_VERSION, VersionUtils.getVersion()));
-        String finalNameStr = JavaResourcesHelper.getJobJarName(property.getLabel(), property.getVersion());
+        String finalNameStr = JavaResourcesHelper.getJobJarName(property);
         checkPomProperty(properties, "talend.job.finalName", ETalendMavenVariables.JobFinalName, finalNameStr);
 
         if (getJobProcessor() != null) {
@@ -820,7 +820,13 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
     }
 
     protected String getJobCoordinate(Property property) {
-        return getCoordinate(PomIdsHelper.getJobGroupId(property), PomIdsHelper.getJobArtifactId(property),
+        String bundle = "";
+
+        if ("OSGI".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
+            bundle = "-bundle";
+        }
+
+        return getCoordinate(PomIdsHelper.getJobGroupId(property), PomIdsHelper.getJobArtifactId(property) + bundle,
                 MavenConstants.PACKAGING_JAR, PomIdsHelper.getJobVersion(property), null);
     }
     

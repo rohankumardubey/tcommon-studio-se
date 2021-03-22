@@ -44,6 +44,7 @@ import org.talend.core.model.relationship.Relation;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
@@ -149,7 +150,9 @@ public class CreateMavenStandardJobOSGiPom extends CreateMavenJobPom {
             }
         }
         model.setName(model.getName() + " Bundle");
-        model.addProperty("talend.job.finalName", "${talend.job.name}-bundle-${project.version}");
+        Property property = getJobProcessor().getProperty();
+        String finalNameStr = JavaResourcesHelper.getJobJarName(property);
+        model.addProperty("talend.job.finalName", finalNameStr);
         Build build = model.getBuild();
         
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
