@@ -25,6 +25,7 @@ import org.talend.core.model.general.Project;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
@@ -32,6 +33,7 @@ import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
+import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.RepositoryNode;
@@ -88,12 +90,52 @@ public class JavaResourcesHelper {
         return newJobName;
     }
 
+    public static String getJobFolderName(String jobName, boolean isBundle, String version) {
+        String newJobName = escapeFileName(jobName).toLowerCase();
+        if (isBundle) {
+            newJobName += "_bundle";
+        }
+        if (version != null) {
+            newJobName += '_' + version.replace('.', '_');
+        }
+        return newJobName;
+    }
+
     /**
      *
      * get the jar name like maven "artifactId.version"
      */
     public static String getJobJarName(String jobName, String version) {
         String newJobName = getJobFolderName(jobName, version);
+        return newJobName;
+    }
+
+    public static String getJobJarName(String jobName, String version, Property property) {
+
+        boolean isBundle = false;
+        if ("OSGI".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
+            isBundle = true;
+        }
+
+        String newJobName = getJobFolderName(jobName, isBundle, version);
+        return newJobName;
+    }
+    
+    public static String getJobJarName(JobInfo jobInfo) {
+
+        String newJobName = getJobJarName(jobInfo.getJobName(), jobInfo.getJobVersion(), jobInfo.getProcessItem().getProperty());
+        return newJobName;
+    }
+    
+    public static String getJobJarName(Property property) {
+
+        String newJobName = getJobJarName(property.getLabel(), property.getVersion(), property);
+        return newJobName;
+    }
+
+    public static String getJobFolderName(JobInfo jobInfo) {
+
+        String newJobName = getJobJarName(jobInfo);
         return newJobName;
     }
 
