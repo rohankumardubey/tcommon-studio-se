@@ -138,6 +138,9 @@ public final class JavaUtils {
     /** Java contexts Directory. */
     public static final String JAVA_CONTEXTS_DIRECTORY = "contexts"; //$NON-NLS-1$
 
+    /** Java package . */
+    public static final String JAVA_PACKAGE = "package"; //$NON-NLS-1$
+
     /** Java datass Directory. */
     public static final String JAVA_DATAS_DIRECTORY = "datas"; //$NON-NLS-1$
 

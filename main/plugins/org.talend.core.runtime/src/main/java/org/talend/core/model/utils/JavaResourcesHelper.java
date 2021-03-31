@@ -175,7 +175,21 @@ public class JavaResourcesHelper {
 
     public static String getJobClassPackageName(Item processItem, boolean isTest) {
         Property itemProperty = processItem.getProperty();
-        String packageName = getProjectFolderName(processItem);
+        String packageName = getProjectFolderName(processItem) + JavaUtils.JAVA_PACKAGE;
+        if (isTest) {
+            Item baseItem = ProcessUtils.getTestContainerBaseItem(processItem);
+            if (baseItem != null && baseItem.getProperty() != null) {
+                Property baseItemProperty = baseItem.getProperty();
+                packageName = packageName + '.' + getJobFolderName(baseItemProperty.getLabel(), baseItemProperty.getVersion());
+            }
+        }
+        packageName = packageName + '.' + getJobFolderName(itemProperty.getLabel(), itemProperty.getVersion());
+        return packageName;
+    }
+    
+    public static String getJobClassPackageNameForContextFiles(Item processItem, boolean isTest) {
+        Property itemProperty = processItem.getProperty();
+        String packageName = getProjectFolderName(processItem) + JavaUtils.JAVA_PACKAGE;
         if (isTest) {
             Item baseItem = ProcessUtils.getTestContainerBaseItem(processItem);
             if (baseItem != null && baseItem.getProperty() != null) {
@@ -188,7 +202,12 @@ public class JavaResourcesHelper {
     }
 
     public static String getJobClassPackageName(String projectName, String jobName, String jobVersion) {
-        String packageName = getProjectFolderName(projectName) + '.' + getJobFolderName(jobName, jobVersion);
+        String packageName = getProjectFolderName(projectName) + JavaUtils.JAVA_PACKAGE + '.' + getJobFolderName(jobName, jobVersion);
+        return packageName;
+    }
+
+    public static String getJobClassPackageNameForContextFiles(String projectName, String jobName, String jobVersion) {
+        String packageName = getProjectFolderName(projectName) + JavaUtils.JAVA_PACKAGE + '.' + getJobFolderName(jobName, jobVersion);
         return packageName;
     }
 
@@ -227,6 +246,11 @@ public class JavaResourcesHelper {
 
     public static String getJobClassPackageFolder(Item processItem, boolean isTest) {
         String packageName = getJobClassPackageName(processItem, isTest);
+        return changePackage2Path(packageName);
+    }
+
+    public static String getJobClassPackageFolderForContextFiles(Item processItem, boolean isTest) {
+        String packageName = getJobClassPackageNameForContextFiles(processItem, isTest);
         return changePackage2Path(packageName);
     }
 
