@@ -538,11 +538,15 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
 		MavenTemplateManager.saveContent(codeProject.getExternalResourcesFolder().getFile(property.getLabel() + ".txt"), libJarsArgCmd, overwrite);
 		String libJarsArg = windowsScriptAdditionValue.toString().split(" ")[1];
 		String libJarsAdapted = libJarsArgCmd.replaceAll(libJarsArg, "./" + property.getLabel() + ".txt");
+		String windowsClassPath = getWindowsClasspath();
+		if ((jvmArgsStr.toString().trim() + getWindowsClasspath() + jobClass + libJarsAdapted).length() > 8192) {
+			windowsClassPath = ".;../lib/*;" + JavaResourcesHelper.getJobJarName(property.getLabel(), property.getVersion()) + ".jar;";
+		}
         batContent = StringUtils
                 .replaceEach(batContent,
                         new String[] { "${talend.job.jvmargs}", "${talend.job.bat.classpath}", "${talend.job.class}",
                                 "${talend.job.bat.addition}" },
-                        new String[] { jvmArgsStr.toString().trim(), getWindowsClasspath(), jobClass,
+                        new String[] { jvmArgsStr.toString().trim(), windowsClassPath, jobClass,
                         		libJarsAdapted });
         batContent = normalizeSpaces(batContent);
 
