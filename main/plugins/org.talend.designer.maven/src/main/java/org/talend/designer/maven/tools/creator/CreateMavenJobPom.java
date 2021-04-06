@@ -14,10 +14,8 @@ package org.talend.designer.maven.tools.creator;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -536,25 +534,16 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
         final Map<String, Object> templateParameters = PomUtil.getTemplateParameters(property);
         String batContent = MavenTemplateManager.getProjectSettingValue(IProjectSettingPreferenceConstants.TEMPLATE_BAT,
                 templateParameters);
-        PrintWriter out = null;
         String libJarsArgCmd = windowsScriptAdditionValue.toString();
-    	try {
-    		String fileOutput = "../lib/libJars" + property.getLabel() + ".txt";
-    		String libJarsArg = windowsScriptAdditionValue.toString().split(" ")[1];
-			out = new PrintWriter(fileOutput);
-			out.print(libJarsArg);
-			libJarsArgCmd.replaceAll(libJarsArg, fileOutput);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} finally {
-			out.close();
-		}
+		MavenTemplateManager.saveContent(codeProject.getExternalResourcesFolder().getFile(property.getLabel() + ".txt"), libJarsArgCmd, overwrite);
+		String libJarsArg = windowsScriptAdditionValue.toString().split(" ")[1];
+		String libJarsAdapted = libJarsArgCmd.replaceAll(libJarsArg, "./" + property.getLabel() + ".txt");
         batContent = StringUtils
                 .replaceEach(batContent,
                         new String[] { "${talend.job.jvmargs}", "${talend.job.bat.classpath}", "${talend.job.class}",
                                 "${talend.job.bat.addition}" },
                         new String[] { jvmArgsStr.toString().trim(), getWindowsClasspath(), jobClass,
-                        		libJarsArgCmd });
+                        		libJarsAdapted });
         batContent = normalizeSpaces(batContent);
 
         String shContent = MavenTemplateManager.getProjectSettingValue(IProjectSettingPreferenceConstants.TEMPLATE_SH,
