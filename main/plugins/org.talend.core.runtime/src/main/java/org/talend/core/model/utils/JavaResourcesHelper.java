@@ -113,7 +113,7 @@ public class JavaResourcesHelper {
     public static String getJobJarName(String jobName, String version, Property property) {
 
         boolean isBundle = false;
-        if ("OSGI".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
+        if (property.getAdditionalProperties() != null && "OSGI".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
             isBundle = true;
         }
 
@@ -122,8 +122,12 @@ public class JavaResourcesHelper {
     }
     
     public static String getJobJarName(JobInfo jobInfo) {
-
-        String newJobName = getJobJarName(jobInfo.getJobName(), jobInfo.getJobVersion(), jobInfo.getProcessItem().getProperty());
+    	String newJobName = null;
+    	if (jobInfo.getProcessItem() == null) {
+    		newJobName = getJobJarName(jobInfo.getJobName(), jobInfo.getJobVersion());
+    	} else  {
+    		newJobName = getJobJarName(jobInfo.getJobName(), jobInfo.getJobVersion(), jobInfo.getProcessItem().getProperty());
+    	}
         return newJobName;
     }
     
