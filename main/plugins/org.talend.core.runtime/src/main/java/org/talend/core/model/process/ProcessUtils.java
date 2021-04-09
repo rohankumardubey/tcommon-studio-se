@@ -953,5 +953,17 @@ public final class ProcessUtils {
 
         return false;
     }
+    
+    public static boolean isChildRouteProcess(IProcess process) {
+        if (process != null)   {
+            for (INode node : process.getGraphicalNodes()) {
+                if ((node.getComponent().getName() != null) && 
+                        (node.getComponent().getName().compareTo("tRouteInput") == 0)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
 }
