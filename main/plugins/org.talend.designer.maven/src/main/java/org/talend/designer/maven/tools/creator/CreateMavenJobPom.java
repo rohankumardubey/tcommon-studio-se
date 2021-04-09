@@ -76,6 +76,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.template.ETalendMavenVariables;
 import org.talend.designer.maven.template.MavenTemplateManager;
+import org.talend.designer.maven.utils.JobUtils;
 import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IProcessor;
@@ -620,8 +621,18 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
                 Property property = jobInfo.getProcessItem().getProperty();
                 String coordinate = getCoordinate(PomIdsHelper.getJobGroupId(property), PomIdsHelper.getJobArtifactId(jobInfo),
                         MavenConstants.PACKAGING_JAR, PomIdsHelper.getJobVersion(property), null);
-                Dependency dependency = PomUtil.createDependency(PomIdsHelper.getJobGroupId(property),
-                        PomIdsHelper.getJobArtifactId(jobInfo), PomIdsHelper.getJobVersion(property),
+                String groupId = null;
+                String version = null;
+                IProcessor jobProcessor = getJobProcessor();
+                 if (JobUtils.isJob(jobInfo) && jobProcessor !=null &&  JobUtils.isRoute(getJobProcessor().getProperty()))  {
+                    groupId = PomIdsHelper.getJobGroupId(jobProcessor.getProperty());     
+                    version = PomIdsHelper.getJobVersion(jobProcessor.getProperty());
+                }else {
+                    groupId = PomIdsHelper.getJobGroupId(property);     
+                    version = PomIdsHelper.getJobVersion(property);                    	
+                }
+                Dependency dependency = PomUtil.createDependency(groupId,
+                        PomIdsHelper.getJobArtifactId(jobInfo), version,
                         MavenConstants.PACKAGING_JAR);
                 jobCoordinateMap.put(coordinate, dependency);
             }
