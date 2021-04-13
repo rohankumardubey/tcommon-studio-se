@@ -535,8 +535,8 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
         String batContent = MavenTemplateManager.getProjectSettingValue(IProjectSettingPreferenceConstants.TEMPLATE_BAT,
                 templateParameters);
         //we write -libjars argument to a text file to lighten the command
-		MavenTemplateManager.saveContent(codeProject.getExternalResourcesFolder().getFile(property.getLabel() + ".txt"), this.getWindowsScriptAddition(), overwrite);
-		String libJarsAdapted = windowsScriptAdditionValue.toString().replaceAll(this.getWindowsScriptAddition(), "./" + property.getLabel() + ".txt");
+		MavenTemplateManager.saveContent(codeProject.getExternalResourcesFolder().getFile(property.getLabel() + ".txt"), this.getWindowsScriptAddition().replaceAll("-libjars ", ""), overwrite);
+		String libJarsAdapted = windowsScriptAdditionValue.toString().replaceAll(this.getWindowsScriptAddition().replaceAll("-libjars ", ""), "./" + property.getLabel() + ".txt");
         batContent = StringUtils
                 .replaceEach(batContent,
                         new String[] { "${talend.job.jvmargs}", "${talend.job.bat.classpath}", "${talend.job.class}",
