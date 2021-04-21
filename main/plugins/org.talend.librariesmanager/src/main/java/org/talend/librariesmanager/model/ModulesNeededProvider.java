@@ -63,6 +63,7 @@ import org.talend.core.model.components.ComponentManager;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.components.IComponentsService;
+import org.talend.core.model.general.ILibrariesService;
 import org.talend.core.model.general.ILibrariesService.IChangedLibrariesListener;
 import org.talend.core.model.general.LibraryInfo;
 import org.talend.core.model.general.ModuleNeeded;
@@ -83,7 +84,6 @@ import org.talend.core.model.routines.IRoutinesProvider;
 import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
-import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.core.utils.TalendCacheUtils;
 import org.talend.core.utils.TalendQuoteUtils;
@@ -95,6 +95,7 @@ import org.talend.librariesmanager.model.service.CustomUriManager;
 import org.talend.librariesmanager.model.service.LibrariesIndexManager;
 import org.talend.librariesmanager.prefs.LibrariesManagerUtils;
 import org.talend.repository.ProjectManager;
+import org.talend.repository.documentation.ExportFileResource;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryService;
 
@@ -305,6 +306,7 @@ public class ModulesNeededProvider {
             for (ModuleNeeded neededLibrary : neededLibraries) {
                 boolean alreadyInImports = false;
                 for (ModuleNeeded module : getModulesNeeded()) {
+                    if (module == null) continue;
                     if (module != null && module.getModuleName() != null
                             && module.getModuleName().equals(neededLibrary.getModuleName())) {
                         if (StringUtils.equals(module.getMavenUri(), neededLibrary.getMavenUri())) {
@@ -521,7 +523,7 @@ public class ModulesNeededProvider {
         if (ComponentCategory.CATEGORY_4_CAMEL.getName().equals(process.getComponentsType())) {
             // route do not save any relationship with beans , so add all for now
             modulesNeeded.addAll(getCodesModuleNeededs(ERepositoryObjectType.BEANS));
-            modulesNeeded.addAll(getModulesNeededForRoutes());
+            modulesNeeded.addAll(getModulesNeededForRoutes(processItem));
         }
         return modulesNeeded;
     }
@@ -576,14 +578,6 @@ public class ModulesNeededProvider {
         }
         EList<RoutinesParameterType> routinesParameterTypes = null;
         if (item instanceof ProcessItem) {
-            ITestContainerProviderService testcaseService = ITestContainerProviderService.get();
-            if (testcaseService != null && testcaseService.isTestContainerItem(item)) {
-                try {
-                    item = testcaseService.getParentJobItem(item);
-                } catch (PersistenceException e) {
-                    ExceptionHandler.process(e);
-                }
-            }
             if (((ProcessItem) item).getProcess() != null && ((ProcessItem) item).getProcess().getParameters() != null) {
                 routinesParameterTypes = ((ProcessItem) item).getProcess().getParameters().getRoutinesParameter();
             }
@@ -782,12 +776,33 @@ public class ModulesNeededProvider {
         return null;
     }
 
-    public static List<ModuleNeeded> getModulesNeededForRoutes() {
+    /**
+     * DOC sunchaoqun Comment method "getModulesNeededForRoutes".
+     * 
+     * @param processes
+     * @return
+     */
+    private static List<ModuleNeeded> getModulesNeededForRoutes(ProcessItem processItem) {
+        ILibrariesService service = null;
+        if (!GlobalServiceRegister.getDefault().isServiceRegistered(ILibrariesService.class)) {
+            return null;
+        }
+        service = (ILibrariesService) GlobalServiceRegister.getDefault().getService(ILibrariesService.class);
+
+        Project project = ProjectManager.getInstance().getCurrentProject();
+
         if (importNeedsListForRoutes == null) {
 
             importNeedsListForRoutes = new ArrayList<ModuleNeeded>();
-            importNeedsListForRoutes.add(getComponentModuleById("CAMEL", "camel-core"));
-            importNeedsListForRoutes.add(getComponentModuleById("CAMEL", "camel-spring"));
+
+            if (processItem != null && project.isCamel3()) {
+                importNeedsListForRoutes.addAll(service.getModuleNeeded("camel3-core", true));
+                importNeedsListForRoutes.addAll(service.getModuleNeeded("camel3-spring", true));
+            } else {
+                importNeedsListForRoutes.add(getComponentModuleById("CAMEL", "camel-core"));
+                importNeedsListForRoutes.add(getComponentModuleById("CAMEL", "camel-spring"));
+            }
+
             importNeedsListForRoutes.add(getComponentModuleById("CAMEL", "spring-context"));
             importNeedsListForRoutes.add(getComponentModuleById("CAMEL", "spring-beans"));
             importNeedsListForRoutes.add(getComponentModuleById("CAMEL", "spring-core"));
@@ -800,7 +815,14 @@ public class ModulesNeededProvider {
                 }
             }
         }
+        
+        importNeedsListForRoutes.removeIf(m-> (m==null));
+        
         return importNeedsListForRoutes;
+    }
+
+    public static List<ModuleNeeded> getModulesNeededForRoutes() {
+        return getModulesNeededForRoutes(null);
     }
 
     private static void getModulesNeededForRoutesJava11() {
@@ -838,9 +860,32 @@ public class ModulesNeededProvider {
     }
 
     public static List<ModuleNeeded> getModulesNeededForBeans() {
+        return getModulesNeededForBeans(null);
+    }
+
+    public static List<ModuleNeeded> getModulesNeededForBeans(ExportFileResource[] processes) {
+        ProcessItem processItem = null;
+        if (processes != null && processes.length > 0) {
+            if (processes[0].getItem() instanceof ProcessItem) {
+                processItem = (ProcessItem) processes[0].getItem();
+            }
+        }
+
         if (importNeedsListForBeans == null) {
-            importNeedsListForBeans = getModulesNeededForRoutes();
-            importNeedsListForBeans.add(getComponentModuleById("CAMEL", "camel-cxf"));
+            importNeedsListForBeans = getModulesNeededForRoutes(processItem);
+
+            Project project = ProjectManager.getInstance().getCurrentProject();
+            boolean camel3 = true;
+            if (processItem != null && project.isCamel3()) {
+                camel3 = true;
+            }
+
+            if (camel3) {
+                importNeedsListForBeans.add(getComponentModuleById("CAMEL", "camel3-cxf"));
+            } else {
+                importNeedsListForBeans.add(getComponentModuleById("CAMEL", "camel-cxf"));
+            }
+
             importNeedsListForBeans.add(getComponentModuleById("CAMEL", "cxf-core"));
             importNeedsListForBeans.add(getComponentModuleById("CAMEL", "javax.ws.rs-api"));
             for (ModuleNeeded need : importNeedsListForBeans) {
