@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -1067,7 +1067,10 @@ public class RepositoryToComponentProperty {
                 return dbVersionString;
             } else if (EDatabaseTypeName.SYBASEASE.getDisplayName().equals(databaseType)) {
                 return dbVersionString;
-            } else {
+            } else if (EDatabaseTypeName.GREENPLUM.getDisplayName().equals(databaseType)) {
+                return dbVersionString;
+                
+            }else {
                 String driverValue = EDatabaseVersion4Drivers.getDriversStr(databaseType, dbVersionString);
                 if (EDatabaseConnTemplate.ORACLE_OCI.getDBDisplayName().equals(databaseType)
                         || EDatabaseConnTemplate.ORACLE_CUSTOM.getDBDisplayName().equals(databaseType)
@@ -1768,6 +1771,37 @@ public class RepositoryToComponentProperty {
         }
         if (StringUtils.equals("MAPPING", value)) {//$NON-NLS-1$
             return connection.getDbmsId();
+        }
+        if (value.equals("GOOGLE_PROJECT_ID")) {
+            String projectId = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HIVE_GOOGLE_PROJECT_ID);
+            return getAppropriateValue(connection, projectId);
+        }
+
+        if (value.equals("GOOGLE_CLUSTER_ID")) {
+            String clusterId = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HIVE_GOOGLE_CLUSTER_ID);
+            return getAppropriateValue(connection, clusterId);
+        }
+
+        if (value.equals("GOOGLE_REGION")) {
+            String region = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HIVE_GOOGLE_REGION);
+            return getAppropriateValue(connection, region);
+        }
+
+        if (value.equals("GOOGLE_JARS_BUCKET")) {
+            String jarsBucket = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HIVE_GOOGLE_JARS_BUCKET);
+            return getAppropriateValue(connection, jarsBucket);
+        }
+
+        if (value.equals("DEFINE_PATH_TO_GOOGLE_CREDENTIALS")) {
+            String usePathToCredentials = connection.getParameters()
+                    .get(ConnParameterKeys.CONN_PARA_KEY_HIVE_AUTHENTICATION_DEFINE_PATH_TO_GOOGLE_CREDENTIALS);
+            return Boolean.parseBoolean(usePathToCredentials);
+        }
+
+        if (value.equals("PATH_TO_GOOGLE_CREDENTIALS")) {
+            String pathToCredentials = connection.getParameters()
+                    .get(ConnParameterKeys.CONN_PARA_KEY_HIVE_AUTHENTICATION_PATH_TO_GOOGLE_CREDENTIALS);
+            return getAppropriateValue(connection, pathToCredentials);
         }
         return null;
     }

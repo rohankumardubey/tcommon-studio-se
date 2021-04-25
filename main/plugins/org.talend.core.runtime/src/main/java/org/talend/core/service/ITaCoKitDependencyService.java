@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2020 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2021 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -17,9 +17,11 @@ import java.nio.file.Path;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.eclipse.swt.graphics.Image;
 import org.talend.core.IService;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.repository.ERepositoryObjectType;
 
 /**
  * For documentation, see implementation in org.talend.sdk.component.studio-integration plugin
@@ -33,4 +35,6 @@ public interface ITaCoKitDependencyService extends IService {
     Stream<IComponent> getJobComponents(Item item);
 
     Path findM2Path();
+
+    Image getTaCoKitImageByRepositoryType(ERepositoryObjectType repObjType);
 }

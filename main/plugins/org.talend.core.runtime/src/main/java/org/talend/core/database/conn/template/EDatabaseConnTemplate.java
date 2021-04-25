@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -54,6 +54,11 @@ public enum EDatabaseConnTemplate {
             "5432")), //$NON-NLS-1$
 
     GREENPLUM(new DbConnStr(EDatabaseTypeName.GREENPLUM, //
+            "jdbc:pivotal:greenplum://<host>:<port>;;DatabaseName=<sid>;<property>", //$NON-NLS-1$
+            "5432")), //$NON-NLS-1$
+    
+
+    GREENPLUM_PSQL(new DbConnStr(EDatabaseTypeName.GREENPLUM, //
             "jdbc:postgresql://<host>:<port>/<sid>?<property>", //$NON-NLS-1$
             "5432")), //$NON-NLS-1$
 

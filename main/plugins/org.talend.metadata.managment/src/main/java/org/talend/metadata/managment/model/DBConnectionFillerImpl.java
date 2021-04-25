@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -1438,6 +1438,14 @@ public class DBConnectionFillerImpl extends MetadataFillerImpl<DatabaseConnectio
             valueOfInt = resultSet.getInt(nameOfInt);
         } catch (SQLException e) {
             log.error(e, e);
+        } catch (NumberFormatException e) {
+            try {
+                // SAPHanaDataBaseMetadata getcolumns will have two different type here string or int
+                String value = resultSet.getString(nameOfInt);
+                valueOfInt = Integer.parseInt(value == null ? "0" : value);
+            } catch (SQLException e1) {
+                log.error(e1, e1);
+            }
         }
         return valueOfInt;
     }

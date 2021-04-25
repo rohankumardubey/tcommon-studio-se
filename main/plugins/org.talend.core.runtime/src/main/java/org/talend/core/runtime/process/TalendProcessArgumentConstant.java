@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -51,6 +51,8 @@ public interface TalendProcessArgumentConstant {
     static final String ARG_NEED_XMLMAPPINGS = "NEED_XMLMAPPINGS";
 
     static final String ARG_NEED_RULES = "NEED_RULES";
+
+    static final String ARG_NEED_JETTY_SERVER = "NEED_JETTY_SERVER";
 
     static final String ARG_ENABLE_WATCH = "ENABLE_WATCH";
 

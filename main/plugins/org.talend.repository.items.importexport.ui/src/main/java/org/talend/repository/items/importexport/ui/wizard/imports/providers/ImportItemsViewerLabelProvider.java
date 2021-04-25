@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,6 +22,7 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.RepositoryNodeProviderRegistryReader;
 import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.runtime.services.IGenericWizardService;
+import org.talend.core.service.ITaCoKitDependencyService;
 import org.talend.core.ui.images.CoreImageProvider;
 import org.talend.repository.items.importexport.wizard.models.FolderImportNode;
 import org.talend.repository.items.importexport.wizard.models.ImportNode;
@@ -93,10 +94,18 @@ public class ImportItemsViewerLabelProvider extends LabelProvider {
                     wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(
                             IGenericWizardService.class);
                 }
+
                 if (wizardService != null && wizardService.isGenericType(itemType)) {
                     image = wizardService.getNodeImage(itemType.getType());
                 } else {
-                    image = RepositoryNodeProviderRegistryReader.getInstance().getImage(itemType);
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(ITaCoKitDependencyService.class)) {
+                        ITaCoKitDependencyService service = GlobalServiceRegister.getDefault()
+                                .getService(ITaCoKitDependencyService.class);
+                        image = service.getTaCoKitImageByRepositoryType(itemType);
+                    }
+                    if (image == null) {
+                        image = RepositoryNodeProviderRegistryReader.getInstance().getImage(itemType);
+                    }
                 }
                 if (image == null) {
                     image = CoreImageProvider.getImage(itemType);

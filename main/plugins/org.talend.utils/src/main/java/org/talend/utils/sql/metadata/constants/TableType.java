@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,6 +28,7 @@ public enum TableType {
     GLOBAL_TEMPORARY,
     LOCAL_TEMPORARY,
     ALIAS,
+    CALCULATION_VIEW,
     SYNONYM;
 
     @Override
@@ -39,6 +40,8 @@ public enum TableType {
             return "GLOBAL TEMPORARY";
         case LOCAL_TEMPORARY:
             return "LOCAL TEMPORARY";
+        case CALCULATION_VIEW:
+            return "CALCULATION VIEW";
         default:
             return this.name();
         }
