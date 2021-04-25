@@ -46,7 +46,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.emf.common.util.EMap;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
@@ -1265,8 +1264,16 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
             service = GlobalServiceRegister.getDefault().getService(IComponentsService.class);
         }
 
-        // we need to invoke this, because some module needed is defined inside component plugin.xml
-        modules.addAll(ModulesNeededProvider.getAllManagedModules());
+        if (service != null) {
+            for (IComponent component : service.getComponentsFactory().readComponents()) {
+                try {
+                    modules.addAll(component.getModulesNeeded());
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                    continue;
+                }
+            }
+        }
 
         calculateModulesIndex(modules, platformURLMap, duplicateLocationJar, mavenURIMap, duplicateMavenUri);
 
