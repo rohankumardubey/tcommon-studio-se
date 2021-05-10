@@ -624,7 +624,7 @@ public abstract class AbstractEMFRepositoryFactory extends AbstractRepositoryFac
 
             byte[] currentContent = item.getContent().getInnerContent();
 
-            if (!Arrays.equals(innerContent, currentContent)) {
+            if (!item.isBuiltIn() && !Arrays.equals(innerContent, currentContent)) {
                 item.getContent().setInnerContent(innerContent);
                 Project project = getRepositoryContext().getProject();
                 save(project, item);
@@ -694,7 +694,7 @@ public abstract class AbstractEMFRepositoryFactory extends AbstractRepositoryFac
 
             byte[] currentContent = item.getContent().getInnerContent();
 
-            if (!Arrays.equals(innerContent, currentContent)) {
+            if (!item.isSystem() && Arrays.equals(innerContent, currentContent)) {
                 item.getContent().setInnerContent(innerContent);
                 Project project = getRepositoryContext().getProject();
                 save(project, item);
