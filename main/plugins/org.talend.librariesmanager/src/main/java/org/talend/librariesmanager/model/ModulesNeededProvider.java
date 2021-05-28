@@ -67,7 +67,9 @@ import org.talend.core.model.general.LibraryInfo;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.ModuleNeeded.ELibraryInstallStatus;
 import org.talend.core.model.general.Project;
+import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
@@ -504,9 +506,12 @@ public class ModulesNeededProvider {
         modulesNeeded.addAll(modulesNeededForPigudf);
         if (ComponentCategory.CATEGORY_4_CAMEL.getName().equals(process.getComponentsType())) {
             // route do not save any relateionship with beans , so add all for now
-            Set<ModuleNeeded> modulesNeededForBean = ModulesNeededProvider
-                    .getCodesModuleNeededs(ERepositoryObjectType.getType("BEANS"), false);
-            modulesNeeded.addAll(modulesNeededForBean);
+        	boolean needBeanDependencies = ProcessUtils.areBeanDependenciesNeededForProcess(process);
+            if (needBeanDependencies) {
+                Set<ModuleNeeded> modulesNeededForBean = ModulesNeededProvider
+                        .getCodesModuleNeededs(ERepositoryObjectType.getType("BEANS"), false);
+                modulesNeeded.addAll(modulesNeededForBean);
+        	}
             modulesNeeded.addAll(getModulesNeededForRoutes());
         }
         return modulesNeeded;
