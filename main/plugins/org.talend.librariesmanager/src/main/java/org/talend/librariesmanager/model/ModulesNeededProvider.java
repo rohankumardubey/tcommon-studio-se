@@ -506,12 +506,8 @@ public class ModulesNeededProvider {
         modulesNeeded.addAll(modulesNeededForPigudf);
         if (ComponentCategory.CATEGORY_4_CAMEL.getName().equals(process.getComponentsType())) {
             // route do not save any relateionship with beans , so add all for now
-        	boolean needBeanDependencies = ProcessUtils.areBeanDependenciesNeededForProcess(process);
-            if (needBeanDependencies) {
-                Set<ModuleNeeded> modulesNeededForBean = ModulesNeededProvider
-                        .getCodesModuleNeededs(ERepositoryObjectType.getType("BEANS"), false);
-                modulesNeeded.addAll(modulesNeededForBean);
-        	}
+            Set<ModuleNeeded> modulesNeededForBean = ModulesNeededProvider.getCodesModuleNeededs(ERepositoryObjectType.getType("BEANS"), false);
+            modulesNeeded.addAll(modulesNeededForBean);
             modulesNeeded.addAll(getModulesNeededForRoutes());
         }
         return modulesNeeded;
