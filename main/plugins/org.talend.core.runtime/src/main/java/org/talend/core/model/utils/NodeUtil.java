@@ -27,9 +27,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
-
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
@@ -412,6 +409,52 @@ public class NodeUtil {
                 if (!uniqueNamesDone.contains(nextNode.getUniqueName())) {
                     uniqueNamesDone.add(nextNode.getUniqueName());
                     conns.addAll(getAllInLineJobConnections(nextNode, uniqueNamesDone)); // follow this way
+                }
+            }
+        }
+        return conns;
+    }
+
+    /**
+     * DOC
+     * <p>
+     * The method searches for the incoming node connections of type
+     * on a processing path and returns the first ones only
+     * </p>
+     *
+     * @param node
+     * @param type - node type to look for
+     * @return
+     */
+    public static List<? extends IConnection> getFirstIncomingLineConnectionsOfType(INode node, String type) {
+        if (type == null)
+            return new ArrayList<IConnection>();
+
+        Set<String> uniqueNamesDone = new HashSet<String>();
+        List<? extends IConnection> allIncomingConnections = getFirstIncomingLineConnectionsOfType(node, uniqueNamesDone, type);
+
+        return allIncomingConnections;
+    }
+
+    private static List<? extends IConnection> getFirstIncomingLineConnectionsOfType(INode node, Set<String> uniqueNamesDone, String type) {
+        List<IConnection> conns = new ArrayList<IConnection>();
+
+        List<? extends IConnection> incomingConnections = node.getIncomingConnections();
+        if (incomingConnections != null) {
+
+            for (int i = 0; i < incomingConnections.size(); i++) {
+
+                IConnection connection = incomingConnections.get(i);
+                INode nextNode = connection.getSource();
+
+                if (!uniqueNamesDone.contains(nextNode.getUniqueName())) {
+                    uniqueNamesDone.add(nextNode.getUniqueName());
+
+                    if (type.equals((String)nextNode.getElementParameter("COMPONENT_NAME").getValue())) {
+                        conns.add(connection);
+                    } else {
+                        conns.addAll(getFirstIncomingLineConnectionsOfType(nextNode, uniqueNamesDone, type)); // follow this way
+                    }
                 }
             }
         }
@@ -1040,14 +1083,7 @@ public class NodeUtil {
     }
     
     private static boolean isValidLiteralValue(String value) {
-        ScriptEngine se = ContextParameterUtils.getScriptEngine();
-        if(se==null) return true;
-        try {
-            se.eval(value);
-            return true;
-        } catch (ScriptException e) {
-            return false;
-        }
+        return ContextParameterUtils.isValidLiteralValue(value);
     }
     
     private static String checkStringQuotationMarks(String str) {
