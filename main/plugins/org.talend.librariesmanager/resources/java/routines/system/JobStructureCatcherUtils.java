@@ -22,6 +22,7 @@
 package routines.system;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -117,11 +118,23 @@ public class JobStructureCatcherUtils {
 	public String job_id = "";
 
 	public String job_version = "";
+	
+	private int message_batch_size;
 
-	public JobStructureCatcherUtils(String jobName, String jobId, String jobVersion) {
+	public JobStructureCatcherUtils(String jobName, String jobId, String jobVersion, String message_batch_size) {
 		this.job_name = jobName;
 		this.job_id = jobId;
 		this.job_version = jobVersion;
+		
+		if(message_batch_size==null) {
+			return;
+		}
+		
+		try {
+			this.message_batch_size = Integer.valueOf(message_batch_size);
+		} catch(NumberFormatException e) {
+			//do nothing
+		}
 	}
 	
 	public void addComponentParameterMessage(String component_id, String component_name, Map<String, String> component_parameters) {
@@ -235,6 +248,21 @@ public class JobStructureCatcherUtils {
 	}
 
 	public java.util.List<JobStructureCatcherMessage> getMessages() {
+		synchronized (messages) {
+			if(messages.isEmpty() || (messages.size() < message_batch_size)) {
+				return Collections.emptyList();
+			}
+			
+			java.util.List<JobStructureCatcherMessage> messagesToSend = new java.util.ArrayList<JobStructureCatcherMessage>();
+			for (JobStructureCatcherMessage scm : messages) {
+				messagesToSend.add(scm);
+			}
+			messages.clear();
+			return messagesToSend;
+		}
+	}
+	
+	public java.util.List<JobStructureCatcherMessage> getAllMessages() {
 		java.util.List<JobStructureCatcherMessage> messagesToSend = new java.util.ArrayList<JobStructureCatcherMessage>();
 		synchronized (messages) {
 			for (JobStructureCatcherMessage scm : messages) {

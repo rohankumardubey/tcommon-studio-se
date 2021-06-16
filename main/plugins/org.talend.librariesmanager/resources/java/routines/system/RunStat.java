@@ -380,13 +380,13 @@ public class RunStat implements Runnable {
             bean = processStats4Meter.get(key);
         } else {
             bean = new StatBean(connectionId);
+            processStats4Meter.put(key, bean);
         }
 
         bean.setState(mode);
         bean.setNbLine(bean.getNbLine() + nbLine);
         //not set it, to avoid too many call as System.currentTimeMillis() is not fast
         //bean.setEndTime(System.currentTimeMillis());
-        processStats4Meter.put(key, bean);
 
         if (mode == BEGIN) {
             bean.setNbLine(0);
