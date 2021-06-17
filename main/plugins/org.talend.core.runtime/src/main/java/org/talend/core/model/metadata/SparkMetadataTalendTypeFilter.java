@@ -20,7 +20,8 @@ import java.util.Map;
 
 public class SparkMetadataTalendTypeFilter extends MetadataTalendTypeFilter {
 
-    private final static List<String> UNSUPPORTED_TYPES = Arrays.asList(new String[] { "Document", "Dynamic" }); //$NON-NLS-1$ //$NON-NLS-2$
+    // Temporary activate Dynamic type for all components - TODO To be removed later
+    private final static List<String> UNSUPPORTED_TYPES = Arrays.asList(new String[] { "Document" }); //$NON-NLS-1$
 
     private final static String ROWGENERATOR_COMPONENT_NAME = "tRowGenerator"; //$NON-NLS-1$
 
