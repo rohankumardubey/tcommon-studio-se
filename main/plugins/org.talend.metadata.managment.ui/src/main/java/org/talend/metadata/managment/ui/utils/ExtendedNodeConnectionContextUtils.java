@@ -138,8 +138,15 @@ public class ExtendedNodeConnectionContextUtils {
         DataBricksCloudProvider,
         DataBricksClusterId,
         DataBricksToken,
-        DataBricksDBFSDepFolder
-
+        DataBricksDBFSDepFolder,
+        
+        //Knox
+        SparkMode,
+        UseKnox,
+        KnoxUrl,
+        KnoxUsername,
+        KnoxPassword,
+        KnoxGatewayPath
     }
 
     static List<IContextParameter> getContextVariables(final String prefixName, Connection conn, Set<IConnParamName> paramSet) {
