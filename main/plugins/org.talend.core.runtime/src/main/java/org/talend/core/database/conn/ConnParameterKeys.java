@@ -334,5 +334,23 @@ public class ConnParameterKeys {
     public static final String CONN_PARA_KEY_SET_HADOOP_CONF = "CONN_PARA_KEY_SET_HADOOP_CONF";
 
     public static final String CONN_PARA_KEY_HADOOP_CONF_SPECIFIC_JAR = "CONN_PARA_KEY_HADOOP_CONF_SPECIFIC_JAR";
+    
+    /**Knox*/
+    public static final String CONN_PARA_KEY_USE_KNOX="CONN_PARA_KEY_USE_KNOX";
+    
+    public static final String CONN_PARA_KEY_KNOX_URL="CONN_PARA_KEY_KNOX_URL";
+
+    public static final String CONN_PARA_KEY_KNOX_USER = "CONN_PARA_KEY_KNOX_USER";
+
+    public static final String CONN_PARA_KEY_KNOX_PASSWORD="CONN_PARA_KEY_KNOX_PASSWORD";
+    
+    public static final String CONN_PARA_KEY_KNOX_GATEWAY_PATH="CONN_PARA_KEY_KNOX_GATEWAY_PATH";
+
+    public static final String CONN_PARA_KEY_WEBHDFS_DIRECTORY="CONN_PARA_KEY_WEBHDFS_DIRECTORY";
+
+    public static final String CONN_PARA_KEY_KNOX_POLL_INTERVAL="CONN_PARA_KEY_KNOX_POLL_INTERVAL";
+    
+    public static final String CONN_PARA_KEY_KNOX_MAX_STATUS="CONN_PARA_KEY_KNOX_MAX_STATUS";
+
 
 }
