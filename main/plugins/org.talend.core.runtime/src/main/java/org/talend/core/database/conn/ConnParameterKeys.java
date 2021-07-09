@@ -346,7 +346,7 @@ public class ConnParameterKeys {
 
     public static final String CONN_PARA_KEY_KNOX_PASSWORD="CONN_PARA_KEY_KNOX_PASSWORD";
     
-    public static final String CONN_PARA_KEY_KNOX_GATEWAY_PATH="CONN_PARA_KEY_KNOX_GATEWAY_PATH";
+    public static final String CONN_PARA_KEY_KNOX_DIRECTORY="CONN_PARA_KEY_KNOX_DIRECTORY";
 
 
 }
