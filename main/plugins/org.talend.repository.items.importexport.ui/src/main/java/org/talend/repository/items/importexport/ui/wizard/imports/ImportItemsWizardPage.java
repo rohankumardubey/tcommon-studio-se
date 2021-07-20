@@ -381,6 +381,8 @@ public class ImportItemsWizardPage extends WizardPage {
                 if (dependencyButton.getSelection()) {
                     handleImportDependencies();
                 }
+                filteredCheckboxTree.calculateCheckedLeafNodes();
+                checkSelectedItemErrors();
             }
 
         });
