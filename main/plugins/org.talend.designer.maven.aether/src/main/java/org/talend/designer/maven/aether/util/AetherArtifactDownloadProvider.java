@@ -101,7 +101,7 @@ public class AetherArtifactDownloadProvider implements TransferListener {
     public void transferStarted(TransferEvent event) throws TransferCancelledException {
         if (event != null) {
             for (DownloadListener listener : downloadListeners) {
-                listener.downloadStart(new Long(event.getResource().getContentLength()).intValue());
+                listener.downloadStart(Long.valueOf(event.getResource().getContentLength()).intValue());
             }
         }
     }
@@ -110,7 +110,7 @@ public class AetherArtifactDownloadProvider implements TransferListener {
     public void transferProgressed(TransferEvent event) throws TransferCancelledException {
         if (event != null) {
             for (DownloadListener listener : downloadListeners) {
-                listener.downloadProgress(null, new Long(event.getTransferredBytes()).intValue());
+                listener.downloadProgress(null, Long.valueOf(event.getTransferredBytes()).intValue());
             }
         }
     }

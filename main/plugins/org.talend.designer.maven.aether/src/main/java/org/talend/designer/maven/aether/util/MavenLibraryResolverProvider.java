@@ -38,15 +38,18 @@ import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.impl.DefaultServiceLocator;
+import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
 import org.eclipse.aether.internal.transport.wagon.PlexusWagonConfigurator;
 import org.eclipse.aether.internal.transport.wagon.PlexusWagonProvider;
 import org.eclipse.aether.repository.Authentication;
 import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.NoLocalRepositoryManagerException;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
+import org.eclipse.aether.spi.localrepo.LocalRepositoryManagerFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.eclipse.aether.transport.wagon.WagonTransporterFactory;
@@ -78,6 +81,8 @@ public class MavenLibraryResolverProvider {
     private RemoteRepository dynamicRemoteRepository = null;
 
     private static MavenLibraryResolverProvider instance;
+    
+    private static LocalRepositoryManagerFactory simpleLocalRepoMgrFactory = new SimpleLocalRepositoryManagerFactory();
 
     public static MavenLibraryResolverProvider getInstance() {
         if (instance == null) {
@@ -281,10 +286,14 @@ public class MavenLibraryResolverProvider {
         DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 
         LocalRepository localRepo = new LocalRepository( /* "target/local-repo" */target);
-        session.setLocalRepositoryManager(system.newLocalRepositoryManager(session, localRepo));
+        try {
+            session.setLocalRepositoryManager(simpleLocalRepoMgrFactory.newInstance(session,localRepo));
+        } catch (NoLocalRepositoryManagerException e) {
+            ExceptionHandler.process(e);
+        }
         session.setProxySelector(new TalendAetherProxySelector());
-
-        return session;
+        
+        return session; 
     }
 
     public static String getLocalMVNRepository() {
