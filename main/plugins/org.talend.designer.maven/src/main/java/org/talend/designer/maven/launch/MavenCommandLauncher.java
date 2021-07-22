@@ -433,8 +433,9 @@ public abstract class MavenCommandLauncher {
 
             try {
                 boolean isCommandLine = CommonsPlugin.isHeadless();
+                boolean isJunitTest = CommonsPlugin.isJUnitTest();
                 while (!launchFinished) {
-                    if (isCommandLine) {
+                    if (isCommandLine || isJunitTest) {
                         Thread.sleep(100);
                     } else {
                         waitStudioFinish();
