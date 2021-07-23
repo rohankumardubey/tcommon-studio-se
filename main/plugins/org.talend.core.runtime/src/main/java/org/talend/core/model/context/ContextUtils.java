@@ -1040,7 +1040,11 @@ public class ContextUtils {
     }
 
     public static boolean isBuildInParameter(ContextParameterType paramType) {
-        if (paramType.getRepositoryContextId() == null || IContextParameter.BUILT_IN.equals(paramType.getRepositoryContextId())) {
+        return isBuildInParameterId(paramType.getRepositoryContextId());
+    }
+
+    public static boolean isBuildInParameterId(String repositoryContextId) {
+        if (repositoryContextId == null || IContextParameter.BUILT_IN.equals(repositoryContextId)) {
             return true;
         }
         return false;
