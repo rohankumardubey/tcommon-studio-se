@@ -54,44 +54,6 @@ public enum EHadoopVersion4Drivers {
 
     APACHE_1_0_0(EHadoopDistributions.APACHE, "Apache 1.0.0", "APACHE_1_0_0", true, false), //$NON-NLS-1$ //$NON-NLS-2$
 
-    CLOUDERA_CDH5_5(EHadoopDistributions.CLOUDERA, "Cloudera CDH5.5(YARN mode)", //$NON-NLS-1$
-                    "Cloudera_CDH5_5", //$NON-NLS-1$
-                    true,
-                    false,
-                    new EMRVersion[] { EMRVersion.YARN }),
-
-    CLOUDERA_CDH5_4(EHadoopDistributions.CLOUDERA, "Cloudera CDH5.4(YARN mode)", //$NON-NLS-1$
-                    "Cloudera_CDH5_4", //$NON-NLS-1$
-                    true,
-                    false,
-                    new EMRVersion[] { EMRVersion.YARN }),
-
-    CLOUDERA_CDH5_1(EHadoopDistributions.CLOUDERA, "Cloudera CDH5.1(YARN mode)", //$NON-NLS-1$
-                    "Cloudera_CDH5_1", //$NON-NLS-1$
-                    true,
-                    false,
-                    new EMRVersion[] { EMRVersion.YARN }),
-
-    CLOUDERA_CDH5_1_MR1(EHadoopDistributions.CLOUDERA, "Cloudera CDH5.1(MR 1 mode)", //$NON-NLS-1$
-                        "Cloudera_CDH5_1_MR1", //$NON-NLS-1$
-                        true,
-                        false,
-                        new EMRVersion[] { EMRVersion.MR1 }),
-
-    CLOUDERA_CDH5(EHadoopDistributions.CLOUDERA, "Cloudera CDH5.0(YARN mode)", //$NON-NLS-1$
-                  "Cloudera_CDH5", //$NON-NLS-1$
-                  true,
-                  false,
-                  new EMRVersion[] { EMRVersion.YARN }),
-
-    CLOUDERA_CDH4_YARN(EHadoopDistributions.CLOUDERA, "Cloudera CDH4.3+(YARN mode)", //$NON-NLS-1$
-                       "Cloudera_CDH4_YARN", //$NON-NLS-1$
-                       true,
-                       false,
-                       new EMRVersion[] { EMRVersion.YARN }),
-
-    CLOUDERA_CDH4(EHadoopDistributions.CLOUDERA, "Cloudera CDH4.X(MR1 mode)", "Cloudera_CDH4", true, false), //$NON-NLS-1$ //$NON-NLS-2$
-
     MAPR500(EHadoopDistributions.MAPR, "MapR 5.0.0(YARN mode)", "MAPR500", true, true, new EMRVersion[] { EMRVersion.YARN }), //$NON-NLS-1$ //$NON-NLS-2$
 
     MAPR410(EHadoopDistributions.MAPR, "MapR 4.1.0(YARN mode)", "MAPR410", false, true, new EMRVersion[] { EMRVersion.YARN }), //$NON-NLS-1$ //$NON-NLS-2$

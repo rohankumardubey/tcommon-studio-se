@@ -47,8 +47,6 @@ import org.talend.core.utils.ReflectionUtils;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.metadata.managment.hive.EmbeddedHiveDataBaseMetadata;
 import org.talend.metadata.managment.hive.HiveClassLoaderFactory;
-import org.talend.metadata.managment.hive.handler.CDH4YarnHandler;
-import org.talend.metadata.managment.hive.handler.CDH5YarnHandler;
 import org.talend.metadata.managment.hive.handler.HDP130Handler;
 import org.talend.metadata.managment.hive.handler.HDP200YarnHandler;
 import org.talend.metadata.managment.hive.handler.HiveConnectionHandler;
@@ -539,17 +537,6 @@ public class HiveConnectionManager extends DataBaseConnectionManager {
     }
 
     public boolean isCDHHive2(IMetadataConnection metadataConn) {
-        if (metadataConn != null) {
-            String connURL = metadataConn.getUrl();
-            if (connURL != null) {
-                if (connURL.startsWith(DatabaseConnConstants.HIVE_2_URL_FORMAT)) {
-                    String distroVersion = (String) metadataConn.getParameter(ConnParameterKeys.CONN_PARA_KEY_HIVE_VERSION);
-                    if ("Cloudera_CDH4".equals(distroVersion)) { //$NON-NLS-1$
-                        return true;
-                    }
-                }
-            }
-        }
         return false;
     }
 
@@ -579,15 +566,11 @@ public class HiveConnectionManager extends DataBaseConnectionManager {
         } else {
             if (EHadoopVersion4Drivers.HDP_1_3.getVersionValue().equals(version)) {
                 handler = new HDP130Handler(metadataConnection);
-            } else if (EHadoopVersion4Drivers.CLOUDERA_CDH4_YARN.getVersionValue().equals(version)) {
-                handler = new CDH4YarnHandler(metadataConnection);
             } else if (EHadoopVersion4Drivers.HDP_2_0.getVersionValue().equals(version)) {
                 handler = new HDP200YarnHandler(metadataConnection);
             } else if (EHadoopVersion4Drivers.MAPR212.getVersionValue().equals(version)
                     || EHadoopVersion4Drivers.MAPR301.getVersionValue().equals(version)) {
                 handler = new Mapr212Handler(metadataConnection);
-            } else if (EHadoopVersion4Drivers.CLOUDERA_CDH5.getVersionValue().equals(version)) {
-                handler = new CDH5YarnHandler(metadataConnection);
             } else {
                 handler = new HiveConnectionHandler(metadataConnection);
             }
