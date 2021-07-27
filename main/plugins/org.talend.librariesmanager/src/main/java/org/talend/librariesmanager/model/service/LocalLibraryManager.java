@@ -16,7 +16,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -1600,48 +1599,6 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
             }
         }
         return missingJarObservable;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.talend.core.ILibraryManagerService#synToLocalMaven()
-     */
-    @Override
-    public void synToLocalMaven() {
-        File libDirectory = getStorageDirectory();
-        for (File svnLibFile : libDirectory.listFiles()) {
-            if (svnLibFile.isFile()) {
-                String jarName = svnLibFile.getName();
-                ModuleNeeded testModule = new ModuleNeeded("", jarName, "", true);
-                Set<String> toDeploy = guessMavenURI(testModule);
-                for (String uriToDeploy : toDeploy) {
-                    MavenArtifact parseMvnUrl = MavenUrlHelper.parseMvnUrl(uriToDeploy);
-                    // only can redeploy for snapshot
-                    if (!parseMvnUrl.getVersion().endsWith(MavenUrlHelper.VERSION_SNAPSHOT)) {
-                        continue;
-                    }
-                    boolean installed = checkJarInstalledInMaven(uriToDeploy);
-                    if (installed) {
-                        File jarInMaven = new File(mavenJarInstalled.get(uriToDeploy));
-                        try {
-                            String mavenLibMD5 = DigestUtils.md5Hex(new FileInputStream(jarInMaven));
-                            String svnLibMD5 = DigestUtils.md5Hex(new FileInputStream(svnLibFile));
-                            // check the md5 to see if jar is updated
-                            if (mavenLibMD5 != null && !mavenLibMD5.equals(svnLibMD5)) {
-                                deployer.install(svnLibFile.getAbsolutePath(), uriToDeploy);
-                            }
-                        } catch (FileNotFoundException e) {
-                            ExceptionHandler.process(e);
-                        } catch (IOException e) {
-                            ExceptionHandler.process(e);
-                        } catch (Exception e) {
-                            ExceptionHandler.process(e);
-                        }
-                    }
-                }
-            }
-        }
     }
 
     /*
