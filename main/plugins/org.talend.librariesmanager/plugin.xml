@@ -47,11 +47,25 @@
               name="crypto-utils-0.31.11.jar"
               required="true">
       </libraryNeeded>
-        <libraryNeeded
+      <libraryNeeded
               context="plugin:org.talend.librariesmanager"
               id="daikon-0.31.11.jar"
               mvn_uri="mvn:org.talend.daikon/daikon/0.31.11"
               name="daikon-0.31.11.jar"
+              required="true">
+      </libraryNeeded>
+      <libraryNeeded
+              context="plugin:org.talend.librariesmanager"
+              id="audit-common-1.16.1.jar"
+              mvn_uri="mvn:org.talend.daikon/audit-common/1.16.1"
+              name="audit-common-1.16.1.jar"
+              required="true">
+      </libraryNeeded>
+      <libraryNeeded
+              context="plugin:org.talend.librariesmanager"
+              id="job-audit-1.4.jar"
+              mvn_uri="mvn:org.talend.components.lib/job-audit/1.4"
+              name="job-audit-1.4.jar"
               required="true">
       </libraryNeeded>
    </extension>
@@ -67,6 +81,15 @@
             name="PasswordEncryptUtil">
          <library
                name="crypto-utils-0.31.11.jar">
+         </library>
+      </systemRoutine>
+      <systemRoutine
+            name="JobStructureCatcherUtils">
+         <library
+               name="audit-common-1.16.1.jar">
+         </library>
+         <library
+               name="job-audit-1.4.jar">
          </library>
       </systemRoutine>
    </extension>
