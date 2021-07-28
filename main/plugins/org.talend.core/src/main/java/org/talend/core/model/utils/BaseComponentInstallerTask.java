@@ -20,20 +20,23 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.m2e.core.MavenPlugin;
+import org.eclipse.m2e.core.embedder.IMaven;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ILibraryManagerService;
-import org.talend.core.runtime.projectsetting.IProjectSettingTemplateConstants;
+import org.talend.core.i18n.Messages;
+import org.talend.utils.io.FilesUtils;
 
 /**
  * @author bhe created on Jul 1, 2021
@@ -103,6 +106,12 @@ abstract public class BaseComponentInstallerTask implements IComponentInstallerT
         return null;
     }
 
+    /**
+     * <pre>
+     *Implementation of unzipping files into studio local m2 directory
+     *
+     * </pre>
+     */
     @Override
     public boolean needInstall() {
         boolean toInstall = false;
@@ -132,39 +141,79 @@ abstract public class BaseComponentInstallerTask implements IComponentInstallerT
         if (monitor == null) {
             monitor = new NullProgressMonitor();
         }
+
         if (!this.needInstall()) {
             return false;
         }
 
-        if (getJarFileDir() == null) {
+        File jarDir = getJarFileDir();
+
+        if (jarDir == null) {
+            LOGGER.info("Jar file directory can't be found");
             return false;
         }
 
-        try {
-            FileUtils.copyDirectory(getJarFileDir(), getM2RepositoryPath(), false);
-            LOGGER.info("Jars inside: {} were copied to {}", getJarFileDir(), getM2RepositoryPath());
-            return true;
-        } catch (IOException e) {
-            LOGGER.error("install error", e);
+        File m2Dir = getM2RepositoryPath();
+        if (m2Dir == null) {
+            LOGGER.warn("Can't get local m2 path");
+            return false;
         }
-        return false;
+
+        File[] files = jarDir.listFiles();
+        Set<File> zipFiles = Stream.of(files).filter(f -> f.getName().endsWith(".zip")).collect(Collectors.toSet());
+        boolean installed = true;
+
+        monitor.beginTask(Messages.getString("BaseComponentInstallerTask.installComponent", getMonitorText()), zipFiles.size());
+        
+        for (File zf : zipFiles) {
+            try {
+                FilesUtils.unzip(zf.getAbsolutePath(), m2Dir.getAbsolutePath(), false);
+                LOGGER.info("Jar zip: {} were unzipped to {}", zf, m2Dir);
+            } catch (Exception e) {
+                LOGGER.error("unzipp error", e);
+                installed = false;
+            }
+            monitor.worked(1);
+        }
+
+        return installed;
     }
 
-    private File getM2RepositoryPath() {
-        String configFolder = Platform.getConfigurationLocation().getURL().getPath();
-        File mavenUserSettingFile = new File(configFolder, IProjectSettingTemplateConstants.MAVEN_USER_SETTING_TEMPLATE_FILE_NAME);
+    /**
+     * Get studio local maven repository path
+     * 
+     * @return local maven repository path
+     */
+    protected File getM2RepositoryPath() {
         File m2Repo = null;
-        if (mavenUserSettingFile.exists()) {
-            m2Repo = new File(MavenPlugin.getMaven().getLocalRepositoryPath());
+        final IMaven maven = MavenPlugin.getMaven();
+        try {
+            maven.reloadSettings();
+        } catch (CoreException e) {
+            LOGGER.error("getM2RepositoryPath error", e);
         }
-        if (m2Repo == null) {
-            File m2Folder = new File(configFolder, ".m2");
-            m2Repo = new File(m2Folder, "repository");
+        String localRepository = maven.getLocalRepositoryPath();
+
+        if (!StringUtils.isEmpty(localRepository)) {
+            m2Repo = new File(localRepository);
         }
-        if (!m2Repo.exists()) {
+
+        if (m2Repo != null && !m2Repo.exists()) {
             m2Repo.mkdirs();
         }
         return m2Repo;
+    }
+
+    protected String getMonitorText() {
+        Set<ComponentGAV> tcompv0Gavs = this.getComponentGAV(COMPONENT_TYPE_TCOMPV0);
+        final StringBuilder sb = new StringBuilder();
+        tcompv0Gavs.forEach(gav -> {
+            if (sb.length() > 0) {
+                sb.append(",");
+            }
+            sb.append(gav.getArtifactId());
+        });
+        return sb.toString();
     }
 
 }
