@@ -1687,15 +1687,7 @@ public class RepositoryToComponentProperty {
         }
 
         if (value.equals("IMPALA_VERSION")) {
-            String impalaVersion = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_IMPALA_VERSION);
-            if (impalaVersion != null) {
-                // The value for IMPALA_CDH5 is wrong for a long time, so need to change it manaully, so can avoid to
-                // add migration task
-                if ("CLOUDERA_5".equals(impalaVersion)) {
-                    impalaVersion = "Cloudera_CDH5_1";
-                }
-            }
-            return impalaVersion;
+            return connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_IMPALA_VERSION);
         }
 
         if (value.equals("SET_SCHEDULER_ADDRESS")) {
