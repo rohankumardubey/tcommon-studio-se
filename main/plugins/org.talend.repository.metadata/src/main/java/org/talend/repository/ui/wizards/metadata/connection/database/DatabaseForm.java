@@ -4495,6 +4495,13 @@ public class DatabaseForm extends AbstractForm {
             };
         } else if (isImpalaDBConnSelected()) {
             final IMetadataConnection metadataConn = ConvertionHelper.convert(connectionItem.getConnection(), true);
+            
+            if( !"".equals( metadataConn.getPassword() ) ) {
+                String url = metadataConn.getUrl().replace(";auth=noSasl", "");
+                url = url + ";user=" + metadataConn.getUsername() + ";password=" + metadataConn.getPassword();
+                metadataConn.setUrl(url);
+            }
+            
             checkingDialog = new AProgressMonitorDialogWithCancel<Boolean>(getShell()) {
 
                 @Override
