@@ -140,14 +140,10 @@ public class PluginChecker {
 
     public static final String PROD_LITE = "org.talend.rcp.branding.lite.product";
 
-    public static final String APP_LITE = "org.talend.rcp.branding.lite.application";
-
     /**
      * Currently only used by CI, since CI is installed by p2Installer, it will use the cmd product
      */
     public static final String PROD_LITE_CI = "org.talend.rcp.branding.lite.ci.product";
-
-    public static final String APP_LITE_CI = "org.talend.rcp.branding.lite.ci.application";
 
     private static Boolean isStudioLite;
 
