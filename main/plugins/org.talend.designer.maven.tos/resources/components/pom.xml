@@ -55,7 +55,7 @@
                 <artifactId>commons-parent</artifactId>
                 <version>17</version>
                 <type>pom</type>
-            </dependency>             
+            </dependency>
             <!-- It fixes provided dependency scope to compile, because maven-dependency-plugin is setup to include
              only compile and runtime scopes, but provided is also required. It's not possible to setup plugin to
              include all: compile, runtime and provided dependencies -->
@@ -76,97 +76,6 @@
     </dependencyManagement>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.talend.components</groupId>
-			<artifactId>components-couchbase</artifactId>
-			<version>${components.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.talend.components</groupId>
-			<artifactId>components-salesforce-runtime</artifactId>
-			<version>${components.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.httpcomponents</groupId>
-					<artifactId>httpclient</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.talend.components</groupId>
-			<artifactId>components-jdbc-runtime</artifactId>
-			<version>${components.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.talend.components</groupId>
-			<artifactId>components-splunk</artifactId>
-			<version>${components.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.talend.components</groupId>
-			<artifactId>components-jira</artifactId>
-			<version>${components.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.talend.components</groupId>
-			<artifactId>components-snowflake-runtime</artifactId>
-			<version>${components.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.talend.components</groupId>
-			<artifactId>components-azurestorage</artifactId>
-			<version>${components.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.talend.components</groupId>
-			<artifactId>components-netsuite-runtime_2014_2</artifactId>
-			<version>${components.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.talend.components</groupId>
-			<artifactId>components-netsuite-runtime_2016_2</artifactId>
-			<version>${components.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.talend.components</groupId>
-			<artifactId>components-netsuite-runtime_2018_2</artifactId>
-			<version>${components.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.talend.components</groupId>
-			<artifactId>components-netsuite-runtime_2019_2</artifactId>
-			<version>${components.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.talend.components</groupId>
-			<artifactId>components-marketo-runtime</artifactId>
-			<version>${components.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.talend.components</groupId>
-			<artifactId>components-googledrive-runtime</artifactId>
-			<version>${components.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.talend.components</groupId>
-			<artifactId>components-marklogic-runtime</artifactId>
-			<version>${components.version}</version>
-		</dependency>
-        <dependency>
-            <groupId>org.talend.components</groupId>
-            <artifactId>components-common</artifactId>
-            <version>${components.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.talend.components</groupId>
-            <artifactId>components-common-oauth</artifactId>
-            <version>${components.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.talend.components</groupId>
-            <artifactId>components-api</artifactId>
-            <version>${components.version}</version>
-        </dependency>
         <!-- Dependencies in provided scope should be explicitly added as dependency in this module,
             because provided scope is not transitive -->
 		<dependency>
