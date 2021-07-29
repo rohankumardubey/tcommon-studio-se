@@ -51,6 +51,18 @@
 									<version>1.7.25</version>
 									<overWrite>true</overWrite>
 								</artifactItem>
+								<artifactItem>
+									<groupId>org.talend.components.lib</groupId>
+									<artifactId>job-audit</artifactId>
+									<version>1.4</version>
+									<overWrite>true</overWrite>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.talend.daikon</groupId>
+									<artifactId>audit-common</artifactId>
+									<version>1.16.1</version>
+									<overWrite>true</overWrite>
+								</artifactItem>
 							</artifactItems>
 						</configuration>
 					</execution>

@@ -105,7 +105,8 @@ public class JobStructureCatcherUtils {
 		RUNTIMEPARAMETER, RUNTIMESCHEMA
 	}
 
-	private final List<JobStructureCatcherMessage> messages = java.util.Collections
+	//single one for message send order as batch support
+	private static final List<JobStructureCatcherMessage> messages = java.util.Collections
 			.synchronizedList(
 					new java.util.ArrayList<JobStructureCatcherMessage>());
 
