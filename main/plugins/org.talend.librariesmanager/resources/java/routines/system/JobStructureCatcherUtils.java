@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 //TODO split to several classes by the level when have a clear requirement or design : job, component, connection
 public class JobStructureCatcherUtils {
@@ -105,10 +107,8 @@ public class JobStructureCatcherUtils {
 		RUNTIMEPARAMETER, RUNTIMESCHEMA
 	}
 
-	//single one for message send order as batch support
-	private static final List<JobStructureCatcherMessage> messages = java.util.Collections
-			.synchronizedList(
-					new java.util.ArrayList<JobStructureCatcherMessage>());
+	// single one for message send order as batch support
+	private static final Queue<JobStructureCatcherMessage> messages = new ConcurrentLinkedQueue<>();
 
 	public String job_name = "";
 
@@ -117,6 +117,8 @@ public class JobStructureCatcherUtils {
 	public String job_version = "";
 
 	private int message_batch_size;
+	
+	//private final boolean asyn;
 
 	public JobStructureCatcherUtils(String jobName, String jobId,
 			String jobVersion, String message_batch_size) {
@@ -124,6 +126,8 @@ public class JobStructureCatcherUtils {
 		this.job_id = jobId;
 		this.job_version = jobVersion;
 		
+		//this.asyn = asyn;
+
 		if (message_batch_size == null) {
 			return;
 		}
@@ -134,7 +138,7 @@ public class JobStructureCatcherUtils {
 			// do nothing
 		}
 	}
-	
+
 	public void init(String pid, String fatherPid, String rootPid) {
 		this.pid = pid;
 		this.fatherPid = fatherPid;
@@ -293,36 +297,36 @@ public class JobStructureCatcherUtils {
 		messages.add(scm);
 		send(getMessages());
 	}
-	
+
 	private java.util.List<JobStructureCatcherMessage> getMessages() {
-		synchronized (messages) {
-			if (messages.size() < message_batch_size) {
-				return Collections.emptyList();
-			}
-
-			java.util.List<JobStructureCatcherMessage> messagesToSend = new java.util.ArrayList<JobStructureCatcherMessage>();
-			for (JobStructureCatcherMessage scm : messages) {
-				messagesToSend.add(scm);
-			}
-			messages.clear();
-			return messagesToSend;
+		if (messages.size() < message_batch_size) {
+			return Collections.emptyList();
 		}
-	}
-
-	//it works for final send for not loss data and also for runtime parameter/schema log as they don't have stop method
-	private java.util.List<JobStructureCatcherMessage> getAllMessages() {
+		
 		java.util.List<JobStructureCatcherMessage> messagesToSend = new java.util.ArrayList<JobStructureCatcherMessage>();
 		synchronized (messages) {
-			for (JobStructureCatcherMessage scm : messages) {
-				messagesToSend.add(scm);
+			JobStructureCatcherMessage message = null;
+			while ((message = messages.poll())!=null) {
+				messagesToSend.add(message);
 			}
-			messages.clear();
 		}
 		return messagesToSend;
 	}
 
-	private void send(
-			List<JobStructureCatcherUtils.JobStructureCatcherMessage> messages) {
+	// it works for final send for not loss data and also for runtime
+	// parameter/schema log as they don't have stop method
+	private java.util.List<JobStructureCatcherMessage> getAllMessages() {
+		java.util.List<JobStructureCatcherMessage> messagesToSend = new java.util.ArrayList<JobStructureCatcherMessage>();
+		synchronized (messages) {
+			JobStructureCatcherMessage message = null;
+			while ((message = messages.poll())!=null) {
+				messagesToSend.add(message);
+			}
+		}
+		return messagesToSend;
+	}
+
+	private void send(java.util.List<JobStructureCatcherMessage> messages) {
 		if (messages.isEmpty()) {
 			return;
 		}
@@ -434,5 +438,21 @@ public class JobStructureCatcherUtils {
 			org.talend.job.audit.JobAuditLogger runtime_lineage_logger) {
 		this.runtime_lineage_logger = runtime_lineage_logger;
 	}
+
+	/*
+	static {
+		// not sure can use runtime hook, as that may not executed for some
+		// case, and also, the audit sender implement also use runtime hook, how
+		// to process execute order when jvm down? TODO
+		final ScheduledExecutorService executor = Executors
+				.newSingleThreadScheduledExecutor(runnable -> {
+					Thread thread = new Thread(runnable, "Sender-Worker");
+					thread.setDaemon(true);
+					return thread;
+				});
+		
+
+	}
+	*/
 
 }
