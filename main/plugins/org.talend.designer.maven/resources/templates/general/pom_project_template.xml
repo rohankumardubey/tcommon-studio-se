@@ -56,6 +56,11 @@
 							<artifactId>commons-codec</artifactId>
 							<version>1.15</version>
 			            </dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-archiver</artifactId>
+							<version>3.6.0</version>
+						</dependency>
 					</dependencies>
 				</plugin>
 				<plugin>
@@ -95,6 +100,16 @@
 					       <artifactId>maven-shared-utils</artifactId>
 					       <version>3.3.3</version>
 					    </dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-archiver</artifactId>
+							<version>3.6.0</version>
+						</dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+						    <artifactId>plexus-io</artifactId>
+						    <version>3.0.0</version>
+						</dependency>
 					</dependencies>
 					<configuration>
 						<archive>
@@ -121,6 +136,11 @@
 							<groupId>org.apache.commons</groupId>
 							<artifactId>commons-compress</artifactId>
 							<version>1.19</version>
+						</dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-archiver</artifactId>
+							<version>3.6.0</version>
 						</dependency>
 					</dependencies>
 				</plugin>
