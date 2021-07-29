@@ -119,15 +119,11 @@ public class JobStructureCatcherUtils {
 	private int message_batch_size;
 
 	public JobStructureCatcherUtils(String jobName, String jobId,
-			String jobVersion, String pid, String fatherPid, String rootPid, String message_batch_size) {
+			String jobVersion, String message_batch_size) {
 		this.job_name = jobName;
 		this.job_id = jobId;
 		this.job_version = jobVersion;
 		
-		this.pid = pid;
-		this.fatherPid = fatherPid;
-		this.rootPid = rootPid;
-
 		if (message_batch_size == null) {
 			return;
 		}
@@ -137,6 +133,12 @@ public class JobStructureCatcherUtils {
 		} catch (NumberFormatException e) {
 			// do nothing
 		}
+	}
+	
+	public void init(String pid, String fatherPid, String rootPid) {
+		this.pid = pid;
+		this.fatherPid = fatherPid;
+		this.rootPid = rootPid;
 	}
 
 	public void addComponentParameterMessage(String component_id,
