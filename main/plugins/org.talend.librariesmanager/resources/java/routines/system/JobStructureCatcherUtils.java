@@ -114,29 +114,38 @@ public class JobStructureCatcherUtils {
 	private static final List<JobStructureCatcherMessage> messages = Collections
 			.synchronizedList(new ArrayList<JobStructureCatcherMessage>());
 
+	private static final boolean asyn = Boolean
+			.getBoolean(System.getProperty("audit.asyn"));
+	private static final int message_batch_size;
+	
+	static {
+		Integer batch_size = Integer.getInteger(System.getProperty("audit.batch.size"));
+		message_batch_size = batch_size != null ? batch_size : 0;
+	}
+
+	private static class LazyHolder {
+		// not load it if not enable audit/runtime
+		private static LogSender sender;
+
+		static {
+			if (asyn) {
+				sender = new LogSender();
+			}
+		}
+	}
+
 	public String job_name = "";
 
 	public String job_id = "";
 
 	public String job_version = "";
 
-	private int message_batch_size;
-
 	public JobStructureCatcherUtils(String jobName, String jobId,
-			String jobVersion, String message_batch_size) {
+			String jobVersion) {
 		this.job_name = jobName;
 		this.job_id = jobId;
 		this.job_version = jobVersion;
 
-		if (message_batch_size == null) {
-			return;
-		}
-
-		try {
-			this.message_batch_size = Integer.valueOf(message_batch_size);
-		} catch (NumberFormatException e) {
-			// do nothing
-		}
 	}
 
 	public void init(String pid, String fatherPid, String rootPid) {
@@ -160,7 +169,7 @@ public class JobStructureCatcherUtils {
 		scm.log_type = LogType.RUNTIMEPARAMETER;
 
 		messages.add(scm);
-		send(getAllMessages());
+		sendAll();
 	}
 
 	public void addConnectionSchemaMessage(String source_component_id,
@@ -183,7 +192,7 @@ public class JobStructureCatcherUtils {
 		scm.log_type = LogType.RUNTIMESCHEMA;
 
 		messages.add(scm);
-		send(getAllMessages());
+		sendAll();
 	}
 
 	public void addConnectionMessage(String component_id,
@@ -213,7 +222,7 @@ public class JobStructureCatcherUtils {
 		}
 
 		messages.add(scm);
-		send(getMessages());
+		sendBatch();
 	}
 
 	public void addCM(String component_id, String component_label,
@@ -232,7 +241,7 @@ public class JobStructureCatcherUtils {
 		scm.log_type = LogType.RUNCOMPONENT;
 
 		messages.add(scm);
-		send(getMessages());
+		sendBatch();
 	}
 
 	public void addJobStartMessage() {
@@ -246,7 +255,7 @@ public class JobStructureCatcherUtils {
 		scm.log_type = LogType.JOBSTART;
 
 		messages.add(scm);
-		send(getMessages());
+		sendBatch();
 	}
 
 	public void addJobEndMessage(long start_time, long end_time,
@@ -265,7 +274,7 @@ public class JobStructureCatcherUtils {
 		scm.log_type = LogType.JOBEND;
 
 		messages.add(scm);
-		send(getAllMessages());
+		sendAll();
 	}
 
 	public void addConnectionMessage4PerformanceMonitor(
@@ -295,28 +304,52 @@ public class JobStructureCatcherUtils {
 		scm.log_type = LogType.PERFORMANCE;
 
 		messages.add(scm);
-		send(getMessages());
+		sendBatch();
 	}
 
-	private java.util.List<JobStructureCatcherMessage> getMessages() {
-		if (messages.size() < message_batch_size) {
-			return Collections.emptyList();
-		}
-
-		java.util.List<JobStructureCatcherMessage> messagesToSend = new java.util.ArrayList<JobStructureCatcherMessage>();
+	private List<JobStructureCatcherMessage> getMessages() {
 		synchronized (messages) {
+			if (messages.size() < message_batch_size) {
+				return Collections.emptyList();
+			}
+
+			List<JobStructureCatcherMessage> messagesToSend = new ArrayList<JobStructureCatcherMessage>();
+
 			for (JobStructureCatcherMessage scm : messages) {
 				messagesToSend.add(scm);
 			}
 			messages.clear();
+
+			return messagesToSend;
 		}
-		return messagesToSend;
+	}
+
+	private void sendAll() {
+		if (asyn) {
+			LazyHolder.sender.send(() -> send(getAllMessages()));
+		} else {
+			send(getAllMessages());
+		}
+	}
+
+	private void sendBatch() {
+		if (asyn) {
+			LazyHolder.sender.send(() -> send(getMessages()));
+		} else {
+			send(getMessages());
+		}
+	}
+
+	public void shutdown() {
+		if (asyn) {
+			LazyHolder.sender.shutdown();
+		}
 	}
 
 	// it works for final send for not loss data and also for runtime
 	// parameter/schema log as they don't have stop method
-	private java.util.List<JobStructureCatcherMessage> getAllMessages() {
-		java.util.List<JobStructureCatcherMessage> messagesToSend = new java.util.ArrayList<JobStructureCatcherMessage>();
+	private List<JobStructureCatcherMessage> getAllMessages() {
+		List<JobStructureCatcherMessage> messagesToSend = new ArrayList<JobStructureCatcherMessage>();
 		synchronized (messages) {
 			for (JobStructureCatcherMessage scm : messages) {
 				messagesToSend.add(scm);
@@ -362,6 +395,7 @@ public class JobStructureCatcherUtils {
 
 				log_context = builder.timestamp(jcm.moment).duration(duration)
 						.status(jcm.status).build();
+
 				auditLogger.jobstop(log_context);
 			} else if (jcm.log_type == JobStructureCatcherUtils.LogType.RUNCOMPONENT) {
 				log_context = builder.timestamp(jcm.moment)
@@ -403,7 +437,7 @@ public class JobStructureCatcherUtils {
 				builder.connectorType(jcm.component_name)
 						.connectorId(jcm.component_id);
 
-				for (java.util.Map.Entry<String, String> entry : jcm.component_parameters
+				for (Map.Entry<String, String> entry : jcm.component_parameters
 						.entrySet()) {
 					builder.custom("P_" + entry.getKey(), entry.getValue());
 				}
