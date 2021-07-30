@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -41,7 +42,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.talend.utils.sugars.ReturnCode;
 
@@ -450,25 +450,6 @@ public final class FilesUtils {
         }
     }
 
-    public static String getFileMD5Hex(File inputFile) throws IOException {
-        if (inputFile == null || !inputFile.exists()) {
-            return null;
-        }
-
-        final FileInputStream inputStream = new FileInputStream(inputFile);
-        try {
-            return getStreamMD5Hex(inputStream);
-        } finally {
-            inputStream.close();
-        }
-    }
-
-    public static String getStreamMD5Hex(InputStream inputStream) throws IOException {
-        if (inputStream == null) {
-            return null;
-        }
-        return DigestUtils.md5Hex(inputStream);
-    }
 
     /**
      * DOC amaumont Comment method "getBytes".
@@ -872,6 +853,27 @@ public final class FilesUtils {
                 file.delete();
             }
         }
+    }
+
+    public static void deleteFile(String path) {
+        File file = new File(path);
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                File files[] = file.listFiles();
+                for (File file2 : files) {
+                    deleteFile(file2.getAbsolutePath());
+                }
+            }
+            file.setWritable(true);
+            try {
+                Files.delete(file.toPath());
+            } catch (IOException e) {
+                // fail to get clear reason and try again
+                file.delete();
+            }
+
+        }
+
     }
 
     /**
