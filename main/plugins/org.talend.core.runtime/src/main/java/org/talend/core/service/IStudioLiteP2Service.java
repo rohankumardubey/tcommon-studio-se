@@ -146,9 +146,9 @@ public interface IStudioLiteP2Service extends IService {
 
         void setRelease(IProgressMonitor monitor, URI uri) throws Exception;
 
-        URI getUpdate(IProgressMonitor monitor) throws Exception;
+        Collection<URI> getUpdates(IProgressMonitor monitor) throws Exception;
 
-        void setUpdate(IProgressMonitor monitor, URI uri) throws Exception;
+        void setUpdates(IProgressMonitor monitor, Collection<URI> uris) throws Exception;
 
     }
 
