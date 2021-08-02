@@ -209,12 +209,10 @@ public class AdditionalPackagesDialog extends TitleAreaDialog {
 
         Label lblNewLabel = new Label(container, SWT.NONE);
         lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
-//        lblNewLabel.setText(Messages.getString("SelectExtraFeaturesToInstallWizardPage.feature.list.label")); //$NON-NLS-1$
-        lblNewLabel.setText("Available features");
+        lblNewLabel.setText(Messages.getString("AdditionalPackagesDialog.feature.list.label")); //$NON-NLS-1$
         Composite featureComposite = new Composite(container, SWT.NONE);
-        GridData g = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
-//        g.heightHint = 600;
-        featureComposite.setLayoutData(g);
+        GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+        featureComposite.setLayoutData(gd);
         TreeColumnLayout friendsColumnLayout = new TreeColumnLayout();
         featureComposite.setLayout(friendsColumnLayout);
 
@@ -254,8 +252,7 @@ public class AdditionalPackagesDialog extends TitleAreaDialog {
 
         Label lblDescription = new Label(container, SWT.NONE);
         lblDescription.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-//        lblDescription.setText(Messages.getString("SelectExtraFeaturesToInstallWizardPage.description.label")); //$NON-NLS-1$
-        lblDescription.setText("description");
+        lblDescription.setText(Messages.getString("AdditionalPackagesDialog.description.label")); //$NON-NLS-1$
         featureDescriptionText = new StyledText(container, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
         GridData gd_featureDescriptionText = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
         gd_featureDescriptionText.heightHint = 61;
@@ -367,9 +364,7 @@ public class AdditionalPackagesDialog extends TitleAreaDialog {
     	if (updateWizardModel.selectedExtraFeatures.isEmpty()) {
     		installAllBtn.setEnabled(false);
     	}else {
-    		 featureDescriptionText.setText("Contains all required third-party libraries that cannot be shipped with this product for licensing reasons, but which are required for the product to run correctly.\n" + 
-              		"If you select this option, you will be invited to accept the license for each library you install. You must accept all the licenses to be able to use Talend Studio.\n" + 
-              		"If you do not select this option, you will be prompted for each missing library one by one whenever they are needed by the product."); //$NON-NLS-1$
+    		 featureDescriptionText.setText(Messages.getString("AdditionalPackagesDialog.description.content")); //$NON-NLS-1$ 
      		
     		installAllBtn.setEnabled(true);
     	}
@@ -555,8 +550,7 @@ public class AdditionalPackagesDialog extends TitleAreaDialog {
         // increment the number of columns in the button bar
         ((GridLayout) parent.getLayout()).numColumns++;
         Button button = new Button(parent, SWT.PUSH);
-//        button.setText(Messages.getString("ExternalModulesInstallDialog_InstallAll") + "  "); //$NON-NLS-1$ //$NON-NLS-2$//a space is added cause the last letter is missing on my MAC
-        button.setText("OK");
+        button.setText(Messages.getString("AdditionalPackagesDialog.ok"));
         setButtonLayoutData(button);
         button.setFont(parent.getFont());
 
