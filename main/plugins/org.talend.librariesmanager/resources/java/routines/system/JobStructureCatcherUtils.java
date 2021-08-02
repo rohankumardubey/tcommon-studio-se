@@ -108,18 +108,22 @@ public class JobStructureCatcherUtils {
 
 	// single one for message send order as batch support
 	// ConcurrentLinkedQueue is not good way to implement batch, except we send
-	// it regularly by time, also out of memory risk
+	// it regularly by time, also out of memory risk and kill cpu time if
+	// produce slow a lot than consumer, and if call wait/sleep, no mmuch better
+	// than BlockingQueue
 	// seems BlockingQueue not better a lot than synchronizedList or syn self
 	// directly, but introduce risk
+	// if no batch or batch size is 1, no need this
 	private static final List<JobStructureCatcherMessage> messages = Collections
 			.synchronizedList(new ArrayList<JobStructureCatcherMessage>());
 
 	private static final boolean asyn = Boolean
 			.getBoolean(System.getProperty("audit.asyn"));
 	private static final int message_batch_size;
-	
+
 	static {
-		Integer batch_size = Integer.getInteger(System.getProperty("audit.batch.size"));
+		Integer batch_size = Integer
+				.getInteger(System.getProperty("audit.batch.size"));
 		message_batch_size = batch_size != null ? batch_size : 0;
 	}
 
@@ -168,8 +172,14 @@ public class JobStructureCatcherUtils {
 
 		scm.log_type = LogType.RUNTIMEPARAMETER;
 
-		messages.add(scm);
-		sendAll();
+		addMessage(scm);
+		sendAll(scm);
+	}
+
+	private void addMessage(JobStructureCatcherMessage scm) {
+		if (message_batch_size > 1) {
+			messages.add(scm);
+		}
 	}
 
 	public void addConnectionSchemaMessage(String source_component_id,
@@ -191,8 +201,8 @@ public class JobStructureCatcherUtils {
 
 		scm.log_type = LogType.RUNTIMESCHEMA;
 
-		messages.add(scm);
-		sendAll();
+		addMessage(scm);
+		sendAll(scm);
 	}
 
 	public void addConnectionMessage(String component_id,
@@ -221,8 +231,8 @@ public class JobStructureCatcherUtils {
 			scm.log_type = LogType.FLOWOUTPUT;
 		}
 
-		messages.add(scm);
-		sendBatch();
+		addMessage(scm);
+		sendBatch(scm);
 	}
 
 	public void addCM(String component_id, String component_label,
@@ -240,8 +250,8 @@ public class JobStructureCatcherUtils {
 
 		scm.log_type = LogType.RUNCOMPONENT;
 
-		messages.add(scm);
-		sendBatch();
+		addMessage(scm);
+		sendBatch(scm);
 	}
 
 	public void addJobStartMessage() {
@@ -254,8 +264,8 @@ public class JobStructureCatcherUtils {
 
 		scm.log_type = LogType.JOBSTART;
 
-		messages.add(scm);
-		sendBatch();
+		addMessage(scm);
+		sendBatch(scm);
 	}
 
 	public void addJobEndMessage(long start_time, long end_time,
@@ -273,8 +283,8 @@ public class JobStructureCatcherUtils {
 
 		scm.log_type = LogType.JOBEND;
 
-		messages.add(scm);
-		sendAll();
+		addMessage(scm);
+		sendAll(scm);
 	}
 
 	public void addConnectionMessage4PerformanceMonitor(
@@ -303,8 +313,8 @@ public class JobStructureCatcherUtils {
 
 		scm.log_type = LogType.PERFORMANCE;
 
-		messages.add(scm);
-		sendBatch();
+		addMessage(scm);
+		sendBatch(scm);
 	}
 
 	private List<JobStructureCatcherMessage> getMessages() {
@@ -324,19 +334,42 @@ public class JobStructureCatcherUtils {
 		}
 	}
 
-	private void sendAll() {
+	private void sendAll(JobStructureCatcherMessage message) {
 		if (asyn) {
-			LazyHolder.sender.send(() -> send(getAllMessages()));
+			// this is a inside blocking queue with size 1 here for tasks, good
+			// for performance? our concurrent is not too high, producer is slow
+			// a lot than consumer, maybe OK
+			LazyHolder.sender.send(() -> {
+				if (message_batch_size > 1) {
+					send(getAllMessages());
+				} else {
+					sendOne(message);
+				}
+			});
 		} else {
-			send(getAllMessages());
+			if (message_batch_size > 1) {
+				send(getAllMessages());
+			} else {
+				sendOne(message);
+			}
 		}
 	}
 
-	private void sendBatch() {
+	private void sendBatch(JobStructureCatcherMessage message) {
 		if (asyn) {
-			LazyHolder.sender.send(() -> send(getMessages()));
+			LazyHolder.sender.send(() -> {
+				if (message_batch_size > 1) {
+					send(getMessages());
+				} else {
+					sendOne(message);
+				}
+			});
 		} else {
-			send(getMessages());
+			if (message_batch_size > 1) {
+				send(getMessages());
+			} else {
+				sendOne(message);
+			}
 		}
 	}
 
@@ -366,95 +399,98 @@ public class JobStructureCatcherUtils {
 		}
 
 		for (JobStructureCatcherUtils.JobStructureCatcherMessage jcm : messages) {
-			org.talend.job.audit.JobContextBuilder builder = org.talend.job.audit.JobContextBuilder
-					.create().jobName(jcm.job_name).jobId(jcm.job_id)
-					.jobVersion(jcm.job_version).custom("process_id", jcm.pid)
-					.custom("thread_id", jcm.tid).custom("pid", pid)
-					.custom("father_pid", fatherPid)
-					.custom("root_pid", rootPid);
-			org.talend.logging.audit.Context log_context = null;
+			sendOne(jcm);
+		}
+	}
 
-			if (jcm.log_type == JobStructureCatcherUtils.LogType.PERFORMANCE) {
-				long timeMS = jcm.end_time - jcm.start_time;
-				String duration = String.valueOf(timeMS);
+	private void sendOne(
+			JobStructureCatcherUtils.JobStructureCatcherMessage jcm) {
+		org.talend.job.audit.JobContextBuilder builder = org.talend.job.audit.JobContextBuilder
+				.create().jobName(jcm.job_name).jobId(jcm.job_id)
+				.jobVersion(jcm.job_version).custom("process_id", jcm.pid)
+				.custom("thread_id", jcm.tid).custom("pid", pid)
+				.custom("father_pid", fatherPid).custom("root_pid", rootPid);
+		org.talend.logging.audit.Context log_context = null;
 
-				log_context = builder.sourceId(jcm.sourceId)
-						.sourceLabel(jcm.sourceLabel)
-						.sourceConnectorType(jcm.sourceComponentName)
-						.targetId(jcm.targetId).targetLabel(jcm.targetLabel)
-						.targetConnectorType(jcm.targetComponentName)
-						.connectionName(jcm.current_connector)
-						.rows(jcm.row_count).duration(duration).build();
-				auditLogger.flowExecution(log_context);
-			} else if (jcm.log_type == JobStructureCatcherUtils.LogType.JOBSTART) {
-				log_context = builder.timestamp(jcm.moment).build();
-				auditLogger.jobstart(log_context);
-			} else if (jcm.log_type == JobStructureCatcherUtils.LogType.JOBEND) {
-				long timeMS = jcm.end_time - jcm.start_time;
-				String duration = String.valueOf(timeMS);
+		if (jcm.log_type == JobStructureCatcherUtils.LogType.PERFORMANCE) {
+			long timeMS = jcm.end_time - jcm.start_time;
+			String duration = String.valueOf(timeMS);
 
-				log_context = builder.timestamp(jcm.moment).duration(duration)
-						.status(jcm.status).build();
+			log_context = builder.sourceId(jcm.sourceId)
+					.sourceLabel(jcm.sourceLabel)
+					.sourceConnectorType(jcm.sourceComponentName)
+					.targetId(jcm.targetId).targetLabel(jcm.targetLabel)
+					.targetConnectorType(jcm.targetComponentName)
+					.connectionName(jcm.current_connector).rows(jcm.row_count)
+					.duration(duration).build();
+			auditLogger.flowExecution(log_context);
+		} else if (jcm.log_type == JobStructureCatcherUtils.LogType.JOBSTART) {
+			log_context = builder.timestamp(jcm.moment).build();
+			auditLogger.jobstart(log_context);
+		} else if (jcm.log_type == JobStructureCatcherUtils.LogType.JOBEND) {
+			long timeMS = jcm.end_time - jcm.start_time;
+			String duration = String.valueOf(timeMS);
 
-				auditLogger.jobstop(log_context);
-			} else if (jcm.log_type == JobStructureCatcherUtils.LogType.RUNCOMPONENT) {
-				log_context = builder.timestamp(jcm.moment)
-						.connectorType(jcm.component_name)
-						.connectorId(jcm.component_id)
-						.connectorLabel(jcm.component_label).build();
-				auditLogger.runcomponent(log_context);
-			} else if (jcm.log_type == JobStructureCatcherUtils.LogType.FLOWINPUT) {// log
+			log_context = builder.timestamp(jcm.moment).duration(duration)
+					.status(jcm.status).build();
+
+			auditLogger.jobstop(log_context);
+		} else if (jcm.log_type == JobStructureCatcherUtils.LogType.RUNCOMPONENT) {
+			log_context = builder.timestamp(jcm.moment)
+					.connectorType(jcm.component_name)
+					.connectorId(jcm.component_id)
+					.connectorLabel(jcm.component_label).build();
+			auditLogger.runcomponent(log_context);
+		} else if (jcm.log_type == JobStructureCatcherUtils.LogType.FLOWINPUT) {// log
+																				// current
+																				// component
+																				// input
+																				// line
+			long timeMS = jcm.end_time - jcm.start_time;
+			String duration = String.valueOf(timeMS);
+
+			log_context = builder.connectorType(jcm.component_name)
+					.connectorId(jcm.component_id)
+					.connectorLabel(jcm.component_label)
+					.connectionName(jcm.current_connector)
+					.connectionType(jcm.current_connector_type)
+					.rows(jcm.total_row_number).duration(duration).build();
+			auditLogger.flowInput(log_context);
+		} else if (jcm.log_type == JobStructureCatcherUtils.LogType.FLOWOUTPUT) {// log
 																					// current
 																					// component
-																					// input
+																					// output/reject
 																					// line
-				long timeMS = jcm.end_time - jcm.start_time;
-				String duration = String.valueOf(timeMS);
+			long timeMS = jcm.end_time - jcm.start_time;
+			String duration = String.valueOf(timeMS);
 
-				log_context = builder.connectorType(jcm.component_name)
-						.connectorId(jcm.component_id)
-						.connectorLabel(jcm.component_label)
-						.connectionName(jcm.current_connector)
-						.connectionType(jcm.current_connector_type)
-						.rows(jcm.total_row_number).duration(duration).build();
-				auditLogger.flowInput(log_context);
-			} else if (jcm.log_type == JobStructureCatcherUtils.LogType.FLOWOUTPUT) {// log
-																						// current
-																						// component
-																						// output/reject
-																						// line
-				long timeMS = jcm.end_time - jcm.start_time;
-				String duration = String.valueOf(timeMS);
+			log_context = builder.connectorType(jcm.component_name)
+					.connectorId(jcm.component_id)
+					.connectorLabel(jcm.component_label)
+					.connectionName(jcm.current_connector)
+					.connectionType(jcm.current_connector_type)
+					.rows(jcm.total_row_number).duration(duration).build();
+			auditLogger.flowOutput(log_context);
+		} else if (jcm.log_type == JobStructureCatcherUtils.LogType.RUNTIMEPARAMETER) {
+			builder.connectorType(jcm.component_name)
+					.connectorId(jcm.component_id);
 
-				log_context = builder.connectorType(jcm.component_name)
-						.connectorId(jcm.component_id)
-						.connectorLabel(jcm.component_label)
-						.connectionName(jcm.current_connector)
-						.connectionType(jcm.current_connector_type)
-						.rows(jcm.total_row_number).duration(duration).build();
-				auditLogger.flowOutput(log_context);
-			} else if (jcm.log_type == JobStructureCatcherUtils.LogType.RUNTIMEPARAMETER) {
-				builder.connectorType(jcm.component_name)
-						.connectorId(jcm.component_id);
-
-				for (Map.Entry<String, String> entry : jcm.component_parameters
-						.entrySet()) {
-					builder.custom("P_" + entry.getKey(), entry.getValue());
-				}
-
-				log_context = builder.build();
-
-				runtime_lineage_logger.componentParameters(log_context);
-			} else if (jcm.log_type == JobStructureCatcherUtils.LogType.RUNTIMESCHEMA) {
-				log_context = builder
-						.sourceConnectorType(jcm.sourceComponentName)
-						.sourceId(jcm.sourceId)
-						.connectionName(jcm.current_connector)
-						.schema(jcm.component_schema.toString())
-						.targetConnectorType(jcm.targetComponentName)
-						.targetId(jcm.targetId).build();
-				runtime_lineage_logger.schema(log_context);
+			for (Map.Entry<String, String> entry : jcm.component_parameters
+					.entrySet()) {
+				builder.custom("P_" + entry.getKey(), entry.getValue());
 			}
+
+			log_context = builder.build();
+
+			runtime_lineage_logger.componentParameters(log_context);
+		} else if (jcm.log_type == JobStructureCatcherUtils.LogType.RUNTIMESCHEMA) {
+			log_context = builder.sourceConnectorType(jcm.sourceComponentName)
+					.sourceId(jcm.sourceId)
+					.connectionName(jcm.current_connector)
+					.schema(jcm.component_schema.toString())
+					.targetConnectorType(jcm.targetComponentName)
+					.targetId(jcm.targetId).build();
+			runtime_lineage_logger.schema(log_context);
 		}
 	}
 
