@@ -32,6 +32,16 @@
             class="org.talend.librariesmanager.emf.librariesindex.util.LibrariesindexResourceFactoryImpl"/>
    </extension>
    <extension
+        point="org.talend.core.runtime.librariesNeeded">
+      <libraryNeeded
+              context="plugin:org.talend.librariesmanager"
+              id="crypto-utils-1.4.0_Studio.jar"
+              mvn_uri="mvn:org.talend.daikon/crypto-utils/1.4.0_Studio"
+              name="crypto-utils-1.4.0_Studio.jar"
+              required="true">
+      </libraryNeeded>
+   </extension>
+   <extension
          point="org.talend.core.systemRoutineLibrary">
       <systemRoutine
             name="SharedDBConnectionLog4j">
@@ -45,7 +55,7 @@
             <systemRoutine
             name="PasswordEncryptUtil">
          <library
-               name="crypto-utils.jar">
+               name="crypto-utils-1.4.0_Studio.jar">
          </library>
       </systemRoutine>
    </extension>
