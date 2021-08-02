@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,10 +20,7 @@ import org.talend.core.service.IUpdateService;
 import org.talend.librariesmanager.ui.i18n.Messages;
 import org.talend.librariesmanager.ui.views.ModulesView;
 
-/**
- * created by Administrator on 2012-9-20 Detailled comment
- *
- */
+
 public class CheckThirdPartyLibrariesAction extends Action {
 
 	private ModulesView parentView = null;
