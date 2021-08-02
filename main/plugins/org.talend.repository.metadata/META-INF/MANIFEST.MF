@@ -35,6 +35,7 @@ Require-Bundle: org.apache.commons.lang,
  org.talend.libraries.dom4j-jaxen,
  org.talend.libraries.jackson,
  org.apache.xerces,
+ org.talend.hadoop.distribution,
  org.talend.repository
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
@@ -65,3 +66,4 @@ Export-Package: org.talend.repository.metadata,
  org.talend.repository.ui.wizards.metadata.table.database,
  org.talend.repository.ui.wizards.metadata.table.files
 Bundle-Vendor: .Talend SA.
+Import-Package: org.talend.hadoop.distribution

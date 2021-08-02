@@ -133,6 +133,7 @@ import org.talend.core.ui.branding.IBrandingService;
 import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
+import org.talend.hadoop.distribution.model.DistributionBean;
 import org.talend.metadata.managment.hive.EHiveExecutionTypes;
 import org.talend.metadata.managment.model.MetadataFillFactory;
 import org.talend.metadata.managment.repository.ManagerConnection;
@@ -297,6 +298,8 @@ public class DatabaseForm extends AbstractForm {
     private LabelledCombo hbaseDistributionCombo;
 
     private LabelledCombo hbaseVersionCombo;
+    
+    private LabelledCombo hbaseUniversalVersionCombo;
 
     private Button hbaseCustomButton;
 
@@ -3286,6 +3289,20 @@ public class DatabaseForm extends AbstractForm {
         hbaseVersionCombo = new LabelledCombo(hbaseSettingGroup, Messages.getString("DatabaseForm.hbase.version"), //$NON-NLS-1$
                 Messages.getString("DatabaseForm.hbase.version.tooltip"), new String[0], 1, true); //$NON-NLS-1$
         hbaseVersionCombo.setHideWidgets(true);
+        hbaseUniversalVersionCombo = new LabelledCombo(hbaseSettingGroup, Messages.getString("DatabaseForm.hbase.version"), //$NON-NLS-1$
+                Messages.getString("DatabaseForm.hbase.version.tooltip"), new String[0], 1, true); //$NON-NLS-1$
+        hbaseUniversalVersionCombo.setHideWidgets(true);
+        DatabaseConnection connection = getConnection();
+        String hadoopDistribution = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HBASE_DISTRIBUTION);
+        IHDistribution hBaseDistribution = getHBaseDistribution(hadoopDistribution, false);
+        String distributionDisplayName = hBaseDistribution.getDisplayName();
+        if ("Universal".equals(distributionDisplayName)) {
+        	hbaseVersionCombo.setVisible(false);
+        	hbaseUniversalVersionCombo.setVisible(true);
+        } else {
+        	hbaseUniversalVersionCombo.setVisible(false);
+        	hbaseVersionCombo.setVisible(true);
+        }
         hbaseCustomButton = new Button(hbaseSettingGroup, SWT.NONE);
         hbaseCustomButton.setImage(ImageProvider.getImage(EImage.THREE_DOTS_ICON));
         hbaseCustomButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, true, false, 1, 1));
@@ -3415,7 +3432,17 @@ public class DatabaseForm extends AbstractForm {
         hcRepositoryText.setVisible(fromRepository);
 
         hbaseDistributionCombo.setReadOnly(fromRepository || isContextMode());
-        hbaseVersionCombo.setReadOnly(fromRepository || isContextMode());
+        
+        DatabaseConnection connection = getConnection();
+        String hadoopDistribution = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HBASE_DISTRIBUTION);
+        IHDistribution hBaseDistribution = getHBaseDistribution(hadoopDistribution, false);
+        String distributionDisplayName = hBaseDistribution.getDisplayName();
+        if ("Universal".equals(distributionDisplayName)) {
+        	hbaseUniversalVersionCombo.setReadOnly(false);
+        } else {
+        	hbaseVersionCombo.setReadOnly(fromRepository || isContextMode());
+        }
+        
         hbaseCustomButton.setEnabled(!fromRepository && !isContextMode());
 
         maprdbDistributionCombo.setReadOnly(fromRepository || isContextMode());
@@ -3696,7 +3723,13 @@ public class DatabaseForm extends AbstractForm {
             updateHBaseVersionPart(hBaseDistribution);
             IHDistributionVersion hdVersion = hBaseDistribution.getHDVersion(hadoopVersion, false);
             if (hdVersion != null && hdVersion.getDisplayVersion() != null) {
-                hbaseVersionCombo.setText(hdVersion.getDisplayVersion());
+            	if ("Universal".equals(distributionDisplayName)) {
+            		List<String> hbaseVersions = ((DistributionBean) hBaseDistribution).gethBaseVersions();
+            		hbaseUniversalVersionCombo.getCombo().setItems(hbaseVersions.toArray(new String[hbaseVersions.size()]));
+            		hbaseUniversalVersionCombo.getCombo().select(0);
+            	} else {
+            		hbaseVersionCombo.setText(hdVersion.getDisplayVersion());
+            	}
             } else {
                 hbaseVersionCombo.select(0);
             }
@@ -3979,15 +4012,31 @@ public class DatabaseForm extends AbstractForm {
             hbaseVersionCombo.setHideWidgets(true);
             hbaseCustomButton.setVisible(true);
         } else {
-            hbaseVersionCombo.setHideWidgets(false);
+            
             hbaseCustomButton.setVisible(false);
+            
+            String distributionDisplayName = hBaseDistribution.getDisplayName();
+            if ("Universal".equals(distributionDisplayName)) {
+            	hbaseVersionCombo.setVisible(false);
+            	hbaseUniversalVersionCombo.setHideWidgets(false);
+            	hbaseUniversalVersionCombo.setVisible(true);
+            } else {
+            	hbaseVersionCombo.setHideWidgets(false);
+            	hbaseUniversalVersionCombo.setVisible(false);
+            	hbaseVersionCombo.setVisible(true);
+            }
+            
             String[] versionsDisplay = hBaseDistribution.getVersionsDisplay();
             hbaseVersionCombo.getCombo().setItems(versionsDisplay);
             if (versionsDisplay.length > 0) {
                 IHDistributionVersion defaultVersion = hBaseDistribution.getDefaultVersion();
-                if (defaultVersion != null && defaultVersion.getDisplayVersion() != null) {
-                    hbaseVersionCombo.getCombo().setText(defaultVersion.getDisplayVersion());
-                } else {
+                if ("Universal".equals(distributionDisplayName)) {
+            		List<String> hbaseVersions = ((DistributionBean) hBaseDistribution).gethBaseVersions();
+            		hbaseUniversalVersionCombo.getCombo().setItems(hbaseVersions.toArray(new String[hbaseVersions.size()]));
+            		hbaseUniversalVersionCombo.getCombo().select(0);
+            	} else if (defaultVersion != null && defaultVersion.getDisplayVersion() != null) {
+            		hbaseVersionCombo.setText(defaultVersion.getDisplayVersion());
+            	} else {
                     hbaseVersionCombo.getCombo().select(0);
                 }
             }
@@ -5702,6 +5751,37 @@ public class DatabaseForm extends AbstractForm {
                 }
             }
         });
+        
+        hbaseUniversalVersionCombo.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(final ModifyEvent e) {
+                if (isContextMode()) {
+                    return;
+                }
+                String originalDistributionName = getConnection().getParameters().get(
+                        ConnParameterKeys.CONN_PARA_KEY_HBASE_API_VERSION);
+                IHDistribution originalDistribution = getHBaseDistribution(originalDistributionName, false);
+                if (originalDistribution == null) {
+                    return;
+                }
+                String newVersionDisplayName = StringUtils.trimToNull(hbaseUniversalVersionCombo.getText());
+                IHDistributionVersion newVersion = originalDistribution.getHDVersion(newVersionDisplayName, true);
+                if (newVersion == null) {
+                    return;
+                }
+                String originalVersionName = getConnection().getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HBASE_API_VERSION);
+                IHDistributionVersion originalVersion = originalDistribution.getHDVersion(originalVersionName, false);
+
+                if (originalVersion == null || newVersion.getVersion() != null
+                        && !newVersion.getVersion().equals(originalVersion.getVersion())) {
+                    getConnection().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HBASE_API_VERSION, newVersion.getVersion());
+                    fillDefaultsWhenHBaseVersionChanged();
+                    checkFieldsValue();
+                    checkHBaseKerberos();
+                }
+            }
+        });
 
         hbaseCustomButton.addSelectionListener(new SelectionAdapter() {
 
@@ -6373,9 +6453,20 @@ public class DatabaseForm extends AbstractForm {
             updateStatus(IStatus.WARNING, Messages.getString("DatabaseForm.hbase.distributionAlert")); //$NON-NLS-1$
             return false;
         }
-        if (hbaseVersionCombo.getSelectionIndex() == -1) {
-            updateStatus(IStatus.WARNING, Messages.getString("DatabaseForm.hbase.versionAlert")); //$NON-NLS-1$
-            return false;
+        DatabaseConnection connection = getConnection();
+        String hadoopDistribution = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HBASE_DISTRIBUTION);
+        IHDistribution hBaseDistribution = getHBaseDistribution(hadoopDistribution, false);
+        String distributionDisplayName = hBaseDistribution.getDisplayName();
+        if ("Universal".equals(distributionDisplayName)) {
+        	if (hbaseUniversalVersionCombo.getSelectionIndex() == -1) {
+                updateStatus(IStatus.WARNING, Messages.getString("DatabaseForm.hbase.versionAlert")); //$NON-NLS-1$
+                return false;
+            }
+        } else {
+        	if (hbaseVersionCombo.getSelectionIndex() == -1) {
+                updateStatus(IStatus.WARNING, Messages.getString("DatabaseForm.hbase.versionAlert")); //$NON-NLS-1$
+                return false;
+            }
         }
         updateStatus(IStatus.OK, null);
         return true;
@@ -8895,7 +8986,15 @@ public class DatabaseForm extends AbstractForm {
         hiveComposite.setVisible(!hide);
         hiveCompGD.exclude = hide;
         hiveDistributionCombo.setHideWidgets(hide);
-        hiveVersionCombo.setHideWidgets(hide);
+        DatabaseConnection connection = getConnection();
+        String hadoopDistribution = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HBASE_DISTRIBUTION);
+        IHDistribution hBaseDistribution = getHBaseDistribution(hadoopDistribution, false);
+        String distributionDisplayName = hBaseDistribution.getDisplayName();
+        if ("Universal".equals(distributionDisplayName)) {
+        	hiveVersionCombo.setHideWidgets(true);
+        } else {
+        	hiveVersionCombo.setHideWidgets(hide);
+        }
         hiveModeCombo.setHideWidgets(hide);
         if (hide) {
             hiveCustomButton.setVisible(!hide);
@@ -8904,7 +9003,11 @@ public class DatabaseForm extends AbstractForm {
             GridData yarnCompGd = (GridData) yarnComp.getLayoutData();
             IHDistribution currentHiveDistribution = getCurrentHiveDistribution(false);
             if (currentHiveDistribution != null && currentHiveDistribution.useCustom()) {
-                hiveVersionCombo.setHideWidgets(true);
+            	if ("Universal".equals(distributionDisplayName)) {
+                	hiveVersionCombo.setHideWidgets(true);
+                } else {
+                	hiveVersionCombo.setHideWidgets(hide);
+                }
                 hiveModeCombo.setHideWidgets(false);
                 hiveCustomButton.setVisible(true);
                 hiveServerVersionCombo.setHideWidgets(false);
@@ -8916,7 +9019,11 @@ public class DatabaseForm extends AbstractForm {
                 } else {
                     hiveServerVersionCombo.setHideWidgets(true);
                 }
-                hiveVersionCombo.setHideWidgets(false);
+                if ("Universal".equals(distributionDisplayName)) {
+                	hiveVersionCombo.setHideWidgets(true);
+                } else {
+                	hiveVersionCombo.setHideWidgets(hide);
+                }
                 hiveModeCombo.setHideWidgets(false);
                 hiveCustomButton.setVisible(false);
                 yarnComp.setVisible(false);
@@ -8979,7 +9086,15 @@ public class DatabaseForm extends AbstractForm {
         hiveComposite.setVisible(!hide);
         gridData.exclude = hide;
         hiveDistributionCombo.setHideWidgets(hide);
-        hiveVersionCombo.setHideWidgets(hide);
+        DatabaseConnection connection = getConnection();
+        String hadoopDistribution = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HBASE_DISTRIBUTION);
+        IHDistribution hBaseDistribution = getHBaseDistribution(hadoopDistribution, false);
+        String distributionDisplayName = hBaseDistribution.getDisplayName();
+        if ("Universal".equals(distributionDisplayName)) {
+        	hiveVersionCombo.setHideWidgets(true);
+        } else {
+        	hiveVersionCombo.setHideWidgets(hide);
+        }
         hiveModeCombo.setHideWidgets(hide);
         // usernameText.setHideWidgets(hide);
         // passwordText.setHideWidgets(hide);
