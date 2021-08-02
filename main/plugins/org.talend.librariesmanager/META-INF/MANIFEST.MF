@@ -27,6 +27,8 @@ Require-Bundle: org.eclipse.core.runtime,
 Eclipse-LazyStart: true
 Bundle-ClassPath: .,
  lib/crypto-utils.jar,
+ lib/audit-common-1.16.1.jar,
+ lib/job-audit-1.4.jar,
  lib/slf4j-api-1.7.25.jar
 Export-Package: org.talend.librariesmanager.emf.librariesindex,
  org.talend.librariesmanager.librarydata,
