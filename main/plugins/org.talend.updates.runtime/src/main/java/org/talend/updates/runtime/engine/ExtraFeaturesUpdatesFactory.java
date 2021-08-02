@@ -62,17 +62,16 @@ public class ExtraFeaturesUpdatesFactory {
                 if (SharedStudioUtils.isSharedStudioMode() && !factory.isSupportSharedMode()) {
                     continue;
                 }
-				if (factory instanceof PluginRequiredMissingJarsExtraUpdatesFactory
-						|| factory instanceof PluginOptionalMissingJarsExtraUpdatesFactory) {
-					try {
-						factory.setCheckUpdateOnLine(isCheckUpdateOnLine);
-						factory.retrieveUninstalledExtraFeatures(monitor, uninstalledExtraFeatures);
-					} catch (Exception e) {
-						ExceptionHandler.process(e);
-					}
-				}
-
-			}
+                if (factory instanceof PluginRequiredMissingJarsExtraUpdatesFactory
+                        || factory instanceof PluginOptionalMissingJarsExtraUpdatesFactory) {
+                    try {
+                        factory.setCheckUpdateOnLine(isCheckUpdateOnLine);
+                        factory.retrieveUninstalledExtraFeatures(monitor, uninstalledExtraFeatures);
+                    } catch (Exception e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
+            }
         }
     }
 
