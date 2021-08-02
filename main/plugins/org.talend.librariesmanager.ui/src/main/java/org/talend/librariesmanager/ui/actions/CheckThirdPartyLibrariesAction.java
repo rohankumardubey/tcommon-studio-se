@@ -29,7 +29,7 @@ public class CheckThirdPartyLibrariesAction extends Action {
         super();
         this.setText(Messages.getString("Module.view.install.additional.packages.action.text"));
         this.setDescription(Messages.getString("Module.view.install.additional.packages.action.description"));
-        this.setImageDescriptor(ImageProvider.getImageDesc(EImage.DOWN_ICON));
+        this.setImageDescriptor(ImageProvider.getImageDesc(EImage.COMPACT_VIEW));
         this.parentView = parentView;
     }
 
