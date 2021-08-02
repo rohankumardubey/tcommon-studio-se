@@ -20,6 +20,8 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.updates.runtime.engine.factory.AbstractExtraUpdatesFactory;
 import org.talend.updates.runtime.engine.factory.IComponentUpdatesFactory;
+import org.talend.updates.runtime.engine.factory.PluginOptionalMissingJarsExtraUpdatesFactory;
+import org.talend.updates.runtime.engine.factory.PluginRequiredMissingJarsExtraUpdatesFactory;
 import org.talend.updates.runtime.model.ExtraFeature;
 
 /**
@@ -60,12 +62,16 @@ public class ExtraFeaturesUpdatesFactory {
                 if (SharedStudioUtils.isSharedStudioMode() && !factory.isSupportSharedMode()) {
                     continue;
                 }
-                try {
-                    factory.setCheckUpdateOnLine(isCheckUpdateOnLine);
-                    factory.retrieveUninstalledExtraFeatures(monitor, uninstalledExtraFeatures);
-                } catch (Exception e) {
-                    ExceptionHandler.process(e);
+                if (factory instanceof PluginRequiredMissingJarsExtraUpdatesFactory
+                        || factory instanceof PluginOptionalMissingJarsExtraUpdatesFactory) {
+                    try {
+                        factory.setCheckUpdateOnLine(isCheckUpdateOnLine);
+                        factory.retrieveUninstalledExtraFeatures(monitor, uninstalledExtraFeatures);
+                    } catch (Exception e) {
+                        ExceptionHandler.process(e);
+                    }
                 }
+
             }
         }
     }

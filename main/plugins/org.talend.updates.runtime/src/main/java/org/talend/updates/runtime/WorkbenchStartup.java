@@ -8,7 +8,8 @@ public class WorkbenchStartup implements IStartup {
     @Override
     public void earlyStartup() {
         CheckExtraFeaturesToInstallJob checkExtraFeaturesToInstallJob = new CheckExtraFeaturesToInstallJob();
-        checkExtraFeaturesToInstallJob.schedule();
+        //check studio lite PluginChecker
+//        checkExtraFeaturesToInstallJob.schedule();
 
     }
 
