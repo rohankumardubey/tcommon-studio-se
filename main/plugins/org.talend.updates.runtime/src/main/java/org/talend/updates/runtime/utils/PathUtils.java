@@ -35,7 +35,6 @@ import org.eclipse.equinox.p2.metadata.Version;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.service.ComponentsInstallComponent;
 import org.talend.commons.runtime.service.PatchComponent;
-import org.talend.commons.utils.VersionUtils;
 import org.talend.commons.utils.resource.FileExtensions;
 import org.talend.updates.runtime.feature.model.Category;
 import org.talend.updates.runtime.feature.model.Type;
@@ -155,19 +154,6 @@ public class PathUtils {
             filePath = matcher.group(1);
         }
         return new File(URI.create(filePath).toURL().getFile());
-    }
-
-    public static String getTalendVersionStr() {
-        org.osgi.framework.Version studioVersion = new org.osgi.framework.Version(VersionUtils.getTalendVersion());
-
-        StringBuffer result = new StringBuffer();
-        result.append(studioVersion.getMajor());
-        result.append('.');
-        result.append(studioVersion.getMinor());
-        result.append('.');
-        result.append(studioVersion.getMicro());
-
-        return result.toString();
     }
 
     public static Collection<Type> getAllTypeCategories(Collection<Type> types) {

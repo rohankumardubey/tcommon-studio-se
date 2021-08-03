@@ -12,19 +12,15 @@
 // ============================================================================
 package org.talend.core;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.commons.utils.VersionUtils;
+import org.talend.core.service.IStudioLiteP2Service;
 
 /**
  * This class can check whether some specific plugins are loaded or not. <br/>
@@ -142,6 +138,13 @@ public class PluginChecker {
 
     public static final String SWTBOT_PLUGIN_ID = "org.eclipse.swtbot.eclipse.core"; //$NON-NLS-1$
 
+    public static final String PROD_LITE = "org.talend.rcp.branding.lite.product";
+
+    /**
+     * Currently only used by CI, since CI is installed by p2Installer, it will use the cmd product
+     */
+    public static final String PROD_LITE_CI = "org.talend.rcp.branding.lite.ci.product";
+
     private static Boolean isStudioLite;
 
     /**
@@ -165,12 +168,10 @@ public class PluginChecker {
     public static boolean isStudioLite() {
         if (isStudioLite == null) {
             try {
-                File studioConfigFile = VersionUtils.getStudioConfigFile();
-                Properties props = new Properties();
-                try (BufferedReader reader = Files.newBufferedReader(studioConfigFile.toPath())) {
-                    props.load(reader);
-                }
-                isStudioLite = Boolean.valueOf(props.getProperty("talend.studio.lite"));
+//                IProduct product = Platform.getProduct();
+//                String prodId = product.getId();
+//                isStudioLite = StringUtils.equals(prodId, PROD_LITE) || StringUtils.equals(prodId, PROD_LITE_CI);
+                isStudioLite = IStudioLiteP2Service.get() != null;
             } catch (Exception e) {
                 isStudioLite = false;
                 ExceptionHandler.process(e);

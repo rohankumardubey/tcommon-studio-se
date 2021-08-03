@@ -61,6 +61,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.utils.VersionUtils;
 import org.talend.updates.runtime.engine.P2Manager;
 import org.talend.updates.runtime.feature.model.Category;
 import org.talend.updates.runtime.feature.model.Type;
@@ -73,9 +74,9 @@ import org.talend.updates.runtime.service.ITaCoKitUpdateService;
 import org.talend.updates.runtime.service.ITaCoKitUpdateService.ICarInstallationResult;
 import org.talend.updates.runtime.storage.AbstractFeatureStorage;
 import org.talend.updates.runtime.storage.IFeatureStorage;
-import org.talend.updates.runtime.utils.UpdateTools;
 import org.talend.updates.runtime.utils.PathUtils;
 import org.talend.updates.runtime.utils.TaCoKitCarUtils;
+import org.talend.updates.runtime.utils.UpdateTools;
 import org.talend.utils.files.FileUtils;
 import org.talend.utils.io.FilesUtils;
 import org.talend.utils.json.JSONException;
@@ -259,7 +260,7 @@ public class P2ExtraFeature extends AbstractExtraFeature implements IP2Feature {
         if (!isTOS && p2RepoUrlFromProp != null) {
             uriString = p2RepoUrlFromProp;
         } else {
-            String version = PathUtils.getTalendVersionStr();
+            String version = VersionUtils.getTalendVersionStr();
             if (uriString == null) {
                 return URI.create(version);
             }
