@@ -185,7 +185,7 @@ public class AdditionalPackagesDialog extends TitleAreaDialog {
     @Override
     protected void initializeBounds() {
         super.initializeBounds();
-        getShell().setSize(700, 400);
+        getShell().setSize(1050, 400);
         Point location = getInitialLocation(getShell().getSize());
         getShell().setLocation(location.x, location.y);
     }
@@ -203,16 +203,12 @@ public class AdditionalPackagesDialog extends TitleAreaDialog {
      */
     @Override
     protected Control createDialogArea(Composite parent) {
-        Composite container = new Composite(parent, SWT.NULL);
-        container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        container.setLayout(new GridLayout(3, false));
-
-        Label lblNewLabel = new Label(container, SWT.NONE);
-        lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
-        lblNewLabel.setText(Messages.getString("AdditionalPackagesDialog.feature.list.label")); //$NON-NLS-1$
-        Composite featureComposite = new Composite(container, SWT.NONE);
-        GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
-        featureComposite.setLayoutData(gd);
+        Composite composite = new Composite(parent, SWT.NULL);
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        composite.setLayout(new GridLayout(1, false));
+        Composite featureComposite = new Composite(composite, SWT.NONE);
+        GridData g = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+        featureComposite.setLayoutData(g);
         TreeColumnLayout friendsColumnLayout = new TreeColumnLayout();
         featureComposite.setLayout(friendsColumnLayout);
 
@@ -232,8 +228,9 @@ public class AdditionalPackagesDialog extends TitleAreaDialog {
             /*
              * (non-Javadoc)
              *
-             * @see org.eclipse.jface.viewers.ViewerComparator#compare(org.eclipse.jface.viewers.Viewer,
-             * java.lang.Object, java.lang.Object)
+             * @see
+             * org.eclipse.jface.viewers.ViewerComparator#compare(org.eclipse.jface.viewers.
+             * Viewer, java.lang.Object, java.lang.Object)
              */
             @Override
             public int compare(Viewer viewer, Object e1, Object e2) {
@@ -247,14 +244,9 @@ public class AdditionalPackagesDialog extends TitleAreaDialog {
             }
         });
         tree = checkboxTreeViewer.getTree();
-        tree.setSize(400, 155);
         tree.setLinesVisible(true);
-
-        Label lblDescription = new Label(container, SWT.NONE);
-        lblDescription.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-        lblDescription.setText(Messages.getString("AdditionalPackagesDialog.description.label")); //$NON-NLS-1$
-        featureDescriptionText = new StyledText(container, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
-        GridData gd_featureDescriptionText = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        featureDescriptionText = new StyledText(composite, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
+        GridData gd_featureDescriptionText = new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1);
         gd_featureDescriptionText.heightHint = 61;
         featureDescriptionText.setLayoutData(gd_featureDescriptionText);
 
@@ -281,16 +273,17 @@ public class AdditionalPackagesDialog extends TitleAreaDialog {
 
             @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
-            	if(event.getElement() instanceof TalendWebServiceUpdateExtraFeature){
-                	if (event.getChecked()) {
-                        updateWizardModel.selectedExtraFeatures.add(((TalendWebServiceUpdateExtraFeature) event.getElement()));
+                if (event.getElement() instanceof TalendWebServiceUpdateExtraFeature) {
+                    if (event.getChecked()) {
+                        updateWizardModel.selectedExtraFeatures
+                                .add(((TalendWebServiceUpdateExtraFeature) event.getElement()));
                     } else {
-                        updateWizardModel.selectedExtraFeatures.remove(((TalendWebServiceUpdateExtraFeature) event.getElement()));
+                        updateWizardModel.selectedExtraFeatures
+                                .remove(((TalendWebServiceUpdateExtraFeature) event.getElement()));
                     }
                 }
                 updateInstallModulesButtonState();
             }
-
 
         });
 
@@ -307,15 +300,16 @@ public class AdditionalPackagesDialog extends TitleAreaDialog {
             }
         });
 
-        checkboxTreeViewer
-                .setLabelProvider(new ObservableMapLabelProvider(Properties.observeEach(contentProvider.getKnownElements(),
+        checkboxTreeViewer.setLabelProvider(
+                new ObservableMapLabelProvider(Properties.observeEach(contentProvider.getKnownElements(),
                         new IValueProperty[] { PojoProperties.value(ExtraFeature.class, "name"), //$NON-NLS-1$
                                 PojoProperties.value(ExtraFeature.class, "version") }))); //$NON-NLS-1$
 
         checkboxTreeViewer.setInput(updateWizardModel.availableExtraFeatures);
         initDataBindings();
         updateSelectedState(updateWizardModel.availableExtraFeatures);
-        return container;
+        setTitle(title);
+        return composite;
     }
 
     protected DataBindingContext initDataBindings() {
@@ -325,13 +319,8 @@ public class AdditionalPackagesDialog extends TitleAreaDialog {
         dbc.bindSet(ViewersObservables.observeCheckedElements(checkboxTreeViewer, ExtraFeature.class),
                 updateWizardModel.selectedExtraFeatures);
 
-        // bind the table selection desctiption to the text field
-        IObservableValue selectedFeature = ViewersObservables.observeSingleSelection(checkboxTreeViewer);
-        dbc.bindValue(SWTObservables.observeText(featureDescriptionText),
-                PojoObservables.observeDetailValue(selectedFeature, "description", String.class)); //$NON-NLS-1$
         // add a validator for feature selection because SetObservable does not provide any validator.
         dbc.addValidationStatusProvider(updateWizardModel.new FeatureSelectionValidator());
-//        WizardPageSupport.create(this.getDialogArea(), dbc);
 
         // add a listener to update the description and enabled state when avaialble features are added and also
         // add them to the selected list if the must be installed
@@ -362,6 +351,7 @@ public class AdditionalPackagesDialog extends TitleAreaDialog {
     protected void updateInstallModulesButtonState() {
     
     	if (updateWizardModel.selectedExtraFeatures.isEmpty()) {
+    	    featureDescriptionText.setText("");
     		installAllBtn.setEnabled(false);
     	}else {
     		 featureDescriptionText.setText(Messages.getString("AdditionalPackagesDialog.description.content")); //$NON-NLS-1$ 

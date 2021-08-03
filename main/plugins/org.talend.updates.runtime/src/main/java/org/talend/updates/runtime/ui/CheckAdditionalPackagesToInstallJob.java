@@ -22,9 +22,12 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
-import org.talend.updates.runtime.engine.ExtraFeaturesUpdatesFactory;
+import org.talend.updates.runtime.engine.factory.PluginOptionalMissingJarsExtraUpdatesFactory;
+import org.talend.updates.runtime.engine.factory.PluginRequiredMissingJarsExtraUpdatesFactory;
 import org.talend.updates.runtime.i18n.Messages;
 import org.talend.updates.runtime.model.ExtraFeature;
+import org.talend.commons.exception.ExceptionHandler;
+import org.eclipse.jface.dialogs.MessageDialog;
 
 public class CheckAdditionalPackagesToInstallJob extends Job {
     protected boolean isCheckUpdateOnLine = false;
@@ -44,12 +47,20 @@ public class CheckAdditionalPackagesToInstallJob extends Job {
      */
     @Override
     protected IStatus run(IProgressMonitor monitor) {
-    	ExtraFeaturesUpdatesFactory extraFeaturesFactory = new ExtraFeaturesUpdatesFactory(false);
         final Set<ExtraFeature> uninstalledExtraFeatures = new HashSet<ExtraFeature>();
-        extraFeaturesFactory.retrieveUninstalledExtraFeatures(monitor, uninstalledExtraFeatures, false);
+        PluginRequiredMissingJarsExtraUpdatesFactory pluginRequiredFactory = new PluginRequiredMissingJarsExtraUpdatesFactory();
+        pluginRequiredFactory.setCheckUpdateOnLine(false);
+        PluginOptionalMissingJarsExtraUpdatesFactory pluginOptionalFactory = new PluginOptionalMissingJarsExtraUpdatesFactory();
+        pluginOptionalFactory.setCheckUpdateOnLine(false);
+        try {
+            pluginRequiredFactory.retrieveUninstalledExtraFeatures(monitor, uninstalledExtraFeatures);
+            pluginOptionalFactory.retrieveUninstalledExtraFeatures(monitor, uninstalledExtraFeatures);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
         // if feature to update are available then show the update wizard
         if (monitor.isCanceled()) {
-        	 return Status.CANCEL_STATUS;
+             return Status.CANCEL_STATUS;
         }
         java.util.List<ExtraFeature> mustInstallList = new ArrayList<ExtraFeature>();
         for (ExtraFeature feature : uninstalledExtraFeatures) {
@@ -67,13 +78,19 @@ public class CheckAdditionalPackagesToInstallJob extends Job {
                     public void run() {
                     UpdateWizardModel updateWizardModel = new UpdateWizardModel(uninstalledExtraFeatures);
                     AdditionalPackagesDialog dialog = new AdditionalPackagesDialog(
-                            PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Third-party Libraries", "title",updateWizardModel);  
+                                PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+                                "Third-party Libraries", "Choose the third-party libraries to install",
+                                updateWizardModel);
                     dialog.showDialog(true);
 
                     }
                 });
             }
-        }// else not feature to install
+        } else {
+            MessageDialog.openWarning(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+                    Messages.getString("download.external.dialog.warning"),
+                    Messages.getString("download.external.dialog.message"));
+        }
         return Status.OK_STATUS;
     }
 

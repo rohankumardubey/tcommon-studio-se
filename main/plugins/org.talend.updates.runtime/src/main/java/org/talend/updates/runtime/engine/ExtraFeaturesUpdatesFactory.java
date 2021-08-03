@@ -64,11 +64,6 @@ public class ExtraFeaturesUpdatesFactory {
                 if (SharedStudioUtils.isSharedStudioMode() && !factory.isSupportSharedMode()) {
                     continue;
                 }
-                if (!(factory instanceof PluginRequiredMissingJarsExtraUpdatesFactory
-                        || factory instanceof PluginOptionalMissingJarsExtraUpdatesFactory)
-                        && PluginChecker.isStudioLite()) {
-                    continue;
-                }
                 try {
                     factory.setCheckUpdateOnLine(isCheckUpdateOnLine);
                     factory.retrieveUninstalledExtraFeatures(monitor, uninstalledExtraFeatures);
