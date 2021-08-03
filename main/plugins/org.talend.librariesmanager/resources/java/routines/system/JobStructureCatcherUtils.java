@@ -109,7 +109,7 @@ public class JobStructureCatcherUtils {
 	// single one for message send order as batch support
 	// ConcurrentLinkedQueue is not good way to implement batch, except we send
 	// it regularly by time, also out of memory risk and kill cpu time if
-	// produce slow a lot than consumer, and if call wait/sleep, no mmuch better
+	// produce slow a lot than consumer, and if call wait/sleep, no much better
 	// than BlockingQueue
 	// seems BlockingQueue not better a lot than synchronizedList or syn self
 	// directly, but introduce risk
