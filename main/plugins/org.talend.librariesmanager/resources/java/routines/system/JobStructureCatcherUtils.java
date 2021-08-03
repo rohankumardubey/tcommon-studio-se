@@ -114,8 +114,7 @@ public class JobStructureCatcherUtils {
 	// seems BlockingQueue not better a lot than synchronizedList or syn self
 	// directly, but introduce risk
 	// if no batch or batch size is 1, no need this
-	private static final List<JobStructureCatcherMessage> messages = Collections
-			.synchronizedList(new ArrayList<JobStructureCatcherMessage>());
+	private static List<JobStructureCatcherMessage> messages;
 
 	private static final boolean asyn = Boolean
 			.getBoolean(System.getProperty("audit.asyn"));
@@ -125,6 +124,11 @@ public class JobStructureCatcherUtils {
 		Integer batch_size = Integer
 				.getInteger(System.getProperty("audit.batch.size"));
 		message_batch_size = batch_size != null ? batch_size : 0;
+
+		if (message_batch_size > 1) {
+			messages = Collections.synchronizedList(
+					new ArrayList<JobStructureCatcherMessage>());
+		}
 	}
 
 	private static class LazyHolder {
@@ -336,8 +340,8 @@ public class JobStructureCatcherUtils {
 
 	private void sendAll(JobStructureCatcherMessage message) {
 		if (asyn) {
-			// this is a inside blocking queue with size 1 here for tasks, good
-			// for performance? our concurrent is not too high, producer is slow
+			// this is a inside blocking queue with no limit size here for tasks, good
+			// for performance? no memory risk? our concurrent is not too high, producer is slow
 			// a lot than consumer, maybe OK
 			LazyHolder.sender.send(() -> {
 				if (message_batch_size > 1) {
