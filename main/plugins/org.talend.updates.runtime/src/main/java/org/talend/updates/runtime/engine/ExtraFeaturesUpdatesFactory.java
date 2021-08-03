@@ -17,12 +17,9 @@ import java.util.Set;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.core.PluginChecker;
 import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.updates.runtime.engine.factory.AbstractExtraUpdatesFactory;
 import org.talend.updates.runtime.engine.factory.IComponentUpdatesFactory;
-import org.talend.updates.runtime.engine.factory.PluginOptionalMissingJarsExtraUpdatesFactory;
-import org.talend.updates.runtime.engine.factory.PluginRequiredMissingJarsExtraUpdatesFactory;
 import org.talend.updates.runtime.model.ExtraFeature;
 
 /**
@@ -37,7 +34,6 @@ public class ExtraFeaturesUpdatesFactory {
     public ExtraFeaturesUpdatesFactory(boolean isCheckUpdateOnLine) {
         this.isCheckUpdateOnLine = isCheckUpdateOnLine;
     }
-
     /**
      *
      * DOC ggu Comment method "retrieveUninstalledExtraFeatures".
