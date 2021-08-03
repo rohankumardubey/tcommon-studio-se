@@ -116,13 +116,11 @@ public class JobStructureCatcherUtils {
 	// if no batch or batch size is 1, no need this
 	private static List<JobStructureCatcherMessage> messages;
 
-	private static final boolean asyn = Boolean
-			.getBoolean(System.getProperty("audit.asyn"));
+	private static final boolean asyn = Boolean.getBoolean("audit.asyn");
 	private static final int message_batch_size;
 
 	static {
-		Integer batch_size = Integer
-				.getInteger(System.getProperty("audit.batch.size"));
+		Integer batch_size = Integer.getInteger("audit.batch.size");
 		message_batch_size = batch_size != null ? batch_size : 0;
 
 		if (message_batch_size > 1) {
@@ -340,8 +338,10 @@ public class JobStructureCatcherUtils {
 
 	private void sendAll(JobStructureCatcherMessage message) {
 		if (asyn) {
-			// this is a inside blocking queue with no limit size here for tasks, good
-			// for performance? no memory risk? our concurrent is not too high, producer is slow
+			// this is a inside blocking queue with no limit size here for
+			// tasks, good
+			// for performance? no memory risk? our concurrent is not too high,
+			// producer is slow
 			// a lot than consumer, maybe OK
 			LazyHolder.sender.send(() -> {
 				if (message_batch_size > 1) {

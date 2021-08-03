@@ -6,26 +6,19 @@ import java.util.concurrent.TimeUnit;
 
 public class LogSender {
 
-	private ScheduledExecutorService executor;
-
-	void send(Runnable task) {
-		if (executor == null) {
-			executor = Executors.newSingleThreadScheduledExecutor(runnable -> {
+	private ScheduledExecutorService executor = Executors
+			.newSingleThreadScheduledExecutor(runnable -> {
 				Thread thread = new Thread(runnable, "Sender-Worker");
 				thread.setDaemon(true);
 				return thread;
 			});
 
-			// not sure can use runtime hook, as that may not executed for some
-			// case, and also, the audit sender implement also use runtime hook,
-			// how
-			// to process execute order when jvm down?
+	LogSender() {
+		Runtime.getRuntime().addShutdownHook(
+				Executors.defaultThreadFactory().newThread(() -> shutdown()));
+	}
 
-			// and we don't depend on the order now as we call shutdown to
-			// mark end in any producer threads,
-			Runtime.getRuntime().addShutdownHook(Executors
-					.defaultThreadFactory().newThread(() -> shutdown()));
-		}
+	void send(Runnable task) {
 		executor.execute(task);
 	}
 
