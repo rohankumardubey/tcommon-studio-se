@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -42,6 +41,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.utils.VersionUtils;
 import org.talend.commons.utils.resource.FileExtensions;
 import org.talend.commons.utils.resource.UpdatesHelper;
 import org.talend.core.runtime.maven.MavenArtifact;
@@ -117,8 +117,8 @@ public class ComponentIndexManager {
         if (componentNodes == null) {
             return Collections.emptyList();
         }
-        for (Iterator iter = componentNodes.iterator(); iter.hasNext();) {
-            Element element = (Element) iter.next();
+        for (Object componentNode : componentNodes) {
+            Element element = (Element) componentNode;
 
             ComponentIndexBean indexBean = new ComponentIndexBean();
             // try {
@@ -487,7 +487,7 @@ public class ComponentIndexManager {
         MavenArtifact artifact = new MavenArtifact();
         artifact.setGroupId(COMPONENT_GROUP_ID);
         artifact.setArtifactId(INDEX);
-        String version = PathUtils.getTalendVersionStr();
+        String version = VersionUtils.getTalendVersionStr();
         if (!version.endsWith(SNAPSHOT_SUFFIX)) {
             version = version + SNAPSHOT_SUFFIX;
         }

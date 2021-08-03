@@ -205,6 +205,17 @@ public class VersionUtils {
         return talendVersion;
     }
 
+    public static String getTalendVersionStr() {
+        org.osgi.framework.Version studioVersion = new org.osgi.framework.Version(getTalendVersion());
+        StringBuffer result = new StringBuffer();
+        result.append(studioVersion.getMajor());
+        result.append('.');
+        result.append(studioVersion.getMinor());
+        result.append('.');
+        result.append(studioVersion.getMicro());
+        return result.toString();
+    }
+
     public static String getProductVersionWithoutBranding(String fullProductVersion) {
         String[] splitStr = fullProductVersion.split("-"); //$NON-NLS-1$
         Pattern pattern = Pattern.compile("((\\d+\\.){2}\\d.*)"); //$NON-NLS-1$
