@@ -17,6 +17,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.core.PluginChecker;
 import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.updates.runtime.engine.factory.AbstractExtraUpdatesFactory;
 import org.talend.updates.runtime.engine.factory.IComponentUpdatesFactory;
@@ -36,6 +37,7 @@ public class ExtraFeaturesUpdatesFactory {
     public ExtraFeaturesUpdatesFactory(boolean isCheckUpdateOnLine) {
         this.isCheckUpdateOnLine = isCheckUpdateOnLine;
     }
+
     /**
      *
      * DOC ggu Comment method "retrieveUninstalledExtraFeatures".
@@ -62,14 +64,16 @@ public class ExtraFeaturesUpdatesFactory {
                 if (SharedStudioUtils.isSharedStudioMode() && !factory.isSupportSharedMode()) {
                     continue;
                 }
-                if (factory instanceof PluginRequiredMissingJarsExtraUpdatesFactory
-                        || factory instanceof PluginOptionalMissingJarsExtraUpdatesFactory) {
-                    try {
-                        factory.setCheckUpdateOnLine(isCheckUpdateOnLine);
-                        factory.retrieveUninstalledExtraFeatures(monitor, uninstalledExtraFeatures);
-                    } catch (Exception e) {
-                        ExceptionHandler.process(e);
-                    }
+                if (!(factory instanceof PluginRequiredMissingJarsExtraUpdatesFactory
+                        || factory instanceof PluginOptionalMissingJarsExtraUpdatesFactory)
+                        && PluginChecker.isStudioLite()) {
+                    continue;
+                }
+                try {
+                    factory.setCheckUpdateOnLine(isCheckUpdateOnLine);
+                    factory.retrieveUninstalledExtraFeatures(monitor, uninstalledExtraFeatures);
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
                 }
             }
         }
