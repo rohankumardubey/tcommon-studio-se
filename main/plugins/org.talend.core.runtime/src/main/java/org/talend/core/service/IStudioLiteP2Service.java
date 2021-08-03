@@ -90,8 +90,7 @@ public interface IStudioLiteP2Service extends IService {
     public static IStudioLiteP2Service get() {
         boolean forceLoad = Boolean.getBoolean("talend.studio.studiolite.p2.enable");
         if (!forceLoad) {
-            if (CommonsPlugin.isHeadless() || CommonsPlugin.isJUnitTest() || CommonsPlugin.isTUJTest()
-                    || CommonsPlugin.isScriptCmdlineMode()) {
+            if (CommonsPlugin.isHeadless() || CommonsPlugin.isJUnitTest() || CommonsPlugin.isTUJTest()) {
                 return null;
             }
         }
