@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.talend.commons.CommonsPlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
 import org.talend.core.model.general.Project;
@@ -87,14 +86,9 @@ public interface IStudioLiteP2Service extends IService {
 
     int adaptFeaturesForProject(IProgressMonitor monitor, Project proj) throws Exception;
 
+    void setLocalPatches(Collection<String> localPatchUris) throws Exception;
+
     public static IStudioLiteP2Service get() {
-        boolean forceLoad = Boolean.getBoolean("talend.studio.studiolite.p2.enable");
-        if (!forceLoad) {
-            if (CommonsPlugin.isHeadless() || CommonsPlugin.isJUnitTest() || CommonsPlugin.isTUJTest()
-                    || CommonsPlugin.isScriptCmdlineMode()) {
-                return null;
-            }
-        }
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IStudioLiteP2Service.class)) {
             return GlobalServiceRegister.getDefault().getService(IStudioLiteP2Service.class);
         }
@@ -154,9 +148,9 @@ public interface IStudioLiteP2Service extends IService {
 
         void setRelease(IProgressMonitor monitor, URI uri) throws Exception;
 
-        URI getUpdate(IProgressMonitor monitor) throws Exception;
+        Collection<URI> getUpdates(IProgressMonitor monitor) throws Exception;
 
-        void setUpdate(IProgressMonitor monitor, URI uri) throws Exception;
+        void setUpdates(IProgressMonitor monitor, Collection<URI> uris) throws Exception;
 
     }
 

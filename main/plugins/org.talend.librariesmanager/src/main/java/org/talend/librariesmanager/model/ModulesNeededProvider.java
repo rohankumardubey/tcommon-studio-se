@@ -113,7 +113,7 @@ public class ModulesNeededProvider {
 
     private static IRepositoryService repositoryService = null;
 
-    private static List<ModuleNeeded> importNeedsListForRoutes;
+    private static List<ModuleNeeded> importNeedsListForRoutes = new ArrayList<ModuleNeeded>();;
 
     private static List<ModuleNeeded> importNeedsListForBeans;
 
@@ -686,7 +686,7 @@ public class ModulesNeededProvider {
         }
         service = (ILibrariesService) GlobalServiceRegister.getDefault().getService(ILibrariesService.class);
 
-        if (importNeedsListForRoutes == null) {
+        if (importNeedsListForRoutes.isEmpty()) {
 
             importNeedsListForRoutes = new ArrayList<ModuleNeeded>();
 
