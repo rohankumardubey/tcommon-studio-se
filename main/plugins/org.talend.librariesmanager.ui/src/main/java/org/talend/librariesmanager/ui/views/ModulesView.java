@@ -27,6 +27,7 @@ import org.talend.core.model.general.ILibrariesService.IChangedLibrariesListener
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.librariesmanager.ui.LibManagerUiPlugin;
 import org.talend.librariesmanager.ui.actions.CheckModulesAction;
+import org.talend.librariesmanager.ui.actions.CheckThirdPartyLibrariesAction;
 import org.talend.librariesmanager.ui.actions.DownloadExternalJarAction;
 import org.talend.librariesmanager.ui.actions.ExportCustomSettingsAction;
 import org.talend.librariesmanager.ui.actions.ImportCustomSettingsAction;
@@ -133,7 +134,8 @@ public class ModulesView extends ViewPart {
         manager.add(importAction);
         DownloadExternalJarAction downloadAcion = new DownloadExternalJarAction(this);
         manager.add(downloadAcion);
-
+        CheckThirdPartyLibrariesAction checkThirdPartyLibrariesAction = new CheckThirdPartyLibrariesAction(this);
+        manager.add(checkThirdPartyLibrariesAction);
         ShareLibsAction shareAction = new ShareLibsAction();
         if (shareAction.show()) {
             manager.add(shareAction);

@@ -33,6 +33,7 @@ import org.talend.updates.runtime.model.ExtraFeature;
 import org.talend.updates.runtime.model.FeatureCategory;
 import org.talend.updates.runtime.nexus.component.ComponentIndexManager;
 import org.talend.updates.runtime.nexus.component.NexusServerManager;
+import org.talend.updates.runtime.ui.CheckAdditionalPackagesToInstallJob;
 import org.talend.updates.runtime.utils.PathUtils;
 import org.talend.updates.runtime.utils.UpdateTools;
 
@@ -142,6 +143,12 @@ public class UpdateService implements IUpdateService {
     @Override
     public boolean updateArtifactsFileSha256Hex(IProgressMonitor monitor, String studioArtifactsFileShaCodeHex) {
         return SharedStudioPatchInfoProvider.getInstance().updateArtifactsFileSha256Hex(studioArtifactsFileShaCodeHex);
+    }
+
+    @Override
+    public void checkAdditionalPackages() {
+        CheckAdditionalPackagesToInstallJob checkExtraFeaturesToInstallJob = new CheckAdditionalPackagesToInstallJob();
+        checkExtraFeaturesToInstallJob.schedule();
     }
 }
 
