@@ -277,6 +277,10 @@ public class NetworkUtil {
         if (wrapIpV6 && Inet6Address.class.isInstance(inetAddress)) {
             String addr = inetAddress.getHostAddress();
             if (!addr.startsWith("[") || !addr.endsWith("]")) {
+                int idx = addr.indexOf("%");
+                if (idx > 0) {
+                    addr = addr.substring(0, idx);
+                }
                 addr = "[" + addr + "]";
             }
             return addr;

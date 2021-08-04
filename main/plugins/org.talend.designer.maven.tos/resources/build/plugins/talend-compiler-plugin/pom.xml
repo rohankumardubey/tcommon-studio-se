@@ -14,6 +14,21 @@
 			<groupId>org.eclipse.tycho</groupId>
 			<artifactId>tycho-compiler-jdt</artifactId>
 			<version>1.4.0</version>
+			<exclusions>
+		        <exclusion>
+		          <groupId>org.apache.maven</groupId>
+   				  <artifactId>maven-compat</artifactId>
+		        </exclusion>
+				<exclusion>
+					<groupId>org.codehaus.plexus</groupId>
+					<artifactId>plexus-archiver</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.plexus</groupId>
+			<artifactId>plexus-archiver</artifactId>
+			<version>3.6.0</version>
 		</dependency>
 	</dependencies>
 	<build>
