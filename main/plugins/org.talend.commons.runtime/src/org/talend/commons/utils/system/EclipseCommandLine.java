@@ -137,8 +137,8 @@ public class EclipseCommandLine {
                     currentProperty = restartMatcher.replaceAll(""); //$NON-NLS-1$
                 } // else no match so do nothing
             } else {// else add or update the command
-                    // try to find existing commands to update them
-                    // find the index of the arg to replace its value
+                // try to find existing commands to update them
+                // find the index of the arg to replace its value
                 // if value is null,only add or update the command
                 if (restartMatcher.find()) {// match found so update the command
                     if (isOption) {
@@ -164,7 +164,7 @@ public class EclipseCommandLine {
             result.append(currentProperty);
 
         } else {// creates a new string
-                // define the java process to launch
+            // define the java process to launch
             String property = System.getProperty(EclipseCommandLine.PROP_VM);
             result.append(property);
             result.append(EclipseCommandLine.NEW_LINE);

@@ -181,7 +181,7 @@ public class CopyObjectAction {
         }
         // for cdc
         if (PluginChecker.isCDCPluginLoaded()) {
-            ICDCProviderService cdcService = (ICDCProviderService) GlobalServiceRegister.getDefault().getService(
+            ICDCProviderService cdcService = GlobalServiceRegister.getDefault().getService(
                     ICDCProviderService.class);
             if (cdcService != null
                     && (cdcService.isSubscriberTableNode(sourceNode) || cdcService.isSystemSubscriberTable(sourceNode))) {
@@ -198,13 +198,8 @@ public class CopyObjectAction {
                 || targetNode.getType() == ENodeType.SYSTEM_FOLDER) {
             ERepositoryObjectType targetType = ((ERepositoryObjectType) targetNode.getProperties(EProperties.CONTENT_TYPE));
             ERepositoryObjectType sourceType = getSourceType(sourceNode);
-            if (sourceType.equals(ERepositoryObjectType.PROCESS_STORM)) {
-                return targetType.equals(ERepositoryObjectType.PROCESS) || targetType.equals(ERepositoryObjectType.PROCESS_STORM)
-                        || targetType.equals(ERepositoryObjectType.PROCESS_MR);
-            }
             if (sourceType.equals(ERepositoryObjectType.PROCESS_MR)) {
-                return targetType.equals(ERepositoryObjectType.PROCESS_STORM)
-                        || targetType.equals(ERepositoryObjectType.PROCESS_MR);
+                return targetType.equals(ERepositoryObjectType.PROCESS_MR);
             }
 
             return targetType.equals(sourceType);
@@ -216,7 +211,7 @@ public class CopyObjectAction {
         List<ERepositoryObjectType> extraTypes = new ArrayList<ERepositoryObjectType>();
         IGenericDBService dbService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
+            dbService = GlobalServiceRegister.getDefault().getService(
                     IGenericDBService.class);
         }
         if(dbService != null){
@@ -369,7 +364,7 @@ public class CopyObjectAction {
 
     private void copyDataServiceRelateJob(Item newItem) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
-            IESBService service = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+            IESBService service = GlobalServiceRegister.getDefault().getService(IESBService.class);
             if (service.isServiceItem(newItem.eClass().getClassifierID())) {
                 service.copyDataServiceRelateJob(newItem);
             }
@@ -447,7 +442,7 @@ public class CopyObjectAction {
         final IPath path = getTestCasePath(newItem, sourceNode);
 
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+            ITestContainerProviderService testContainerService = GlobalServiceRegister
                     .getDefault().getService(ITestContainerProviderService.class);
             if (testContainerService != null) {
                 testContainerService.copyDataFiles(newItem, sourceNode.getId());
@@ -470,7 +465,7 @@ public class CopyObjectAction {
 
     public boolean isAllowedToCopyTestCase(Item newItem, RepositoryNode sourceNode) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+            ITestContainerProviderService testContainerService = GlobalServiceRegister
                     .getDefault().getService(ITestContainerProviderService.class);
             if (testContainerService != null) {
                 if (!testContainerService.isDuplicateTestCaseOptionSelected()) {
@@ -510,7 +505,7 @@ public class CopyObjectAction {
     }
 
     private void synDuplicatedRoutine(RoutineItem item, String oldLabel) {
-        ICodeGeneratorService codeGenService = (ICodeGeneratorService) GlobalServiceRegister.getDefault().getService(
+        ICodeGeneratorService codeGenService = GlobalServiceRegister.getDefault().getService(
                 ICodeGeneratorService.class);
         if (codeGenService != null) {
             codeGenService.createRoutineSynchronizer().renameRoutineClass(item);
