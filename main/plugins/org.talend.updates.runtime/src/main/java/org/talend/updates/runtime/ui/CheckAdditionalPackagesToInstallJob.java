@@ -78,7 +78,7 @@ public class CheckAdditionalPackagesToInstallJob extends Job {
                         dialog.showDialog(true);
                     } else {
                         MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-                                Messages.getString("download.external.dialog.warning"),
+                                Messages.getString("download.external.dialog.info"),
                                 Messages.getString("download.external.dialog.message"));
                     }
 
