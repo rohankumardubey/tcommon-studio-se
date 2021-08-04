@@ -62,34 +62,28 @@ public class CheckAdditionalPackagesToInstallJob extends Job {
         if (monitor.isCanceled()) {
              return Status.CANCEL_STATUS;
         }
-        java.util.List<ExtraFeature> mustInstallList = new ArrayList<ExtraFeature>();
-        for (ExtraFeature feature : uninstalledExtraFeatures) {
-            if (feature.mustBeInstalled()) {
-                mustInstallList.add(feature);
-            }
-        }
-        if (!mustInstallList.isEmpty()) {
-            synchronized (ShowWizardHandler.showWizardLock) {
-                // make sure this dialog won't be popup in some special cases
-                // just waiting for the lock to be released, then continue to execute.
-                Display.getDefault().asyncExec(new Runnable() {
+        synchronized (ShowWizardHandler.showWizardLock) {
+            // make sure this dialog won't be popup in some special cases
+            // just waiting for the lock to be released, then continue to execute.
+            Display.getDefault().asyncExec(new Runnable() {
 
-                    @Override
-                    public void run() {
-                    UpdateWizardModel updateWizardModel = new UpdateWizardModel(uninstalledExtraFeatures);
-                    AdditionalPackagesDialog dialog = new AdditionalPackagesDialog(
+                @Override
+                public void run() {
+                    if (!uninstalledExtraFeatures.isEmpty()) {
+                        UpdateWizardModel updateWizardModel = new UpdateWizardModel(uninstalledExtraFeatures);
+                        AdditionalPackagesDialog dialog = new AdditionalPackagesDialog(
                                 PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-                                "Third-party Libraries", "Choose the third-party libraries to install",
-                                updateWizardModel);
-                    dialog.showDialog(true);
-
+                                Messages.getString("download.external.dialog.name"),
+                                Messages.getString("download.external.dialog.title"), updateWizardModel);
+                        dialog.showDialog(true);
+                    } else {
+                        MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+                                Messages.getString("download.external.dialog.warning"),
+                                Messages.getString("download.external.dialog.message"));
                     }
-                });
-            }
-        } else {
-            MessageDialog.openWarning(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-                    Messages.getString("download.external.dialog.warning"),
-                    Messages.getString("download.external.dialog.message"));
+
+                }
+            });
         }
         return Status.OK_STATUS;
     }
