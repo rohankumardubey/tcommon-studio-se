@@ -117,18 +117,6 @@ public class ExtendedNodeConnectionContextUtils {
         GoogleJarsBucket,
         PathToGoogleCredentials,
 
-        // Qubole
-        QuboleAPIToken,
-        QuboleCluster,
-        QuboleClusterLabel,
-        QuboleEndpoint,
-        QuboleEndpointUrl,
-        QuboleS3AccessKey,
-        QuboleS3SecretKey,
-        QuboleS3BucketName,
-        QuboleS3BucketKey,
-        QuboleS3Region,
-
         // Override hadoop configuration
         setHadoopConf,
         hadoopConfSpecificJar,
