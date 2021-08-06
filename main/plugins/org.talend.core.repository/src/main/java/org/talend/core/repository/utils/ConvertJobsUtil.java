@@ -70,8 +70,6 @@ public class ConvertJobsUtil {
 
     public static final String FRAMEWORK = HadoopConstants.FRAMEWORK;
 
-    public static final String STORM_FRAMEWORK = HadoopConstants.FRAMEWORK_STORM;
-
     public static final String SPARKSTREAMING_FRAMEWORK = HadoopConstants.FRAMEWORK_SPARKSTREAMING;
 
     public static final String MAPREDUCE_FRAMEWORK = HadoopConstants.FRAMEWORK_MAPREDUCE;
@@ -436,7 +434,7 @@ public class ConvertJobsUtil {
                         IElementParameter mrVersion = process.getElementParameter(MR_VERSION);
                         if (mrVersion != null
                                 && GlobalServiceRegister.getDefault().isServiceRegistered(IHadoopDistributionService.class)) {
-                            IHadoopDistributionService hadoopService = (IHadoopDistributionService) GlobalServiceRegister
+                            IHadoopDistributionService hadoopService = GlobalServiceRegister
                                     .getDefault().getService(IHadoopDistributionService.class);
                             IHDistributionVersion distributionVersion = hadoopService.getHadoopDistributionVersion(
                                     (String) mrVersion.getValue(), false);
@@ -469,7 +467,7 @@ public class ConvertJobsUtil {
     public static boolean hasTestCase(Project project, Property property) {
         boolean hasTestCase = false;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+            ITestContainerProviderService testContainerService = GlobalServiceRegister
                     .getDefault().getService(ITestContainerProviderService.class);
             if (testContainerService != null) {
                 hasTestCase = testContainerService.hasTestCase(project, property);
@@ -481,7 +479,7 @@ public class ConvertJobsUtil {
     public static boolean hasTestCase(Property property) {
         boolean hasTestCase = false;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+            ITestContainerProviderService testContainerService = GlobalServiceRegister
                     .getDefault().getService(ITestContainerProviderService.class);
             if (testContainerService != null) {
                 hasTestCase = testContainerService.hasTestCase(property);
@@ -649,7 +647,7 @@ public class ConvertJobsUtil {
 
     public static void convertTestcases(final Item newItem,final IRepositoryViewObject sourceObject,final String jobTypeValue){
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+            ITestContainerProviderService testContainerService = GlobalServiceRegister
                     .getDefault().getService(ITestContainerProviderService.class);
             if (testContainerService != null) {
                 testContainerService.copyDataFiles(newItem, sourceObject.getId());

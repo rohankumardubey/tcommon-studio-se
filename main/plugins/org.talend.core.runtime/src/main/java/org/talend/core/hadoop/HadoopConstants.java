@@ -33,8 +33,6 @@ public class HadoopConstants {
 
     public static final String FRAMEWORK = "FRAMEWORK";
 
-    public static final String FRAMEWORK_STORM = "Storm";
-
     public static final String FRAMEWORK_SPARKSTREAMING = "Spark Streaming";
 
     public static final String FRAMEWORK_SPARK_STREAMING = "Spark_Streaming";

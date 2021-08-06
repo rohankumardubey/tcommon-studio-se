@@ -68,15 +68,11 @@ public class CoreImageProvider {
                 return ECoreImage.PROCESS_BATCH_MR_ICON;
             } else if (HadoopConstants.FRAMEWORK_SPARKSTREAMING.equals(framework)) {
                 return ECoreImage.PROCESS_STREAMING_SPARK_ICON;
-            } else if (HadoopConstants.FRAMEWORK_STORM.equals(framework)) {
-                return ECoreImage.PROCESS_STREAMING_STORM_ICON;
             }
             // the following statements are for the items exported from old studio versions since they have no framework
             // properties
             else if (itemType == ERepositoryObjectType.PROCESS_MR) {
                 return ECoreImage.PROCESS_BATCH_MR_ICON;
-            } else if (itemType == ERepositoryObjectType.PROCESS_STORM) {
-                return ECoreImage.PROCESS_STREAMING_STORM_ICON;
             }
         }
         return getIcon(itemType);
@@ -99,7 +95,7 @@ public class CoreImageProvider {
         if (component != null && iconSize != null) {
             if (iconSize == ICON_SIZE.ICON_32
                     && GlobalServiceRegister.getDefault().isServiceRegistered(IDesignerCoreService.class)) {
-                IDesignerCoreService service = (IDesignerCoreService) GlobalServiceRegister.getDefault()
+                IDesignerCoreService service = GlobalServiceRegister.getDefault()
                         .getService(IDesignerCoreService.class);
                 if (service.isDummyComponent(component)) {
                     return getComponentImageFromDesc(component.getIcon32());
@@ -168,7 +164,7 @@ public class CoreImageProvider {
     public static Image getImageFromFramework(ERepositoryObjectType itemType) {
         IGenericWizardService wizardService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
-            wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
+            wizardService = GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
         }
         if (wizardService != null && wizardService.isGenericType(itemType)) {
             return wizardService.getNodeImage(itemType.getType());
