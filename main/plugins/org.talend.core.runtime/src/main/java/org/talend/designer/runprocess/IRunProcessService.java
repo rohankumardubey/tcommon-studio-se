@@ -39,6 +39,7 @@ import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
@@ -271,5 +272,7 @@ public interface IRunProcessService extends IService {
     
     void deleteTalendCodesJarProject(ERepositoryObjectType type, String projectTechName, String codesJarName,
             boolean deleteContent);
+    
+    public void deleteOldVersionTalendJobProject(IRepositoryViewObject object);
 
 }
