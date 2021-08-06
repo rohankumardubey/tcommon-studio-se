@@ -55,8 +55,6 @@ public class HadoopConstants {
 
     public static final String SPARK_TYPE = "SPARK";
 
-    public static final String STORM_TYPE = "STORM";
-
     public static final String IS_HADOOP_CUSTOM_CONFS = "IS_HADOOP_CUSTOM_CONFS";
 
     public static final String IS_DYNAMIC_JAR = "IS_DYNAMIC_JAR";

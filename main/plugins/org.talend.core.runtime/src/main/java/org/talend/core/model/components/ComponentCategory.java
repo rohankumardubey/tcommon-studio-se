@@ -84,14 +84,14 @@ public enum ComponentCategory {
 
     public static ComponentCategory getComponentCategoryFromItem(Item item) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
-            ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault().getService(
+            ICamelDesignerCoreService camelService = GlobalServiceRegister.getDefault().getService(
                     ICamelDesignerCoreService.class);
             if (camelService.isInstanceofCamelRoutes(item)) {
                 return ComponentCategory.CATEGORY_4_CAMEL;
             }
         }
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IMRProcessService.class)) {
-            IMRProcessService mrService = (IMRProcessService) GlobalServiceRegister.getDefault().getService(
+            IMRProcessService mrService = GlobalServiceRegister.getDefault().getService(
                     IMRProcessService.class);
             if (mrService.isSpark(item)) {
                 return ComponentCategory.CATEGORY_4_SPARK;
@@ -101,13 +101,10 @@ public enum ComponentCategory {
             }
         }
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IStormProcessService.class)) {
-            IStormProcessService stormService = (IStormProcessService) GlobalServiceRegister.getDefault().getService(
+            IStormProcessService stormService = GlobalServiceRegister.getDefault().getService(
                     IStormProcessService.class);
             if (stormService.isSparkStreaming(item)) {
                 return ComponentCategory.CATEGORY_4_SPARKSTREAMING;
-            }
-            if (stormService.isStormItem(item)) {
-                return ComponentCategory.CATEGORY_4_STORM;
             }
         }
         if (item instanceof ProcessItem || item instanceof JobletProcessItem) {
