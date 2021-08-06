@@ -36,8 +36,12 @@ public class TalendJavaProjectConstants {
 
     public static final String DIR_PROCESS = "process"; //$NON-NLS-1$
 
+    // This dir also contains Spark jobs
+    // TODO Separate in process_batch
     public static final String DIR_PROCESS_MR = "process_mr"; //$NON-NLS-1$
 
+    // This dir also contains Spark streaming jobs
+    // TODO Rename to process_streaming
     public static final String DIR_PROCESS_STORM = "process_storm"; //$NON-NLS-1$
 
     public static final String DIR_PROCESS_ROUTES = "routes"; //$NON-NLS-1$
