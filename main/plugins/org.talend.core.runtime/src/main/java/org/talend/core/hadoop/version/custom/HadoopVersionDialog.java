@@ -364,9 +364,6 @@ public class HadoopVersionDialog extends TitleAreaDialog {
             if (distributions != null) {
                 for (IHDistribution d : distributions) {
                     if (!d.useCustom()) {// not need custom
-                        if ("CLOUDERA_ALTUS".equals(d.getName())) {
-                            continue;
-                        }
                         distributionsDisplay.add(d.getDisplayName());
                     }
                 }
