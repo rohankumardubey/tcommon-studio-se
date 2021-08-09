@@ -3905,4 +3905,24 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
     public byte[] getReferenceSettingContent(Project project, String branch) throws PersistenceException {
         return null;
     }
+    
+    @Override
+    public void deleteOldVersionPhysical(Project project, IRepositoryViewObject objToDelete, String version ) throws PersistenceException {
+        Property currentProperty = objToDelete.getProperty();
+        List<Resource> affectedResources = xmiResourceManager.getAffectedResources(currentProperty);
+        for (Resource resource : affectedResources) {
+            deleteResource(resource, false);
+        }
+    }
+
+    @Override
+    public void batchDeleteOldVersionsPhysical(Project project, List<IRepositoryViewObject> objToDeleteList,
+            boolean isDeleteOnRemote, IProgressMonitor monitor) throws PersistenceException {
+        for (IRepositoryViewObject object : objToDeleteList) {
+            String versionedLabel = object.getProperty().getLabel() + "_" + object.getProperty().getVersion();
+            monitor.setTaskName("Removing " + object.getRepositoryObjectType() + ":"+  versionedLabel);
+            deleteOldVersionPhysical(project, object, object.getProperty().getVersion());
+            monitor.worked(1);
+        }
+    }
 }
