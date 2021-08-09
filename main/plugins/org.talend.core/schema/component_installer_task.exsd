@@ -50,7 +50,7 @@
    <element name="componentInstallerTask">
       <complexType>
          <sequence>
-            <element ref="componentGAV" minOccurs="1" maxOccurs="unbounded"/>
+            <element ref="componentGAV" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="class" type="string" use="required">
             <annotation>
@@ -70,6 +70,23 @@ where the &lt;b&gt;highest&lt;/b&gt; are executed first and  the &lt;b&gt;lowest
 The default value is &lt;b&gt;normal&lt;/b&gt;
                </documentation>
             </annotation>
+         </attribute>
+         <attribute name="ct">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+            <simpleType>
+               <restriction base="string">
+                  <enumeration value="1">
+                  </enumeration>
+                  <enumeration value="2">
+                  </enumeration>
+                  <enumeration value="4">
+                  </enumeration>
+               </restriction>
+            </simpleType>
          </attribute>
       </complexType>
    </element>
@@ -115,6 +132,8 @@ The default value is &lt;b&gt;normal&lt;/b&gt;
                   <enumeration value="1">
                   </enumeration>
                   <enumeration value="2">
+                  </enumeration>
+                  <enumeration value="4">
                   </enumeration>
                </restriction>
             </simpleType>

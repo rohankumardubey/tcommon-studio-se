@@ -90,9 +90,15 @@ public class ComponentInstallerTaskRegistryReader extends RegistryReader {
     public List<IComponentInstallerTask> getTasks(int componentType) {
         List<IComponentInstallerTask> allTasks = getTasks();
         allTasks = allTasks.stream().filter(task -> {
-            for (ComponentGAV gav : task.getComponentGAV()) {
-                if ((gav.getComponentType() & componentType) > 0) {
+            if (task.getComponentType() > -1) {
+                if ((task.getComponentType() & componentType) > 0) {
                     return true;
+                }
+            } else {
+                for (ComponentGAV gav : task.getComponentGAV()) {
+                    if ((gav.getComponentType() & componentType) > 0) {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -120,6 +126,10 @@ public class ComponentInstallerTaskRegistryReader extends RegistryReader {
                     }
 
                     task.setOrder(order);
+                    String ct = element.getAttribute(TYPE_ATTRIBUTE);
+                    if (ct != null) {
+                        task.setComponentType(Integer.valueOf(ct));
+                    }
 
                     readGAV(task, element);
 

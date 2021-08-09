@@ -40,6 +40,7 @@ Export-Package: org.talend.updates.runtime,
  org.talend.updates.runtime.engine.component,
  org.talend.updates.runtime.engine.factory,
  org.talend.updates.runtime.feature.model,
+ org.talend.updates.runtime.maven,
  org.talend.updates.runtime.model,
  org.talend.updates.runtime.model.interfaces,
  org.talend.updates.runtime.nexus.component,
@@ -48,3 +49,4 @@ Export-Package: org.talend.updates.runtime,
  org.talend.updates.runtime.ui,
  org.talend.updates.runtime.utils
 Bundle-Activator: org.talend.updates.runtime.UpdatesRuntimePlugin
+Import-Package: org.slf4j

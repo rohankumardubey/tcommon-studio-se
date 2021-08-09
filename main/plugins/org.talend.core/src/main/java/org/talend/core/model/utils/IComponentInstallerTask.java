@@ -27,6 +27,8 @@ public interface IComponentInstallerTask {
 
     int COMPONENT_TYPE_TCOMPV1 = 2;
 
+    int COMPONENT_TYPE_MAVEN_REPO = 4;
+
     /**
      * Order of the task, smaller means higher priority
      * 
@@ -77,4 +79,13 @@ public interface IComponentInstallerTask {
      */
     boolean install(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException;
 
+    /**
+     * @return the componentType
+     */
+    int getComponentType();
+
+    /**
+     * @param componentType the componentType to set
+     */
+    void setComponentType(int componentType);
 }
