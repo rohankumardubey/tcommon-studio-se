@@ -1018,7 +1018,11 @@ public class RepositoryToComponentProperty {
         // return getAppropriateValue(connection, connection.getUsername());
         // }
         if (value.equals("PASSWORD")) { //$NON-NLS-1$
-            return getAppropriateValue(connection,connection.getValue(connection.getPassword(), false).replace("\"", "\\\""));
+            String password = connection.getValue(connection.getPassword(), false);
+            if (password != null) {
+                password = password.replace("\"", "\\\"");
+            }
+            return getAppropriateValue(connection, password);
         }
         if (value.equals("NULL_CHAR")) { //$NON-NLS-1$
             return getAppropriateValue(connection, connection.getNullChar());
