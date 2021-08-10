@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
@@ -565,4 +566,8 @@ public interface IProxyRepositoryFactory {
 
     public void batchDeleteObjectPhysical4Remote(Project project, List<IRepositoryViewObject> objToDeleteList)
             throws PersistenceException;
+    
+    public void deleteOldVersionPhysical(Project project, IRepositoryViewObject objToDelete, String version) throws PersistenceException;
+    
+    public void batchDeleteOldVersionPhysical4Remote(Project project, List<IRepositoryViewObject> objToDeleteList, IProgressMonitor monitor) throws PersistenceException;
 }

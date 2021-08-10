@@ -480,4 +480,8 @@ public interface IRepositoryFactory {
     public boolean isRepositoryBusy();
 
     public RepositoryWorkUnit getWorkUnitInProgress();
+    
+    public void deleteOldVersionPhysical(Project project, IRepositoryViewObject objToDelete, String version) throws PersistenceException;
+    
+    public void batchDeleteOldVersionsPhysical(Project project, List<IRepositoryViewObject> objToDeleteList, boolean isDeleteOnRemote, IProgressMonitor monitor) throws PersistenceException;
 }
