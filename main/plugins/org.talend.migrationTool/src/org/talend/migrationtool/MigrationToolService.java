@@ -267,35 +267,20 @@ public class MigrationToolService implements IMigrationToolService {
 
             nbMigrationsToDo++;
         }
-
-        int migrationInEveryLogon = 0;
-        if (beforeLogon) {
-            // UpdateDaikonCryptoUtilsMigrationTask to execute every logon
-            MigrationUtil.removeMigrationTaskById(done,
-                    "org.talend.repository.model.migration.UpdateDaikonCryptoUtilsMigrationTask");
-            migrationInEveryLogon++;
-        }
-
-        if (nbMigrationsToDo == 0 && migrationInEveryLogon == 0) {
+        if (nbMigrationsToDo == 0) {
             return;
         }
 
-        if (nbMigrationsToDo > 0) {
-            // only execute when migration exist
-            if (beforeLogon) {
-                // for migration exist only, force reset to default maven template
-                MigrationUtil.removeMigrationTaskById(done,
-                        "org.talend.repository.model.migration.ResetMavenTemplateMigrationTask");
-            } else {
-                // force execute migration in case user copy-past items with diffrent path on the file system and
-                // refresh
-                // the studio,it may cause bug TDI-19229
-                MigrationUtil.removeMigrationTaskById(done, "org.talend.repository.model.migration.FixProjectResourceLink");
-                // force to re-generate all job poms
-                MigrationUtil.removeMigrationTaskById(done, "org.talend.repository.model.migration.GenerateJobPomMigrationTask");
-            }
-        }
+        // force execute migration in case user copy-past items with diffrent path on the file system and refresh
+        // the studio,it may cause bug TDI-19229
+        MigrationUtil.removeMigrationTaskById(done, "org.talend.repository.model.migration.FixProjectResourceLink");
+        // force to re-generate all job poms
+        MigrationUtil.removeMigrationTaskById(done, "org.talend.repository.model.migration.GenerateJobPomMigrationTask");
 
+        if (beforeLogon) {
+            // for every migration, force reset to default maven template
+            MigrationUtil.removeMigrationTaskById(done, "org.talend.repository.model.migration.ResetMavenTemplateMigrationTask");
+        }
 
         boolean haveAnyBinFolder = false; // to avoid some problems of migration, sometimes
         for (ERepositoryObjectType type : (ERepositoryObjectType[]) ERepositoryObjectType.values()) {
