@@ -144,9 +144,13 @@ public interface IStudioLiteP2Service extends IService {
 
     public static interface UpdateSiteConfig {
 
+        boolean isReleaseEditable();
+
         URI getRelease(IProgressMonitor monitor) throws Exception;
 
         void setRelease(IProgressMonitor monitor, URI uri) throws Exception;
+
+        boolean isUpdateEditable();
 
         Collection<URI> getUpdates(IProgressMonitor monitor) throws Exception;
 
