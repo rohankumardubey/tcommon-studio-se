@@ -184,6 +184,8 @@ public class ProcessorUtilities {
     private static boolean isDynamicJobAndCITest = false;
 
     private static JobInfo mainJobInfo;
+    
+    private static boolean needExportItemsForDQ = false;
 
     public static void addOpenEditor(IEditorPart editor) {
         openedEditors.add(editor);
@@ -272,6 +274,7 @@ public class ProcessorUtilities {
         exportAsOSGI = false;
         exportTimeStamp = null;
         exportJobAsMicroService = false;
+        needExportItemsForDQ = false;
     }
 
     public static String getInterpreter() {
@@ -685,7 +688,7 @@ public class ProcessorUtilities {
 
         processor.setArguments(argumentsMap);
 
-        copyDQDroolsToSrc(selectedProcessItem);
+        handelDQComponents(selectedProcessItem, currentProcess);
         // generate the code of the father after the childrens
         // so the code won't have any error during the check, and it will help to check
         // if the generation is really needed.
@@ -1184,7 +1187,7 @@ public class ProcessorUtilities {
 
             processor.setArguments(argumentsMap);
 
-            copyDQDroolsToSrc(selectedProcessItem);
+            handelDQComponents(selectedProcessItem, currentProcess);
 
             generateContextInfo(jobInfo, selectedContextName, statistics, trace, needContext, progressMonitor,
                     currentProcess, currentJobName, processor, isMainJob, codeGenerationNeeded);
@@ -1289,15 +1292,13 @@ public class ProcessorUtilities {
 
     /**
      *
-     * copy the current item's drools file from 'workspace/metadata/survivorship' to '.Java/src/resources'
+     * Specail operation for DQ components:
+     * - For tdqReportRun, set 'needExportItemsForDQ'to true so as the item folder can be exported
+     * - For tRuleSurvivorship, copy the current item's drools file from 'workspace/metadata/survivorship' to '.Java/src/resources'
      *
      * @param processItem
      */
-    private static void copyDQDroolsToSrc(ProcessItem processItem) {
-        // 1.TDQ-12474 copy the "metadata/survivorship/rulePackage" to ".Java/src/main/resources/". so that it will be
-        // used by
-        // maven command 'include-survivorship-rules' to export.
-        // 2.TDQ-14308 current drools file in 'src/resourcesmetadata/survivorship/' should be included to job jar.
+    private static void handelDQComponents(ProcessItem processItem, IProcess currentProcess) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQItemService.class)) {
             ITDQItemService tdqItemService =
                     GlobalServiceRegister.getDefault().getService(ITDQItemService.class);
@@ -1305,6 +1306,20 @@ public class ProcessorUtilities {
                 return;
             }
             try {
+            	// TDQ-19637 if it includes 'tDqReportRun',must export item folder
+                if (!needExportItemsForDQ) {
+                    for (INode node : currentProcess.getGeneratingNodes()) {
+                        String componentName = node.getComponent().getName();
+                        if ("tDqReportRun".equals(componentName)) {
+                            needExportItemsForDQ = true;
+                            break;
+                        }
+                    }
+                }
+            	/* 1.TDQ-12474 copy the "metadata/survivorship/rulePackage" to ".Java/src/main/resources/". so that it will be
+                     used by maven command 'include-survivorship-rules' to export.
+                   2.TDQ-14308 current drools file in 'src/resourcesmetadata/survivorship/' should be included to job jar.
+                */
                 ExportFileResource resouece = new ExportFileResource();
                 BuildExportManager.getInstance().exportDependencies(resouece, processItem);
                 if (resouece.getAllResources().isEmpty()) {
@@ -2733,5 +2748,9 @@ public class ProcessorUtilities {
 
     public static boolean isDynamicJobAndCITest() {
         return isDynamicJobAndCITest;
+    }
+    
+    public static boolean isNeedExportItemsForDQ() {
+        return needExportItemsForDQ;
     }
 }
