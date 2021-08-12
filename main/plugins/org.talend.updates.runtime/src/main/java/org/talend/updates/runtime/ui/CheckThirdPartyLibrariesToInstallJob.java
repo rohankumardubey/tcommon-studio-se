@@ -29,14 +29,14 @@ import org.talend.updates.runtime.model.ExtraFeature;
 import org.talend.commons.exception.ExceptionHandler;
 import org.eclipse.jface.dialogs.MessageDialog;
 
-public class CheckAdditionalPackagesToInstallJob extends Job {
+public class CheckThirdPartyLibrariesToInstallJob extends Job {
     protected boolean isCheckUpdateOnLine = false;
     /**
      * DOC sgandon CheckExtraFeaturesToUpdateJob constructor comment.
      *
      * @param name
      */
-    public CheckAdditionalPackagesToInstallJob() {
+    public CheckThirdPartyLibrariesToInstallJob() {
         super(Messages.getString("CheckAdditionalPackagesToInstallJob.check.third.party.lib.to.install")); //$NON-NLS-1$
     }
 
@@ -71,7 +71,7 @@ public class CheckAdditionalPackagesToInstallJob extends Job {
                 public void run() {
                     if (!uninstalledExtraFeatures.isEmpty()) {
                         UpdateWizardModel updateWizardModel = new UpdateWizardModel(uninstalledExtraFeatures);
-                        AdditionalPackagesDialog dialog = new AdditionalPackagesDialog(
+                        ThirdPartyLibrariesDialog dialog = new ThirdPartyLibrariesDialog(
                                 PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
                                 Messages.getString("download.external.dialog.name"),
                                 Messages.getString("download.external.dialog.title"), updateWizardModel);

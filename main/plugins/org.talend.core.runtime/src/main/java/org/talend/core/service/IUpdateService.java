@@ -25,5 +25,5 @@ public interface IUpdateService extends IService {
     
     public boolean updateArtifactsFileSha256Hex(IProgressMonitor monitor, String studioArtifactsFileShaCodeHex);
 
-    public void checkAdditionalPackages();
+    public void checkThirdPartyLibraries();
 }

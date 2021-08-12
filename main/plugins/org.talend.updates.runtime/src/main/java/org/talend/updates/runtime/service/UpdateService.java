@@ -33,7 +33,7 @@ import org.talend.updates.runtime.model.ExtraFeature;
 import org.talend.updates.runtime.model.FeatureCategory;
 import org.talend.updates.runtime.nexus.component.ComponentIndexManager;
 import org.talend.updates.runtime.nexus.component.NexusServerManager;
-import org.talend.updates.runtime.ui.CheckAdditionalPackagesToInstallJob;
+import org.talend.updates.runtime.ui.CheckThirdPartyLibrariesToInstallJob;
 import org.talend.updates.runtime.utils.PathUtils;
 import org.talend.updates.runtime.utils.UpdateTools;
 
@@ -146,9 +146,9 @@ public class UpdateService implements IUpdateService {
     }
 
     @Override
-    public void checkAdditionalPackages() {
-        CheckAdditionalPackagesToInstallJob checkExtraFeaturesToInstallJob = new CheckAdditionalPackagesToInstallJob();
-        checkExtraFeaturesToInstallJob.schedule();
+    public void checkThirdPartyLibraries() {
+        CheckThirdPartyLibrariesToInstallJob checkThirdPartyLibrariesToInstallJob = new CheckThirdPartyLibrariesToInstallJob();
+        checkThirdPartyLibrariesToInstallJob.schedule();
     }
 }
 

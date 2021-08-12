@@ -90,9 +90,9 @@ import us.monoid.json.JSONObject;
 /**
  * DOC wchen class global comment. Detailled comment
  */
-public class AdditionalPackagesDialog extends TitleAreaDialog {
+public class ThirdPartyLibrariesDialog extends TitleAreaDialog {
 
-    private static Logger log = Logger.getLogger(AdditionalPackagesDialog.class);
+    private static Logger log = Logger.getLogger(ThirdPartyLibrariesDialog.class);
 
     public static final String DO_NOT_SHOW_EXTERNALMODULESINSTALLDIALOG = "do_not_show_ExternalModulesInstallDialog"; //$NON-NLS-1$
 
@@ -124,7 +124,7 @@ public class AdditionalPackagesDialog extends TitleAreaDialog {
 
     public DataBindingContext dbc;
 
-    public AdditionalPackagesDialog(Shell shell, String text, String title, UpdateWizardModel updateWizardModel) {
+    public ThirdPartyLibrariesDialog(Shell shell, String text, String title, UpdateWizardModel updateWizardModel) {
         super(shell);
         setShellStyle(SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX | SWT.RESIZE | getDefaultOrientation());
         this.text = text;
@@ -139,7 +139,7 @@ public class AdditionalPackagesDialog extends TitleAreaDialog {
         };
     }
 
-    public AdditionalPackagesDialog(Shell shell, String text, String title) {
+    public ThirdPartyLibrariesDialog(Shell shell, String text, String title) {
         super(shell);
         setShellStyle(SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX | SWT.RESIZE | getDefaultOrientation());
         this.text = text;

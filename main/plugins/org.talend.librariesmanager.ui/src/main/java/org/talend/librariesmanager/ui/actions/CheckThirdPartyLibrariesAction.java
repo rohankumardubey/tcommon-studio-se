@@ -37,7 +37,7 @@ public class CheckThirdPartyLibrariesAction extends Action {
     public void run() {
     	 if (GlobalServiceRegister.getDefault().isServiceRegistered(IUpdateService.class)) {
              IUpdateService service = GlobalServiceRegister.getDefault().getService(IUpdateService.class);
-             service.checkAdditionalPackages();
+             service.checkThirdPartyLibraries();
          }
 
     }
