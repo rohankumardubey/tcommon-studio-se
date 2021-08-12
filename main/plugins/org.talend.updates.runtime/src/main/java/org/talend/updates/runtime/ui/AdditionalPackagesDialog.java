@@ -247,7 +247,7 @@ public class AdditionalPackagesDialog extends TitleAreaDialog {
         tree.setLinesVisible(true);
         featureDescriptionText = new StyledText(composite, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
         GridData gd_featureDescriptionText = new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1);
-        gd_featureDescriptionText.heightHint = 61;
+        gd_featureDescriptionText.heightHint = 91;
         featureDescriptionText.setLayoutData(gd_featureDescriptionText);
 
         final IObservableFactory setFactory = new IObservableFactory() {
