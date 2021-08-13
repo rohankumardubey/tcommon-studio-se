@@ -412,8 +412,7 @@ public class DatabaseConnStrUtil {
                     String krbRealm = (Principal.split("/")[1].split("@")[1]);
                     String urlKerberosParameter = ";KrbServiceName=" + krbServiceName
                                                      + ";KrbHostFQDN=" + krbHostFQDN
-                                                     + ";KrbRealm=" + krbRealm
-                                                     + ";KrbAuthType=0";
+                                                     + ";KrbRealm=" + krbRealm;
                     
                     standardURlString = urlArray[0].concat(SEMICOLON).concat(principalSuffix).concat(urlKerberosParameter);
                     
