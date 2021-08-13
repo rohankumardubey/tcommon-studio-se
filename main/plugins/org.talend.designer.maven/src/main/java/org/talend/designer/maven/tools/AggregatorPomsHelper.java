@@ -15,6 +15,7 @@ package org.talend.designer.maven.tools;
 import static org.talend.designer.maven.model.TalendJavaProjectConstants.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,7 +29,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.model.Activation;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Profile;
 import org.eclipse.core.resources.IContainer;
@@ -1051,6 +1054,47 @@ public class AggregatorPomsHelper {
             return runProcessService;
         }
         return null;
+    }
+
+    public void checkAndUpdateDaikonDependencies() {
+        try {
+            IFile rootPomFile = getProjectRootPom();
+            if (rootPomFile.exists()) {
+                boolean isRegeneratePoms = false;
+                Model model = MavenPlugin.getMaven().readModel(rootPomFile.getLocation().toFile());
+                if (model.getModules() != null) {
+                    for (String module : model.getModules()) {
+                        java.nio.file.Path modPath = Paths.get(rootPomFile.getLocation().toFile().getParent(), module, "pom.xml");
+                        Model modModel = MavenPlugin.getMaven().readModel(modPath.toFile());
+                        List<Dependency> deps = modModel.getDependencies();
+                        if (deps != null && !deps.isEmpty()) {
+                            DefaultArtifactVersion targetVersion = new DefaultArtifactVersion("0.31.12");
+
+                            for (Dependency dep : deps) {
+                                DefaultArtifactVersion actualVersion = new DefaultArtifactVersion(dep.getVersion());
+                                int cmp = targetVersion.compareTo(actualVersion);
+
+                                if (StringUtils.equals("org.talend.daikon", dep.getGroupId()) && cmp > 0) {
+                                    if (StringUtils.equals("crypto-utils", dep.getArtifactId())
+                                            || StringUtils.equals("daikon", dep.getArtifactId())) {
+                                        isRegeneratePoms = true;
+                                    }
+                                }
+                            }
+                        }
+                        if (isRegeneratePoms) {
+                            break;
+                        }
+                    }
+                }
+                if (isRegeneratePoms) {
+                    syncAllPomsWithoutProgress(new NullProgressMonitor());
+                    BuildCacheManager.getInstance().clearAllCodesCache();
+                }
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
     }
 
 }
