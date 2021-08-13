@@ -2283,6 +2283,9 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                 IRunProcessService runProcessService = getRunProcessService();
                 if (runProcessService != null) {
                     runProcessService.initMavenJavaProject(monitor, project);
+
+                    // before afterLogon migration execute, check and update daikon dependency
+                    runProcessService.checkAndUpdateDaikonDependencies();
                 }
 
                 currentMonitor = subMonitor.newChild(1, SubMonitor.SUPPRESS_NONE);
