@@ -9,14 +9,14 @@
   </parent>
   <artifactId>org.talend.libraries.mdm</artifactId>
   <packaging>eclipse-plugin</packaging>
-  
+
   <repositories>
 		<repository>
 			<id>talend-update</id>
 			<url>https://talend-update.talend.com/nexus/content/repositories/libraries/</url>
 		</repository>
 	</repositories>
-	
+
   <dependencies>
     <dependency>
     	<groupId>javax.xml.bind</groupId>
@@ -34,9 +34,9 @@
  		<version>2.2.7</version>
     </dependency>
   </dependencies>
-  
+
   <build>
-    <plugins>    
+    <plugins>
       <plugin>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-dependency-plugin</artifactId>
@@ -52,11 +52,14 @@
 						<excludeTypes>pom</excludeTypes>
 						<excludeTransitive>true</excludeTransitive>
 						<outputDirectory>${project.basedir}/lib</outputDirectory>
+						<includeGroupIds>
+							javax.xml.bind,com.sun.xml.bind
+					</includeGroupIds>
 					</configuration>
 				</execution>
 			</executions>
 		</plugin>
     </plugins>
   </build>
-  
+
 </project>
