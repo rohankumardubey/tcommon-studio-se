@@ -173,17 +173,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>target-platform-configuration</artifactId>
-				<version>${tycho.version}</version>
-				<configuration>
-					<dependency-resolution>
-						<optionalDependencies>ignore</optionalDependencies>
-					</dependency-resolution>
-				</configuration>
-			</plugin>
-
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>2.8</version>
@@ -195,6 +184,7 @@
 							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
+							<includeGroupIds>org.apache.cxf,com.sun.activation,jakarta.activation,jakarta.xml.soap,com.sun.istack,org.glassfish.jaxb,jakarta.xml.bind,jakarta.jws,org.apache.ws.xmlschema,javax.ws.rs,com.fasterxml.woodstox,org.codehaus.woodstox,org.apache.neethi,jakarta.annotation,jakarta.ws.rs</includeGroupIds>
 							<excludeTypes>pom</excludeTypes>
 							<excludeTransitive>true</excludeTransitive>
 							<outputDirectory>${project.basedir}/lib</outputDirectory>
