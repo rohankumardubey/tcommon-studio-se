@@ -15,7 +15,7 @@
             serviceId="ILibraryManagerService">
       </Service>
    </extension>
-  
+
    <extension
          point="org.eclipse.emf.ecore.generated_package">
       <package
@@ -35,16 +35,16 @@
         point="org.talend.core.runtime.librariesNeeded">
       <libraryNeeded
               context="plugin:org.talend.librariesmanager"
-              id="slf4j-api-1.7.25.jar"
-              mvn_uri="mvn:org.slf4j/slf4j-api/1.7.25"
-              name="slf4j-api-1.7.25.jar"
+              id="slf4j-api-@@SLF4J_VERSION@@.jar"
+              mvn_uri="mvn:org.slf4j/slf4j-api/@@SLF4J_VERSION@@"
+              name="slf4j-api-@@SLF4J_VERSION@@.jar"
               required="true">
       </libraryNeeded>
       <libraryNeeded
               context="plugin:org.talend.librariesmanager"
-              id="crypto-utils-0.31.12.jar"
-              mvn_uri="mvn:org.talend.daikon/crypto-utils/0.31.12"
-              name="crypto-utils-0.31.12.jar"
+              id="crypto-utils-@@CRYPTOUTILS_VERSION@@.jar"
+              mvn_uri="mvn:org.talend.daikon/crypto-utils/@@CRYPTOUTILS_VERSION@@"
+              name="crypto-utils-@@CRYPTOUTILS_VERSION@@.jar"
               required="true">
       </libraryNeeded>
    </extension>
@@ -53,13 +53,13 @@
       <systemRoutine
             name="SharedDBConnectionLog4j">
          <library
-               name="slf4j-api-1.7.25.jar">
+               name="slf4j-api-@@SLF4J_VERSION@@.jar">
          </library>
       </systemRoutine>
       <systemRoutine
             name="PasswordEncryptUtil">
          <library
-               name="crypto-utils-0.31.12.jar">
+               name="crypto-utils-@@CRYPTOUTILS_VERSION@@.jar">
          </library>
       </systemRoutine>
    </extension>
