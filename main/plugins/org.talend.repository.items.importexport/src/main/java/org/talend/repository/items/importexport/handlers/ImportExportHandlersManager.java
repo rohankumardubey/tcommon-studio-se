@@ -70,6 +70,7 @@ import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.CodesJarM2CacheManager;
+import org.talend.migration.MigrationReportHelper;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.documentation.ERepositoryActionName;
@@ -498,6 +499,8 @@ public class ImportExportHandlersManager {
                 return 100;
             }
         });
+        MigrationReportHelper.getInstance().clearRecorders();
+
         ImportCacheHelper importCacheHelper = ImportCacheHelper.getInstance();
         try {
 
@@ -1051,6 +1054,9 @@ public class ImportExportHandlersManager {
             TimeMeasure.measureActive = false;
             
             ChangeIdManager.oldANDNewIdMap.clear();
+
+            MigrationReportHelper.getInstance()
+                    .generateMigrationReport(ProjectManager.getInstance().getCurrentProject().getTechnicalLabel());
         }
     }
 

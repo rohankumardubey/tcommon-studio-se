@@ -80,6 +80,8 @@ public interface ICoreTisService extends IService {
 
     Set<String> getComponentBlackList();
     
+    String getStandardNodeLabel();
+
     public void afterImport (Property property) throws PersistenceException;  
 
     boolean hasNewPatchInPatchesFolder();

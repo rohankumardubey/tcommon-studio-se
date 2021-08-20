@@ -150,6 +150,8 @@ public interface IRepositoryService extends IService {
 
     List<ModuleNeeded> getLog4j2Modules();
 
+    String getStandardNodeLabel();
+
     public static IRepositoryService get() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRepositoryService.class)) {
             return GlobalServiceRegister.getDefault().getService(IRepositoryService.class);

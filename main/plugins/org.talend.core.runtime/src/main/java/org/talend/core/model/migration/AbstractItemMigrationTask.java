@@ -30,6 +30,8 @@ import org.talend.core.model.repository.RepositoryObject;
 import org.talend.core.runtime.i18n.Messages;
 import org.talend.migration.AbstractMigrationTask;
 import org.talend.migration.IProjectMigrationTask;
+import org.talend.migration.MigrationReportHelper;
+import org.talend.migration.MigrationReportRecorder;
 import org.talend.migration.MigrationTaskExtensionEPReader;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryService;
@@ -105,10 +107,19 @@ public abstract class AbstractItemMigrationTask extends AbstractMigrationTask im
             return ExecutionResult.NOTHING_TO_DO;
         }
         setProject(project);
-        return execute(item);
+        ExecutionResult result = execute(item);
+        if (ExecutionResult.SUCCESS_WITH_ALERT.equals(result) || ExecutionResult.SUCCESS_NO_ALERT.equals(result)) {
+            handleDefaultMigrationReportRecord(this, item);
+        }
+        return result;
     }
 
     public abstract ExecutionResult execute(Item item);
+
+    @Override
+    public void generateReportRecord(MigrationReportRecorder recorder) {
+        MigrationReportHelper.getInstance().addRecorder(recorder);
+    }
 
     // if need to unload the object ,overide this method,see bug 21587
     protected void unloadObject(IRepositoryViewObject object) {
@@ -165,6 +176,12 @@ public abstract class AbstractItemMigrationTask extends AbstractMigrationTask im
     Set<? extends ERepositoryObjectType> getExtendedTypes() {
         Set<ERepositoryObjectType> objectTypeExtensions = migrationTaskExtensionEPReader.getObjectTypeExtensions(getTypes());
         return objectTypeExtensions;
+    }
+
+    private static void handleDefaultMigrationReportRecord(IProjectMigrationTask task, Item item) {
+        if (MigrationReportHelper.getInstance().isRequireDefaultRecord(task, item)) {
+            task.generateReportRecord(new MigrationReportRecorder(task, item));
+        }
     }
 
 }

@@ -36,4 +36,8 @@ public interface IProjectMigrationTask extends IMigrationTask {
 
     public ExecutionResult execute(Project project, Item item);
 
+    default public void generateReportRecord(MigrationReportRecorder recorder) {
+        // do nothing
+    }
+
 }

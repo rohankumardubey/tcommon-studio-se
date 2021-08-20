@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.commons.utils.io;
 
+import java.awt.Desktop;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -60,6 +61,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.osgi.framework.Bundle;
@@ -69,6 +71,7 @@ import org.talend.commons.i18n.internal.Messages;
 import org.talend.commons.utils.StringUtils;
 import org.talend.commons.utils.encoding.CharsetToolkit;
 import org.talend.commons.utils.network.NetworkUtil;
+import org.talend.commons.utils.system.EnvironmentUtils;
 import org.talend.core.model.metadata.builder.connection.FileConnection;
 import org.talend.core.model.repository.SVNConstant;
 import org.talend.utils.xml.XmlUtils;
@@ -1228,6 +1231,18 @@ public class FilesUtils {
 
         }
 
+    }
+
+    public static void selectFileInSystemExplorer(File file) throws Exception {
+        Path path = new Path(file.getAbsolutePath());
+        if (EnvironmentUtils.isWindowsSystem()) {
+            Runtime.getRuntime().exec("explorer.exe /select," + path.toOSString());
+        } else if (EnvironmentUtils.isMacOsSytem()) {
+            Runtime.getRuntime().exec("open -R " + path.toOSString());
+        } else {
+            File dir = file.getParentFile();
+            Desktop.getDesktop().open(dir);
+        }
     }
 
 }

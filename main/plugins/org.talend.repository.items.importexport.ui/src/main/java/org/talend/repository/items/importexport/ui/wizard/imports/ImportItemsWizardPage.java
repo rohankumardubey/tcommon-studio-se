@@ -91,6 +91,7 @@ import org.talend.core.ui.component.ComponentPaletteUtilities;
 import org.talend.designer.core.IMultiPageTalendEditor;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.MavenPomSynchronizer;
+import org.talend.migration.MigrationReportHelper;
 import org.talend.repository.items.importexport.handlers.ImportExportHandlersManager;
 import org.talend.repository.items.importexport.handlers.imports.ImportCacheHelper;
 import org.talend.repository.items.importexport.handlers.imports.ImportDependencyRelationsHelper;
@@ -1186,6 +1187,7 @@ public class ImportItemsWizardPage extends WizardPage {
             nodesBuilder.clear();
         }
         saveImportDependenciesPref();
+        MigrationReportHelper.getInstance().checkMigrationReport(false);
 
         return true;
     }

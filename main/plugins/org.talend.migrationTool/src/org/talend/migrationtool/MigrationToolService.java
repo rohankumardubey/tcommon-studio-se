@@ -76,6 +76,7 @@ import org.talend.migration.IMigrationTask;
 import org.talend.migration.IMigrationTask.ExecutionResult;
 import org.talend.migration.IProjectMigrationTask;
 import org.talend.migration.IWorkspaceMigrationTask;
+import org.talend.migration.MigrationReportHelper;
 import org.talend.migrationtool.i18n.Messages;
 import org.talend.migrationtool.model.GetTasksHelper;
 import org.talend.migrationtool.model.summary.AlertUserOnLogin;
@@ -179,6 +180,7 @@ public class MigrationToolService implements IMigrationToolService {
             }
         }
 
+
         try {
             ICodeGeneratorService service = (ICodeGeneratorService) GlobalServiceRegister.getDefault().getService(
                     ICodeGeneratorService.class);
@@ -226,6 +228,7 @@ public class MigrationToolService implements IMigrationToolService {
         String taskDesc = "Migration tool: " + logonDesc + " project [" + project.getLabel() + "] tasks"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         log.trace(taskDesc);
 
+        MigrationReportHelper.getInstance().clearRecorders();
         IRepositoryService service = (IRepositoryService) GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
         final IProxyRepositoryFactory repFactory = service.getProxyRepositoryFactory();
         final IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -552,6 +555,10 @@ public class MigrationToolService implements IMigrationToolService {
                     workspace1.run(op, schedulingRule, IWorkspace.AVOID_UPDATE, monitorWrap);
                 } catch (CoreException e) {
                     throw new PersistenceException(e);
+                } finally {
+                    if (!beforeLogon) {
+                        MigrationReportHelper.getInstance().generateMigrationReport(project.getTechnicalLabel());
+                    }
                 }
             }
         };

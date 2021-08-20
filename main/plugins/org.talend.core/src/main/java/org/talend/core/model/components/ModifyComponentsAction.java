@@ -57,10 +57,10 @@ public class ModifyComponentsAction {
         searchAndModify(item, item.getProcess(), filter, conversions);
     }
 
-    public static void searchAndModify(Item item, ProcessType processType, IComponentFilter filter,
+    public static boolean searchAndModify(Item item, ProcessType processType, IComponentFilter filter,
             List<IComponentConversion> conversions) throws PersistenceException {
         if (processType == null) {
-            return;
+            return false;
         }
         IRepositoryService service = (IRepositoryService) GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
         IProxyRepositoryFactory factory = service.getProxyRepositoryFactory();
@@ -73,6 +73,7 @@ public class ModifyComponentsAction {
         if (modified) {
             factory.save(item, true);
         }
+        return modified;
     }
 
     public static void searchAndModify(IComponentFilter filter, List<IComponentConversion> conversions)
