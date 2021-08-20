@@ -35,6 +35,11 @@ public final class PluginChecker {
      * @return isLoaded
      */
     public static boolean isPluginLoaded(String pluginID) {
+        // TDQ-19587 msjian: fix tDqReportRun job failed
+        if (!Platform.isRunning()) {
+            return false;
+        }
+        // TDQ-19587~
         boolean isLoaded = true;
         Bundle bundle = Platform.getBundle(pluginID);
         if (bundle == null || (bundle != null && bundle.getState() == Bundle.UNINSTALLED)) {
