@@ -300,13 +300,20 @@ public class DatabaseConnStrUtil {
             if (!url.endsWith(";")) { //$NON-NLS-1$
                 url = url + ";"; //$NON-NLS-1$
             }
-            url = url + "ssl=true;"; //$NON-NLS-1$
+            
+            boolean isHiveDriver = url.startsWith(DbConnStrForHive.URL_HIVE_2_TEMPLATE);
+          
+            url = url + ( isHiveDriver ? "ssl=true;" : "SSL=1;" ); //$NON-NLS-1$
+            
             String trustStorePath = dbConn.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_SSL_TRUST_STORE_PATH);
+            
             if (trustStorePath != null) {
-                url = url + "sslTrustStore=" + trustStorePath + ";"; //$NON-NLS-1$//$NON-NLS-2$
+                url = url + ( isHiveDriver ? "sslTrustStore=" : "SSLTrustStore=" )  + trustStorePath + ";"; //$NON-NLS-1$//$NON-NLS-2$
             }
+            
             String trustStorePassword = null;
             trustStorePassword = dbConn.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_SSL_TRUST_STORE_PASSWORD);
+            
             if (trustStorePassword != null) {
                 if (encryptPassword) {
                     trustStorePassword = "encrypted"; //$NON-NLS-1$
@@ -318,7 +325,7 @@ public class DatabaseConnStrUtil {
                 if (trustStorePassword == null) {
                     trustStorePassword = ""; //$NON-NLS-1$
                 }
-                url = url + "trustStorePassword=" + trustStorePassword; //$NON-NLS-1$
+                url = url + ( isHiveDriver ? "trustStorePassword=" : "SSLTrustStorePwd=" ) + trustStorePassword; //$NON-NLS-1$
             }
             if (url.endsWith(";")) { //$NON-NLS-1$
                 url = url.substring(0, url.length() - 1);
@@ -385,7 +392,8 @@ public class DatabaseConnStrUtil {
             template = EDatabaseConnTemplate.IMPALA_IMPALA_DRIVER.getUrlTemplate(null);
         }
         String standardURlString = getImpalaURlString(template, supportContext, server, port, sid);
-        String principalSuffix = "principal="; //$NON-NLS-1$
+        
+        String principalSuffix = "IMPALA".equals(driver) ? "AuthMech=1" : "principal="; //$NON-NLS-1$
         boolean hasPrinc = false;
         String[] urlArray = standardURlString.split(SEMICOLON);
         if (urlArray[urlArray.length - 1].startsWith(principalSuffix)) {
@@ -397,7 +405,21 @@ public class DatabaseConnStrUtil {
             }
         } else {
             if (Principal != null) {
-                standardURlString = urlArray[0].concat(SEMICOLON).concat(principalSuffix).concat(Principal);
+                
+                if("IMPALA".equals(driver)) {
+                    String krbServiceName  = (Principal.split("/")[0]);
+                    String krbHostFQDN = (Principal.split("/")[1].split("@")[0]);
+                    String krbRealm = (Principal.split("/")[1].split("@")[1]);
+                    String urlKerberosParameter = ";KrbServiceName=" + krbServiceName
+                                                     + ";KrbHostFQDN=" + krbHostFQDN
+                                                     + ";KrbRealm=" + krbRealm;
+                    
+                    standardURlString = urlArray[0].concat(SEMICOLON).concat(principalSuffix).concat(urlKerberosParameter);
+                    
+                } else {
+                
+                    standardURlString = urlArray[0].concat(SEMICOLON).concat(principalSuffix).concat(Principal);
+                }
             }
         }
 
