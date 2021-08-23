@@ -15,6 +15,7 @@ package org.talend.commons.utils;
 import java.util.StringTokenizer;
 
 import org.talend.commons.i18n.internal.Messages;
+import org.talend.utils.JavaVersion;
 
 /**
  *
@@ -53,7 +54,8 @@ public class Version implements Comparable<Version> {
             this.major = LAST_VERSION.getMajor();
             this.minor = LAST_VERSION.getMinor();
         } else {
-            StringTokenizer stringTokenizer = new StringTokenizer(version, LEVEL_SEPARATOR);
+            JavaVersion jv = new JavaVersion(version);
+            StringTokenizer stringTokenizer = new StringTokenizer(jv.toString(), LEVEL_SEPARATOR);
             try {
                 this.major = Integer.parseInt(stringTokenizer.nextToken());
                 this.minor = Integer.parseInt(stringTokenizer.nextToken());

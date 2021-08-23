@@ -13,7 +13,6 @@
 package org.talend.commons.utils.network;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.PasswordAuthentication;
@@ -46,8 +45,6 @@ import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.i18n.internal.Messages;
 import org.talend.daikon.sandbox.properties.ClassLoaderIsolatedSystemProperties;
-
-import sun.net.spi.DefaultProxySelector;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
@@ -99,8 +96,8 @@ public class TalendProxySelector extends ProxySelector {
     private static final String PROP_ALLOW_PROXY_REDIRECT_EXCLUDE_DEFAULT = "";
 
     private static final String KEY_DEFAULT = ":default:";
-
-    private static Field uriHostField;
+    
+    private static final String SYS_JRE_PROXY_SELECTOR = "SYS_JRE_PROXY_SELECTOR";
 
     private static Method proxyManagerUpdateSystemPropertiesFunc;
 
@@ -137,24 +134,34 @@ public class TalendProxySelector extends ProxySelector {
 
     private boolean disableDefaultSelectorProvider = false;
 
-    private boolean validateUri = true;
-
     private boolean executeConnectionFailed = true;
 
     private boolean updateSystemPropertiesForJre = true;
 
     private boolean excludeLoopbackAddressAutomatically = false;
+    
+    private ProxySelector getStardardJreProxySelector() {
+        Object o = System.getProperties().get(SYS_JRE_PROXY_SELECTOR);
+        if (o != null && o instanceof ProxySelector) {
+            return (ProxySelector) o;
+        }
+        return getDefault();
+    }
 
     private TalendProxySelector(final ProxySelector eclipseDefaultSelector) {
         this.eclipseDefaultSelector = eclipseDefaultSelector;
-        this.jreDefaultSelector = new DefaultProxySelector();
+        this.jreDefaultSelector = getStardardJreProxySelector();
+        
+        if (!this.jreDefaultSelector.getClass().getCanonicalName().endsWith("DefaultProxySelector")) {
+            Exception e = new Exception("jreDefaultSelector class: " + this.jreDefaultSelector.getClass().getCanonicalName());
+            ExceptionHandler.process(e);
+        }
 
         selectorProviders = Collections.synchronizedMap(new HashMap<>());
         allowProxyRedirect = Boolean.valueOf(System.getProperty(PROP_ALLOW_PROXY_REDIRECT, Boolean.FALSE.toString()));
         disableDefaultSelectorProvider = Boolean
                 .valueOf(System.getProperty(PROP_DISABLE_DEFAULT_SELECTOR_PROVIDER, Boolean.FALSE.toString()));
         printProxyLog = Boolean.valueOf(System.getProperty(PROP_PRINT_LOGS, Boolean.FALSE.toString()));
-        validateUri = Boolean.valueOf(System.getProperty(PROP_VALIDATE_URI, Boolean.TRUE.toString()));
         executeConnectionFailed = Boolean.valueOf(System.getProperty(PROP_EXECUTE_CONNECTION_FAILED, Boolean.TRUE.toString()));
         updateSystemPropertiesForJre = Boolean
                 .valueOf(System.getProperty(PROP_UPDATE_SYSTEM_PROPERTIES_FOR_JRE, Boolean.TRUE.toString()));
@@ -327,12 +334,6 @@ public class TalendProxySelector extends ProxySelector {
                 if (instance == null) {
                     instance = new TalendProxySelector(proxySelector);
                     try {
-                        uriHostField = URI.class.getDeclaredField("host");
-                        uriHostField.setAccessible(true);
-                    } catch (Exception e) {
-                        ExceptionHandler.process(e);
-                    }
-                    try {
                         proxyManagerUpdateSystemPropertiesFunc = ProxyManager.class.getDeclaredMethod("updateSystemProperties");
                         proxyManagerUpdateSystemPropertiesFunc.setAccessible(true);
                     } catch (Exception e) {
@@ -399,11 +400,10 @@ public class TalendProxySelector extends ProxySelector {
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
-        URI validatedUri = validateUri(uri);
         Set<Proxy> results = new LinkedHashSet<>();
 
         try {
-            final Set<Proxy> resultFromProviders = getProxysFromProviders(validatedUri);
+            final Set<Proxy> resultFromProviders = getProxysFromProviders(uri);
             if (resultFromProviders != null && !resultFromProviders.isEmpty()) {
                 results.addAll(resultFromProviders);
             }
@@ -422,9 +422,9 @@ public class TalendProxySelector extends ProxySelector {
             /**
              * don't validate uri here, so that we can know whether it is an issue uri
              */
-            URI newUri = getNewUri(validatedUri, false);
+            URI newUri = getNewUri(uri);
             List<Proxy> defaultProxys = null;
-            if (validateUri && StringUtils.isBlank(newUri.getHost())) {
+            if (StringUtils.isBlank(newUri.getHost())) {
                 /**
                  * If host is blank, force to use jre proxy selector to avoid the eclipse proxy selector bug
                  */
@@ -436,7 +436,7 @@ public class TalendProxySelector extends ProxySelector {
                 ExceptionHandler.log("TalendProxySelector.defaultProxys " + defaultProxys);
             }
             try {
-                results.addAll(filterProxys(validatedUri, defaultProxys));
+                results.addAll(filterProxys(uri, defaultProxys));
             } catch (Exception e) {
                 results.addAll(defaultProxys);
                 ExceptionHandler.process(e);
@@ -453,54 +453,6 @@ public class TalendProxySelector extends ProxySelector {
         return new LinkedList<Proxy>(results);
     }
 
-    private URI validateUri(URI uri) {
-        if (!validateUri) {
-            return uri;
-        }
-
-        URI validatedUri = null;
-        try {
-            /**
-             * DON'T use URI.create(), MUST use the conductor which requires authority
-             */
-            validatedUri = new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(), uri.getQuery(), uri.getFragment());
-
-            /**
-             * Validate the host, if the host is empty, it will cause the eclipse selector to return dirrect
-             */
-            if (StringUtils.isBlank(validatedUri.getHost())) {
-                String authority = validatedUri.getAuthority();
-                if (StringUtils.isNotBlank(authority)) {
-                    // example: https://u:p@www.company.com:8081/path/a?param=b
-                    String host = null;
-                    int userInfoIndex = authority.indexOf('@');
-                    if (0 <= userInfoIndex) {
-                        authority = authority.substring(userInfoIndex + 1);
-                    }
-                    int portIndex = authority.lastIndexOf(':');
-                    if (0 <= portIndex) {
-                        host = authority.substring(0, portIndex);
-                    }
-                    try {
-                        uriHostField.set(validatedUri, host);
-                    } catch (Exception e) {
-                        ExceptionHandler.process(e);
-                    }
-                }
-
-            }
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-            if (validatedUri == null) {
-                validatedUri = uri;
-            }
-        }
-        if (printProxyLog) {
-            ExceptionHandler.log("After validate: " + uri + " -> " + validatedUri);
-        }
-        return validatedUri;
-    }
-
     private List<Proxy> filterProxys(final URI uri, List<Proxy> defaultProxys) {
         List<Proxy> result = new ArrayList<>();
         if (defaultProxys != null && !defaultProxys.isEmpty()) {
@@ -514,15 +466,12 @@ public class TalendProxySelector extends ProxySelector {
 
                 boolean redirect = true;
                 if (!allowProxyRedirect) {
-                    String host = uri.getHost();
-                    if (host == null) {
-                        host = "";
-                    }
+                    String host = getHostName(uri);
                     host = StringUtils.strip(host).toLowerCase();
                     if (this.redirectWhiteList.contains(host) || this.redirectWhiteList.contains(KEY_DEFAULT)) {
                         redirect = true;
                     } else if (Proxy.Type.DIRECT == proxyType
-                            || (addr != null && StringUtils.equals(uri.getHost(), ((InetSocketAddress) addr).getHostString()))) {
+                            || (addr != null && StringUtils.equals(getHostName(uri), ((InetSocketAddress) addr).getHostString()))) {
                         redirect = false;
                     }
                 }
@@ -536,7 +485,7 @@ public class TalendProxySelector extends ProxySelector {
         return result;
     }
 
-    private URI getNewUri(URI uri, boolean validateUri) {
+    private URI getNewUri(URI uri) {
         URI newUri = uri;
         if (newUri != null) {
             try {
@@ -574,9 +523,6 @@ public class TalendProxySelector extends ProxySelector {
                             Priority.WARN);
                 }
             }
-        }
-        if (validateUri) {
-            newUri = validateUri(newUri);
         }
         return newUri;
     }
@@ -765,6 +711,37 @@ public class TalendProxySelector extends ProxySelector {
         }
         return possibleKeys;
     }
+    
+    public static String getHostName(URI uri) {
+        String host = uri.getHost();
+
+        if (host == null) {
+            // This is a hack to ensure backward compatibility in two
+            // cases: 1. hostnames contain non-ascii characters,
+            // internationalized domain names. in which case, URI will
+            // return null, see BugID 4957669; 2. Some hostnames can
+            // contain '_' chars even though it's not supposed to be
+            // legal, in which case URI will return null for getHost,
+            // but not for getAuthority() See BugID 4913253
+            String auth = uri.getAuthority();
+            if (auth != null) {
+                int i;
+                i = auth.indexOf('@');
+                if (i >= 0) {
+                    auth = auth.substring(i + 1);
+                }
+                i = auth.lastIndexOf(':');
+                if (i >= 0) {
+                    auth = auth.substring(0, i);
+                }
+                host = auth;
+            }
+        }
+        if (host == null) {
+            host = "";
+        }
+        return host;
+    }
 
     private enum EProxySelector {
         eclipse_default,
@@ -811,7 +788,7 @@ public class TalendProxySelector extends ProxySelector {
                 if (uri == null) {
                     return false;
                 }
-                String uriHost = uri.getHost();
+                String uriHost = getHostName(uri);
                 if (StringUtils.isNotBlank(uriHost)) {
                     return this.host.equals(uriHost.toLowerCase());
                 }
