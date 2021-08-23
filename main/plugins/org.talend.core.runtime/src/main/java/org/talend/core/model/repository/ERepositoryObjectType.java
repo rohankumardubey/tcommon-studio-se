@@ -31,7 +31,6 @@ import org.talend.core.IESBService;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.BRMSConnectionItem;
-import org.talend.core.model.properties.BusinessProcessItem;
 import org.talend.core.model.properties.CSVFileConnectionItem;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.ContextItem;
@@ -65,7 +64,6 @@ import org.talend.core.model.properties.RoutinesJarItem;
 import org.talend.core.model.properties.RulesItem;
 import org.talend.core.model.properties.SAPConnectionItem;
 import org.talend.core.model.properties.SQLPatternItem;
-import org.talend.core.model.properties.SVGBusinessProcessItem;
 import org.talend.core.model.properties.SalesforceSchemaConnectionItem;
 import org.talend.core.model.properties.SnippetItem;
 import org.talend.core.model.properties.SnippetVariable;
@@ -108,9 +106,6 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
 
     public final static ERepositoryObjectType SVN_ROOT = new ERepositoryObjectType("repository.svnroot", "", "SVN_ROOT", true, 1,
             new String[] { PROD_DI, PROD_DQ }, new String[] {}, false);
-
-    public final static ERepositoryObjectType SVG_BUSINESS_PROCESS = new ERepositoryObjectType("repository.svgBusinessProcess",
-            "businessProcessSVG", "SVG_BUSINESS_PROCESS", true, 3, new String[] { PROD_DI }, new String[] {});
 
     public final static ERepositoryObjectType SNIPPETS = new ERepositoryObjectType("repository.snippets", "code/snippets",
             "SNIPPETS", true, 10, new String[] { PROD_DI }, new String[] {}, false);
@@ -417,8 +412,6 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
         // init
         RepositoryNodeProviderRegistryReader.getInstance().init();
     }
-
-    public final static ERepositoryObjectType BUSINESS_PROCESS = ERepositoryObjectType.valueOf("BUSINESS_PROCESS"); //$NON-NLS-1$
 
     public final static ERepositoryObjectType PROCESS = ERepositoryObjectType.valueOf("PROCESS"); //$NON-NLS-1$
 
@@ -850,11 +843,7 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
     }
 
     public static String getDeleteFolderName(ERepositoryObjectType type) {
-        if (type == BUSINESS_PROCESS) {
-            return "businessProcess"; //$NON-NLS-1$
-        } else if (type == SVG_BUSINESS_PROCESS) {
-            return "businessProcessSVG"; //$NON-NLS-1$
-        } else if (type == PROCESS) {
+        if (type == PROCESS) {
             return "job"; //$NON-NLS-1$
         } else if (type == JOBLET) {
             return "joblet";
@@ -1074,11 +1063,6 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
             }
 
             @Override
-            public Object caseBusinessProcessItem(BusinessProcessItem object) {
-                return BUSINESS_PROCESS;
-            }
-
-            @Override
             public Object caseCSVFileConnectionItem(CSVFileConnectionItem object) {
                 throw new IllegalStateException(Messages.getString("ERepositoryObjectType.NotImplemented")); //$NON-NLS-1$
             }
@@ -1171,11 +1155,6 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
             @Override
             public Object caseMDMConnectionItem(MDMConnectionItem object) {
                 return METADATA_MDMCONNECTION;
-            }
-
-            @Override
-            public Object caseSVGBusinessProcessItem(SVGBusinessProcessItem object) {
-                return SVG_BUSINESS_PROCESS;
             }
 
             @Override

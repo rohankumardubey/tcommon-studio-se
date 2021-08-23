@@ -103,14 +103,6 @@ public class DynamicContentProvider extends IntroProvider {
             if (latestItems.size() == 0) {
                 parent.appendChild(dom.createTextNode(Messages.getString("DynamicContentProvider.routes"))); //$NON-NLS-1$
             }
-        } else if (ERepositoryObjectType.BUSINESS_PROCESS != null && ERepositoryObjectType.BUSINESS_PROCESS.name().equals(id)) {
-            latestItems = getLatestModifiedItems(ERepositoryObjectType.BUSINESS_PROCESS, 8);
-            url = "http://org.eclipse.ui.intro/runAction?pluginId=org.talend.designer.business.diagram&" //$NON-NLS-1$
-                    + "class=org.talend.designer.business.diagram.custom.actions.OpenDiagramAction&" //$NON-NLS-1$
-                    + "id=org.talend.designer.business.diagram.Action2&nodeId="; //$NON-NLS-1$
-            if (latestItems.size() == 0) {
-                parent.appendChild(dom.createTextNode(Messages.getString("DynamicContentProvider.businessModels"))); //$NON-NLS-1$
-            }
         } else if ("ANALYSIS".equals(id)) { //$NON-NLS-1$
             latestItems = getLatestModifiedItems(ERepositoryObjectType.TDQ_ANALYSIS_ELEMENT, 8);
             url = "http://org.eclipse.ui.intro/runAction?pluginId=org.talend.dataprofiler.core&" //$NON-NLS-1$

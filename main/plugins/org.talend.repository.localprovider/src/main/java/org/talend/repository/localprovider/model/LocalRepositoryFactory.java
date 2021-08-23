@@ -2255,20 +2255,6 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
         return ""; //$NON-NLS-1$
     }
 
-    private Resource create(IProject project, BusinessProcessItem item, IPath path) throws PersistenceException {
-        Resource itemResource = xmiResourceManager.createItemResource(project, item, path,
-                ERepositoryObjectType.BUSINESS_PROCESS, false);
-        // notation depends on semantic ...
-        // in case of new(=empty) diagram, we don't care about order
-        // in other cases, the ordered addition references between notaion and
-        // semantic will be updated
-        itemResource.getContents().add(item.getSemantic());
-        itemResource.getContents().add(item.getNotationHolder());
-        item.computeNotationHolder();
-
-        return itemResource;
-    }
-
     private Resource create(IProject project, ConnectionItem item, IPath path) throws PersistenceException {
         XmiResourceManager xmiResourceManager = ProxyRepositoryFactory.getInstance().getRepositoryFactoryFromProvider()
                 .getResourceManager();
@@ -2945,13 +2931,6 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
 
         if (eClass.eContainer() == PropertiesPackage.eINSTANCE) {
             switch (eClass.getClassifierID()) {
-
-            case PropertiesPackage.BUSINESS_PROCESS_ITEM:
-                itemResource = create(project2, (BusinessProcessItem) item, path);
-                break;
-            case PropertiesPackage.SVG_BUSINESS_PROCESS_ITEM:
-                itemResource = create(project2, (FileItem) item, path, ERepositoryObjectType.SVG_BUSINESS_PROCESS);
-                break;
             case PropertiesPackage.DATABASE_CONNECTION_ITEM:
                 itemResource = create(project2, (ConnectionItem) item, ERepositoryObjectType.METADATA_CONNECTIONS, path);
                 break;

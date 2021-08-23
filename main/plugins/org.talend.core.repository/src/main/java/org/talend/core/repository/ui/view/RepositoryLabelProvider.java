@@ -491,9 +491,6 @@ public class RepositoryLabelProvider extends LabelProvider implements IColorProv
                 return STABLE_PRIMARY_ENTRY_COLOR;
             }
         case SYSTEM_FOLDER:
-            if (node.getContentType() == ERepositoryObjectType.BUSINESS_PROCESS) {
-                return STABLE_PRIMARY_ENTRY_COLOR;
-            }
             if (node.getContentType() == ERepositoryObjectType.PROCESS) {
                 return STABLE_PRIMARY_ENTRY_COLOR;
             }

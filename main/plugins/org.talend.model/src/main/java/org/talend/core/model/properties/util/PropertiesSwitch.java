@@ -133,10 +133,12 @@ public class PropertiesSwitch {
                 return result;
             }
             case PropertiesPackage.BUSINESS_PROCESS_ITEM: {
-                BusinessProcessItem businessProcessItem = (BusinessProcessItem)theEObject;
+                BusinessProcessItem businessProcessItem = (BusinessProcessItem) theEObject;
                 Object result = caseBusinessProcessItem(businessProcessItem);
-                if (result == null) result = caseItem(businessProcessItem);
-                if (result == null) result = defaultCase(theEObject);
+                if (result == null)
+                    result = caseItem(businessProcessItem);
+                if (result == null)
+                    result = defaultCase(theEObject);
                 return result;
             }
             case PropertiesPackage.FILE_ITEM: {
@@ -620,11 +622,14 @@ public class PropertiesSwitch {
                 return result;
             }
             case PropertiesPackage.SVG_BUSINESS_PROCESS_ITEM: {
-                SVGBusinessProcessItem svgBusinessProcessItem = (SVGBusinessProcessItem)theEObject;
+                SVGBusinessProcessItem svgBusinessProcessItem = (SVGBusinessProcessItem) theEObject;
                 Object result = caseSVGBusinessProcessItem(svgBusinessProcessItem);
-                if (result == null) result = caseFileItem(svgBusinessProcessItem);
-                if (result == null) result = caseItem(svgBusinessProcessItem);
-                if (result == null) result = defaultCase(theEObject);
+                if (result == null)
+                    result = caseFileItem(svgBusinessProcessItem);
+                if (result == null)
+                    result = caseItem(svgBusinessProcessItem);
+                if (result == null)
+                    result = defaultCase(theEObject);
                 return result;
             }
             case PropertiesPackage.LINK_RULES_ITEM: {

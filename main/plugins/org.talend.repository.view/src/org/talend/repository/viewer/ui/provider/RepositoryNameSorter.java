@@ -52,9 +52,7 @@ public class RepositoryNameSorter extends ViewerSorter {
             if (contentType == null) {
                 return 199;
             }
-            if (contentType == ERepositoryObjectType.BUSINESS_PROCESS) {
-                return 1;
-            } else if (contentType == ERepositoryObjectType.PROCESS) {
+            if (contentType == ERepositoryObjectType.PROCESS) {
                 return 5;
             } else if (contentType == ERepositoryObjectType.JOBLET) {
                 return 6;

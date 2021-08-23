@@ -82,9 +82,6 @@ public class MigrationTaskExtensionEPReaderTest {
         assertThat(objectTypeExtensions, hasItem(ERepositoryObjectType.getType("JOB_EXT")));
         assertThat(objectTypeExtensions, hasItem(ERepositoryObjectType.getType("JOB_EXT2")));
         assertThat(objectTypeExtensions, hasItem(ERepositoryObjectType.getType("JOB_DOC_EXT")));
-        objectTypeExtensions = migrationTaskExtensionEPReader.getObjectTypeExtensions(Collections
-                .singleton(ERepositoryObjectType.BUSINESS_PROCESS));
-        assertTrue(objectTypeExtensions.isEmpty());
     }
 
     @Test
@@ -97,9 +94,6 @@ public class MigrationTaskExtensionEPReaderTest {
         assertThat(objectTypeExtensions, hasItem(ERepositoryObjectType.getType("JOB_EXT2")));
         assertThat(objectTypeExtensions, hasItem(ERepositoryObjectType.getType("JOB_DOC_EXT")));
         assertThat(objectTypeExtensions, hasItem(ERepositoryObjectType.getType("CODE_EXT")));
-        objectTypeExtensions = migrationTaskExtensionEPReader.getObjectTypeExtensions(Collections
-                .singleton(ERepositoryObjectType.BUSINESS_PROCESS));
-        assertTrue(objectTypeExtensions.isEmpty());
     }
 
 }

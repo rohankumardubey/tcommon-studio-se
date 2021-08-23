@@ -39,7 +39,6 @@ import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.utils.RepositoryManagerHelper;
-import org.talend.designer.business.diagram.custom.IDiagramModelService;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.repository.metadata.ui.actions.metadata.CreateConnectionAction;
 import org.talend.repository.metadata.ui.actions.metadata.CreateFileDelimitedAction;
@@ -203,22 +202,6 @@ public abstract class AbstractCreatToolbarAction implements IWorkbenchWindowPull
             }
         }
         addSeparator(menu);
-
-        if (repositoryView.containsRepositoryType(ERepositoryObjectType.BUSINESS_PROCESS)) {
-            TreeItem[] items = ((TreeViewer) repositoryView.getViewer()).getTree().getItems();
-            // NavigatorContentServiceContentProvider provider = (NavigatorContentServiceContentProvider) ((TreeViewer)
-            // repositoryView
-            // .getViewer()).getContentProvider();
-            ITreeContentProvider provider = (ITreeContentProvider) ((TreeViewer) repositoryView.getViewer()).getContentProvider();
-            Object[] objects = provider.getElements(repositoryView.getRoot());
-            boolean flag = containsType(objects, ERepositoryObjectType.BUSINESS_PROCESS);
-            if (flag) {
-                IDiagramModelService service = (IDiagramModelService) GlobalServiceRegister.getDefault().getService(
-                        IDiagramModelService.class);
-                addToMenu(menu, service.getCreateDiagramAction(true), -1);
-                addSeparator(menu);
-            }
-        }
 
         if (repositoryView.containsRepositoryType(ERepositoryObjectType.METADATA_CONNECTIONS)) {
             final CreateConnectionAction createConnectionAction = new CreateConnectionAction(true);

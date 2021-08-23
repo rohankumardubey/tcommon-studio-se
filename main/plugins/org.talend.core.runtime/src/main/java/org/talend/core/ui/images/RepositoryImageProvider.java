@@ -30,8 +30,6 @@ public class RepositoryImageProvider {
 
         if (type == ERepositoryObjectType.SVN_ROOT) {
             return ECoreImage.SVN_ROOT_ICON;
-        } else if (type == ERepositoryObjectType.BUSINESS_PROCESS) {
-            return ECoreImage.BUSINESS_PROCESS_ICON;
         } else if (type == ERepositoryObjectType.PROCESS) {
             return ECoreImage.PROCESS_ICON;
         } else if (type == ERepositoryObjectType.JOBLET) {

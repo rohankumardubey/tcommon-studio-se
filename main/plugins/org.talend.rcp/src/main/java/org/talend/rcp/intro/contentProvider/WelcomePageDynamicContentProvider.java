@@ -58,17 +58,6 @@ public class WelcomePageDynamicContentProvider implements IIntroXHTMLContentProv
                     + Messages.getString("WelcomePageDynamicContentProvider.LatestItemsJob.Title")));
             parent.appendChild(img);
             parent.appendChild(span2);
-        } else if ("ITEMSBUSINESSMODEL".equals(id)) {
-            Element img = dom.createElement("img");
-            img.setAttribute("style", "padding-top:15px;margin-left:15px;");
-            img.setAttribute("src", content + "imgs/img_businessProcess.png");
-            Element span = dom.createElement("span");
-            span.setAttribute("class", "style_3");
-            span.appendChild(dom.createTextNode(" "
-                    + Messages.getString("WelcomePageDynamicContentProvider.LatestItemsBusinessModel.Title")));
-            parent.appendChild(img);
-            parent.appendChild(span);
-
         } else if ("ITEMSANALYSIS".equals(id)) {
             Element img = dom.createElement("img");
             img.setAttribute("style", "padding-top:10px;margin-left:15px;");
@@ -121,26 +110,6 @@ public class WelcomePageDynamicContentProvider implements IIntroXHTMLContentProv
             span2.appendChild(dom.createTextNode(" " + Messages.getString("WelcomePageDynamicContentProvider.CreateNewJobTitle")));
             hyperlinkJob.appendChild(span2);
             parent.appendChild(hyperlinkJob);
-            //
-            parent.appendChild(dom.createElement("br"));
-            Element imgBusiness = dom.createElement("img");
-            imgBusiness.setAttribute("style", "padding-top:15px;margin-left:15px;");
-            imgBusiness.setAttribute("src", content + "imgs/img_businessProcess.png");
-            parent.appendChild(imgBusiness);
-            Element hyperlinkBusiness = dom.createElement("a");
-            hyperlinkBusiness.setAttribute("class", "xh");
-            hyperlinkBusiness.setAttribute("title", "Create a business model");
-            hyperlinkBusiness
-                    .setAttribute(
-                            "href",
-                            "http://org.eclipse.ui.intro/runAction?pluginId=org.talend.designer.business.diagram&class=org.talend.designer.business.diagram.custom.actions.CreateDiagramAction&id=org.talend.designer.business.diagram.Action1&type=BUSINESS_PROCESS");
-            Element spanBusiness = dom.createElement("span");
-            spanBusiness.setAttribute("class", "style_3");
-            spanBusiness.appendChild(dom.createTextNode(" "
-                    + Messages.getString("WelcomePageDynamicContentProvider.CreateNewBusinessModelTitle")));
-            hyperlinkBusiness.appendChild(spanBusiness);
-            parent.appendChild(hyperlinkBusiness);
-
         } else if ("CREATENEWWITHDQTITLE".equals(id)) {
             Element span = dom.createElement("span");
             span.setAttribute("class", "style_1 style_2 style_3");
@@ -163,26 +132,6 @@ public class WelcomePageDynamicContentProvider implements IIntroXHTMLContentProv
             span2.appendChild(dom.createTextNode(" " + Messages.getString("WelcomePageDynamicContentProvider.CreateNewJobTitle")));
             hyperlinkJob.appendChild(span2);
             parent.appendChild(hyperlinkJob);
-            //
-            parent.appendChild(dom.createElement("br"));
-            Element imgBusiness = dom.createElement("img");
-            imgBusiness.setAttribute("style", "padding-top:15px;margin-left:15px;");
-            imgBusiness.setAttribute("src", content + "imgs/img_businessProcess.png");
-            parent.appendChild(imgBusiness);
-            Element hyperlinkBusiness = dom.createElement("a");
-            hyperlinkBusiness.setAttribute("class", "xh");
-            hyperlinkBusiness.setAttribute("title", "Create a business model");
-            hyperlinkBusiness
-                    .setAttribute(
-                            "href",
-                            "http://org.eclipse.ui.intro/runAction?pluginId=org.talend.designer.business.diagram&class=org.talend.designer.business.diagram.custom.actions.CreateDiagramAction&id=org.talend.designer.business.diagram.Action1&type=BUSINESS_PROCESS");
-            Element spanBusiness = dom.createElement("span");
-            spanBusiness.setAttribute("class", "style_3");
-            spanBusiness.appendChild(dom.createTextNode(" "
-                    + Messages.getString("WelcomePageDynamicContentProvider.CreateNewBusinessModelTitle")));
-            hyperlinkBusiness.appendChild(spanBusiness);
-            parent.appendChild(hyperlinkBusiness);
-
             //
             parent.appendChild(dom.createElement("br"));
             Element imgBarChart = dom.createElement("img");
@@ -225,26 +174,6 @@ public class WelcomePageDynamicContentProvider implements IIntroXHTMLContentProv
             span2.appendChild(dom.createTextNode(" " + Messages.getString("WelcomePageDynamicContentProvider.CreateNewJobTitle")));
             hyperlinkJob.appendChild(span2);
             parent.appendChild(hyperlinkJob);
-            //
-            parent.appendChild(dom.createElement("br"));
-            Element imgBusiness = dom.createElement("img");
-            imgBusiness.setAttribute("style", "padding-top:15px;margin-left:15px;");
-            imgBusiness.setAttribute("src", content + "imgs/img_businessProcess.png");
-            parent.appendChild(imgBusiness);
-            Element hyperlinkBusiness = dom.createElement("a");
-            hyperlinkBusiness.setAttribute("class", "xh");
-            hyperlinkBusiness.setAttribute("title", "Create a business model");
-            hyperlinkBusiness
-                    .setAttribute(
-                            "href",
-                            "http://org.eclipse.ui.intro/runAction?pluginId=org.talend.designer.business.diagram&class=org.talend.designer.business.diagram.custom.actions.CreateDiagramAction&id=org.talend.designer.business.diagram.Action1&type=BUSINESS_PROCESS");
-            Element spanBusiness = dom.createElement("span");
-            spanBusiness.setAttribute("class", "style_3");
-            spanBusiness.appendChild(dom.createTextNode(" "
-                    + Messages.getString("WelcomePageDynamicContentProvider.CreateNewBusinessModelTitle")));
-            hyperlinkBusiness.appendChild(spanBusiness);
-            parent.appendChild(hyperlinkBusiness);
-
             //
             parent.appendChild(dom.createElement("br"));
             Element imgService = dom.createElement("img");
@@ -307,26 +236,6 @@ public class WelcomePageDynamicContentProvider implements IIntroXHTMLContentProv
             span2.appendChild(dom.createTextNode(" " + Messages.getString("WelcomePageDynamicContentProvider.CreateNewJobTitle")));
             hyperlinkJob.appendChild(span2);
             parent.appendChild(hyperlinkJob);
-            //
-            parent.appendChild(dom.createElement("br"));
-            Element imgBusiness = dom.createElement("img");
-            imgBusiness.setAttribute("style", "padding-top:15px;margin-left:15px;");
-            imgBusiness.setAttribute("src", content + "imgs/img_businessProcess.png");
-            parent.appendChild(imgBusiness);
-            Element hyperlinkBusiness = dom.createElement("a");
-            hyperlinkBusiness.setAttribute("class", "xh");
-            hyperlinkBusiness.setAttribute("title", "Create a business model");
-            hyperlinkBusiness
-                    .setAttribute(
-                            "href",
-                            "http://org.eclipse.ui.intro/runAction?pluginId=org.talend.designer.business.diagram&class=org.talend.designer.business.diagram.custom.actions.CreateDiagramAction&id=org.talend.designer.business.diagram.custom.actions.CreateDiagramAction&type=BUSINESS_PROCESS");
-            Element spanBusiness = dom.createElement("span");
-            spanBusiness.setAttribute("class", "style_3");
-            spanBusiness.appendChild(dom.createTextNode(" "
-                    + Messages.getString("WelcomePageDynamicContentProvider.CreateNewBusinessModelTitle")));
-            hyperlinkBusiness.appendChild(spanBusiness);
-            parent.appendChild(hyperlinkBusiness);
-
             //
             parent.appendChild(dom.createElement("br"));
             Element imgBarChart = dom.createElement("img");

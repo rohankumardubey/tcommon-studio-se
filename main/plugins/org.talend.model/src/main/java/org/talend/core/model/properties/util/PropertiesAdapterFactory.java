@@ -6,100 +6,12 @@
 package org.talend.core.model.properties.util;
 
 import java.util.Map;
+
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 import org.eclipse.emf.ecore.EObject;
 import org.talend.core.model.properties.*;
-import org.talend.core.model.properties.BusinessProcessItem;
-import org.talend.core.model.properties.ByteArray;
-import org.talend.core.model.properties.CSVFileConnectionItem;
-import org.talend.core.model.properties.Component;
-import org.talend.core.model.properties.ComponentSetting;
-import org.talend.core.model.properties.ConnectionItem;
-import org.talend.core.model.properties.ContextItem;
-import org.talend.core.model.properties.CronTalendTrigger;
-import org.talend.core.model.properties.CronUITalendTrigger;
-import org.talend.core.model.properties.CustomComponentSetting;
-import org.talend.core.model.properties.DashboardConnection;
-import org.talend.core.model.properties.DatabaseConnectionItem;
-import org.talend.core.model.properties.DelimitedFileConnectionItem;
-import org.talend.core.model.properties.DocumentationItem;
-import org.talend.core.model.properties.EbcdicConnectionItem;
-import org.talend.core.model.properties.ExcelFileConnectionItem;
-import org.talend.core.model.properties.ExecutionPlan;
-import org.talend.core.model.properties.ExecutionPlanPart;
-import org.talend.core.model.properties.ExecutionPlanPartCmdPrm;
-import org.talend.core.model.properties.ExecutionPlanPartJobPrm;
-import org.talend.core.model.properties.ExecutionPlanPrm;
-import org.talend.core.model.properties.ExecutionServer;
-import org.talend.core.model.properties.ExecutionTask;
-import org.talend.core.model.properties.ExecutionTaskCmdPrm;
-import org.talend.core.model.properties.ExecutionTaskJobPrm;
-import org.talend.core.model.properties.ExecutionTriggerable;
-import org.talend.core.model.properties.ExecutionVirtualServer;
-import org.talend.core.model.properties.FTPConnectionItem;
-import org.talend.core.model.properties.FileItem;
-import org.talend.core.model.properties.FileTrigger;
-import org.talend.core.model.properties.FileTriggerMask;
-import org.talend.core.model.properties.FolderItem;
-import org.talend.core.model.properties.GenericSchemaConnectionItem;
-import org.talend.core.model.properties.HL7ConnectionItem;
-import org.talend.core.model.properties.HeaderFooterConnectionItem;
-import org.talend.core.model.properties.ImplicitContextSettings;
-import org.talend.core.model.properties.Information;
-import org.talend.core.model.properties.Item;
-import org.talend.core.model.properties.ItemRelation;
-import org.talend.core.model.properties.ItemRelations;
-import org.talend.core.model.properties.ItemState;
-import org.talend.core.model.properties.JobDocumentationItem;
-import org.talend.core.model.properties.JobletDocumentationItem;
-import org.talend.core.model.properties.JobletProcessItem;
-import org.talend.core.model.properties.LDAPSchemaConnectionItem;
-import org.talend.core.model.properties.LdifFileConnectionItem;
-import org.talend.core.model.properties.License;
-import org.talend.core.model.properties.LinkDocumentationItem;
-import org.talend.core.model.properties.LinkRulesItem;
-import org.talend.core.model.properties.LinkType;
-import org.talend.core.model.properties.MDMConnectionItem;
-import org.talend.core.model.properties.NotationHolder;
-import org.talend.core.model.properties.Notification;
-import org.talend.core.model.properties.PlanExecutionHistory;
-import org.talend.core.model.properties.PositionalFileConnectionItem;
-import org.talend.core.model.properties.ProcessItem;
-import org.talend.core.model.properties.Project;
-import org.talend.core.model.properties.ProjectComponentAuthorisation;
-import org.talend.core.model.properties.ProjectReference;
-import org.talend.core.model.properties.PropertiesPackage;
-import org.talend.core.model.properties.Property;
-import org.talend.core.model.properties.RegExFileConnectionItem;
-import org.talend.core.model.properties.RoleRight;
-import org.talend.core.model.properties.RoutineItem;
-import org.talend.core.model.properties.RulesItem;
-import org.talend.core.model.properties.SAPConnectionItem;
-import org.talend.core.model.properties.SQLPatternItem;
-import org.talend.core.model.properties.SVGBusinessProcessItem;
-import org.talend.core.model.properties.SalesforceSchemaConnectionItem;
-import org.talend.core.model.properties.SchemaInformation;
-import org.talend.core.model.properties.SimpleTalendTrigger;
-import org.talend.core.model.properties.SnippetItem;
-import org.talend.core.model.properties.SnippetVariable;
-import org.talend.core.model.properties.SoaInputParameter;
-import org.talend.core.model.properties.SoaOperation;
-import org.talend.core.model.properties.SoaService;
-import org.talend.core.model.properties.SpagoBiServer;
-import org.talend.core.model.properties.StatAndLogsSettings;
-import org.talend.core.model.properties.Status;
-import org.talend.core.model.properties.TalendTrigger;
-import org.talend.core.model.properties.TaskExecutionHistory;
-import org.talend.core.model.properties.User;
-import org.talend.core.model.properties.UserModuleAuthorization;
-import org.talend.core.model.properties.UserProjectAuthorization;
-import org.talend.core.model.properties.UserRight;
-import org.talend.core.model.properties.UserRole;
-import org.talend.core.model.properties.UserRoleReference;
-import org.talend.core.model.properties.WSDLSchemaConnectionItem;
-import org.talend.core.model.properties.XmlFileConnectionItem;
 
 /**
  * <!-- begin-user-doc --> The <b>Adapter Factory</b> for the model. It provides an adapter <code>createXXX</code>
@@ -178,9 +90,10 @@ public class PropertiesAdapterFactory extends AdapterFactoryImpl {
             public Object caseLinkType(LinkType object) {
                 return createLinkTypeAdapter();
             }
-            public Object caseBusinessProcessItem(BusinessProcessItem object) {
-                return createBusinessProcessItemAdapter();
-            }
+
+        public Object caseBusinessProcessItem(BusinessProcessItem object) {
+            return createBusinessProcessItemAdapter();
+        }
             public Object caseFileItem(FileItem object) {
                 return createFileItemAdapter();
             }

@@ -568,9 +568,7 @@ public class DuplicateAction extends AContextualAction {
         Item item = null;
         if (repositoryType != null) {
             if (repositoryType != null) {
-                if (repositoryType == ERepositoryObjectType.BUSINESS_PROCESS) {
-                    item = PropertiesFactory.eINSTANCE.createBusinessProcessItem();
-                } else if (repositoryType == ERepositoryObjectType.CONTEXT) {
+                if (repositoryType == ERepositoryObjectType.CONTEXT) {
                     item = PropertiesFactory.eINSTANCE.createContextItem();
                 } else if (repositoryType == ERepositoryObjectType.DOCUMENTATION) {
                     item = PropertiesFactory.eINSTANCE.createDocumentationItem();
@@ -620,8 +618,6 @@ public class DuplicateAction extends AContextualAction {
                     item = PropertiesFactory.eINSTANCE.createSnippetItem();
                 } else if (repositoryType == ERepositoryObjectType.SQLPATTERNS) {
                     item = PropertiesFactory.eINSTANCE.createSQLPatternItem();
-                } else if (repositoryType == ERepositoryObjectType.SVG_BUSINESS_PROCESS) {
-                    item = PropertiesFactory.eINSTANCE.createSVGBusinessProcessItem();
                 } else if (repositoryType == ERepositoryObjectType.METADATA_EDIFACT) {
                     item = PropertiesFactory.eINSTANCE.createEDIFACTConnectionItem();
                 } else if (repositoryType == ERepositoryObjectType.METADATA_VALIDATION_RULES) {

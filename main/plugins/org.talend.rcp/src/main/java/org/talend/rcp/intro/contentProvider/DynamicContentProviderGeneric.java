@@ -83,16 +83,6 @@ public class DynamicContentProviderGeneric extends DynamicContentProvider {
             if (latestItems.size() == 0) {
                 parent.appendChild(dom.createElement("br"));
             }
-        } else if (ERepositoryObjectType.BUSINESS_PROCESS != null && ERepositoryObjectType.BUSINESS_PROCESS.name().equals(id)) {
-            String title = Messages.getString("WelcomePageDynamicContentProvider.LatestItemsBusinessModel.Title");
-            createLatestItemTitlePart(dom, parent, imgCommonPath + "imgs/img_businessProcess.png", title);
-            latestItems = getLatestModifiedItems(ERepositoryObjectType.BUSINESS_PROCESS, 8);
-            url = "http://org.eclipse.ui.intro/runAction?pluginId=org.talend.designer.business.diagram&"
-                    + "class=org.talend.designer.business.diagram.custom.actions.OpenDiagramAction&"
-                    + "id=org.talend.designer.business.diagram.Action2&nodeId=";
-            if (latestItems.size() == 0) {
-                parent.appendChild(dom.createElement("br"));
-            }
         } else if ("ANALYSIS".equals(id) && isItemShow("ANALYSIS")) {
             String title = Messages.getString("WelcomePageDynamicContentProvider.LatestItemsAnalysis.Title");
             createLatestItemTitlePart(dom, parent, imgCommonPath + "imgs/chart_bar.png", title);
@@ -169,12 +159,6 @@ public class DynamicContentProviderGeneric extends DynamicContentProvider {
             url = "http://org.eclipse.ui.intro/runAction?pluginId=org.talend.designer.core&class=org.talend.designer.core.ui.action.CreateProcess&id=org.talend.designer.core.actions.createprocess&type=PROCESS";
             String title = "Create a data integration process";
             createANewItem(dom, parent, imgCommonPath + "imgs/img_process.png", text, title, url);
-
-            // create business
-            text = Messages.getString("WelcomePageDynamicContentProvider.CreateNewBusinessModelTitle");
-            url = "http://org.eclipse.ui.intro/runAction?pluginId=org.talend.designer.business.diagram&class=org.talend.designer.business.diagram.custom.actions.CreateDiagramAction&id=org.talend.designer.business.diagram.custom.actions.CreateDiagramAction&type=BUSINESS_PROCESS";
-            title = "Create a business model";
-            createANewItem(dom, parent, imgCommonPath + "imgs/img_businessProcess.png", text, title, url);
 
             // create analysis
             if (isItemShow("ANALYSIS")) {
