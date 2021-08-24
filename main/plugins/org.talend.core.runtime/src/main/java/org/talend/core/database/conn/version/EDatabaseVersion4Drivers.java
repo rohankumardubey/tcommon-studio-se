@@ -77,7 +77,7 @@ public enum EDatabaseVersion4Drivers {
     SAPHana(new DbVersion4Drivers(EDatabaseTypeName.SAPHana, "HDB 1.0", "HDB_1_0", "ngdbc.jar")), //$NON-NLS-1$
     // MYSQL, add for 9594
     MYSQL_8(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MySQL 8", "MYSQL_8", "mysql-connector-java-8.0.18.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    MYSQL_5(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MySQL 5", "MYSQL_5", "mysql-connector-java-5.1.30-bin.jar")), //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
+    MYSQL_5(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MySQL 5", "MYSQL_5", "mysql-connector-java-5.1.49.jar")), //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
     MARIADB(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MariaDB", "MARIADB", "mariadb-java-client-2.5.3.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     // add for 9594
     MSSQL(new DbVersion4Drivers(EDatabaseTypeName.MSSQL,"Open source JTDS", "JTDS", "jtds-1.3.1-patch-20190523.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -174,7 +174,7 @@ public enum EDatabaseVersion4Drivers {
                     "jackson-databind-2.10.1.jar", "jackson-annotations-2.10.1.jar", "httpcore-4.4.11.jar", "httpclient-4.5.9.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$
                     "joda-time-2.8.1.jar", "commons-logging-1.2.jar", "commons-codec-1.11.jar" })), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-    AMAZON_AURORA(new DbVersion4Drivers(EDatabaseTypeName.AMAZON_AURORA, "mysql-connector-java-5.1.30-bin.jar")); //$NON-NLS-1$
+    AMAZON_AURORA(new DbVersion4Drivers(EDatabaseTypeName.AMAZON_AURORA, "mysql-connector-java-5.1.49.jar")); //$NON-NLS-1$
 
     private DbVersion4Drivers dbVersionBean;
 
