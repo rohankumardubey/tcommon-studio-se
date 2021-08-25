@@ -218,6 +218,8 @@ public class ConnParameterKeys {
      * HBase keys.
      */
     public static final String CONN_PARA_KEY_HBASE_DISTRIBUTION = "CONN_PARA_KEY_HBASE_DISTRIBUTION"; //$NON-NLS-1$
+    
+    public static final String CONN_PARA_KEY_HBASE_API_VERSION = "CONN_PARA_KEY_HBASE_API_VERSION"; //$NON-NLS-1$
 
     public static final String CONN_PARA_KEY_HBASE_VERSION = "CONN_PARA_KEY_HBASE_VERSION"; //$NON-NLS-1$
 

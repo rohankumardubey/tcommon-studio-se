@@ -1282,6 +1282,10 @@ public class RepositoryToComponentProperty {
             return connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HBASE_VERSION);
         }
 
+        if (value.equals("HBASE_API_VERSION")) {
+            return connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HBASE_API_VERSION);
+        }
+        
         if (value.equals("SET_TABLE_NS_MAPPING")) {
             return Boolean.valueOf(connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HBASE_SET_TABLE_NS_MAPPING));
         }
