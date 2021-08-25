@@ -24,6 +24,14 @@
 				<groupId>org.apache.maven.shared</groupId>
 				<artifactId>maven-shared-utils</artifactId>
 			</exclusion>
+			<exclusion>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-core</artifactId>
+			</exclusion>
+   		    <exclusion>
+	          <groupId>org.apache.maven</groupId>
+  				  <artifactId>maven-compat</artifactId>
+	        </exclusion>
    			</exclusions>
 		</dependency>
 		
@@ -32,8 +40,17 @@
 			<artifactId>org.osgi.core</artifactId>
 			<version>4.2.0</version>
 		</dependency>
-
-
+		
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-core</artifactId>
+			<version>3.8.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-compat</artifactId>
+			<version>3.8.1</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
