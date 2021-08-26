@@ -4025,7 +4025,7 @@ public class DatabaseForm extends AbstractForm {
             hbaseVersionCombo.getCombo().setItems(versionsDisplay);
             if (versionsDisplay.length > 0) {
                 IHDistributionVersion defaultVersion = hBaseDistribution.getDefaultVersion();
-                if (hBaseDistribution.getDisplayName()!= null && "Universal".equals(hBaseDistribution.getDisplayName())) {
+                if (hBaseDistribution != null && "Universal".equals(hBaseDistribution.getDisplayName())) {
             		List<String> hbaseVersions = ((DistributionBean) hBaseDistribution).gethBaseVersions();
             		hbaseUniversalVersionCombo.getCombo().setItems(hbaseVersions.toArray(new String[hbaseVersions.size()]));
             		hbaseUniversalVersionCombo.getCombo().select(0);
