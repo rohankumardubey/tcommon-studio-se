@@ -3293,8 +3293,7 @@ public class DatabaseForm extends AbstractForm {
         DatabaseConnection connection = getConnection();
         String hadoopDistribution = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HBASE_DISTRIBUTION);
         IHDistribution hBaseDistribution = getHBaseDistribution(hadoopDistribution, false);
-        String distributionDisplayName = hBaseDistribution.getDisplayName();
-        if ("Universal".equals(distributionDisplayName)) {
+        if (hBaseDistribution.getDisplayName() != null && "Universal".equals(hBaseDistribution.getDisplayName())) {
         	hbaseVersionCombo.setVisible(false);
         	hbaseUniversalVersionCombo.setVisible(true);
         } else {
@@ -3434,8 +3433,7 @@ public class DatabaseForm extends AbstractForm {
         DatabaseConnection connection = getConnection();
         String hadoopDistribution = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HBASE_DISTRIBUTION);
         IHDistribution hBaseDistribution = getHBaseDistribution(hadoopDistribution, false);
-        String distributionDisplayName = hBaseDistribution.getDisplayName();
-        if ("Universal".equals(distributionDisplayName)) {
+        if (hBaseDistribution.getDisplayName() != null && "Universal".equals(hBaseDistribution.getDisplayName())) {
         	hbaseUniversalVersionCombo.setReadOnly(false);
         } else {
         	hbaseVersionCombo.setReadOnly(fromRepository || isContextMode());
@@ -4013,8 +4011,7 @@ public class DatabaseForm extends AbstractForm {
             
             hbaseCustomButton.setVisible(false);
             
-            String distributionDisplayName = hBaseDistribution.getDisplayName();
-            if ("Universal".equals(distributionDisplayName)) {
+            if (hBaseDistribution.getDisplayName() != null && "Universal".equals(hBaseDistribution.getDisplayName())) {
             	hbaseVersionCombo.setVisible(false);
             	hbaseUniversalVersionCombo.setHideWidgets(false);
             	hbaseUniversalVersionCombo.setVisible(true);
@@ -4028,7 +4025,7 @@ public class DatabaseForm extends AbstractForm {
             hbaseVersionCombo.getCombo().setItems(versionsDisplay);
             if (versionsDisplay.length > 0) {
                 IHDistributionVersion defaultVersion = hBaseDistribution.getDefaultVersion();
-                if ("Universal".equals(distributionDisplayName)) {
+                if (hBaseDistribution.getDisplayName()!= null && "Universal".equals(hBaseDistribution.getDisplayName())) {
             		List<String> hbaseVersions = ((DistributionBean) hBaseDistribution).gethBaseVersions();
             		hbaseUniversalVersionCombo.getCombo().setItems(hbaseVersions.toArray(new String[hbaseVersions.size()]));
             		hbaseUniversalVersionCombo.getCombo().select(0);
@@ -6454,8 +6451,7 @@ public class DatabaseForm extends AbstractForm {
         DatabaseConnection connection = getConnection();
         String hadoopDistribution = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HBASE_DISTRIBUTION);
         IHDistribution hBaseDistribution = getHBaseDistribution(hadoopDistribution, false);
-        String distributionDisplayName = hBaseDistribution.getDisplayName();
-        if ("Universal".equals(distributionDisplayName)) {
+        if (hBaseDistribution.getDisplayName() != null && "Universal".equals(hBaseDistribution.getDisplayName())) {
         	if (hbaseUniversalVersionCombo.getSelectionIndex() == -1) {
                 updateStatus(IStatus.WARNING, Messages.getString("DatabaseForm.hbase.versionAlert")); //$NON-NLS-1$
                 return false;
@@ -8987,8 +8983,7 @@ public class DatabaseForm extends AbstractForm {
         DatabaseConnection connection = getConnection();
         String hadoopDistribution = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HBASE_DISTRIBUTION);
         IHDistribution hBaseDistribution = getHBaseDistribution(hadoopDistribution, false);
-        String distributionDisplayName = hBaseDistribution.getDisplayName();
-        if ("Universal".equals(distributionDisplayName)) {
+        if (hBaseDistribution.getDisplayName() != null && "Universal".equals(hBaseDistribution.getDisplayName())) {
         	hiveVersionCombo.setHideWidgets(true);
         } else {
         	hiveVersionCombo.setHideWidgets(hide);
@@ -9001,7 +8996,7 @@ public class DatabaseForm extends AbstractForm {
             GridData yarnCompGd = (GridData) yarnComp.getLayoutData();
             IHDistribution currentHiveDistribution = getCurrentHiveDistribution(false);
             if (currentHiveDistribution != null && currentHiveDistribution.useCustom()) {
-            	if ("Universal".equals(distributionDisplayName)) {
+            	if (hBaseDistribution.getDisplayName() != null && "Universal".equals(hBaseDistribution.getDisplayName())) {
                 	hiveVersionCombo.setHideWidgets(true);
                 } else {
                 	hiveVersionCombo.setHideWidgets(hide);
@@ -9017,7 +9012,7 @@ public class DatabaseForm extends AbstractForm {
                 } else {
                     hiveServerVersionCombo.setHideWidgets(true);
                 }
-                if ("Universal".equals(distributionDisplayName)) {
+                if (hBaseDistribution.getDisplayName() != null && "Universal".equals(hBaseDistribution.getDisplayName())) {
                 	hiveVersionCombo.setHideWidgets(true);
                 } else {
                 	hiveVersionCombo.setHideWidgets(hide);
@@ -9087,8 +9082,7 @@ public class DatabaseForm extends AbstractForm {
         DatabaseConnection connection = getConnection();
         String hadoopDistribution = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_HBASE_DISTRIBUTION);
         IHDistribution hBaseDistribution = getHBaseDistribution(hadoopDistribution, false);
-        String distributionDisplayName = hBaseDistribution.getDisplayName();
-        if ("Universal".equals(distributionDisplayName)) {
+        if (hBaseDistribution.getDisplayName() != null && "Universal".equals(hBaseDistribution.getDisplayName())) {
         	hiveVersionCombo.setHideWidgets(true);
         } else {
         	hiveVersionCombo.setHideWidgets(hide);
