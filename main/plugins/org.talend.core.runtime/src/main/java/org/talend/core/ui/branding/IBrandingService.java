@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
 import org.w3c.dom.Element;
 
@@ -58,4 +59,13 @@ public interface IBrandingService extends IService {
     public String getUserManuals();
 
     public String getRoutineLicenseHeader(String version);
+
+    public static IBrandingService get() {
+        GlobalServiceRegister gsr = GlobalServiceRegister.getDefault();
+        if (gsr.isServiceRegistered(IBrandingService.class)) {
+            return gsr.getService(IBrandingService.class);
+        }
+        return null;
+    }
+
 }
