@@ -46,7 +46,7 @@
                                 <artifactItem>
                                     <groupId>org.talend.studio</groupId>
                                     <artifactId>studio-maven-repository</artifactId>
-                                    <version>7.4.1.v20210427</version>
+                                    <version>8.0.1.v20210826</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.basedir}/../repository</outputDirectory>
