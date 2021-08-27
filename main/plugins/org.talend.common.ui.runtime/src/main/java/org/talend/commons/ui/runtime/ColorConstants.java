@@ -33,4 +33,6 @@ public interface ColorConstants {
     static final Color VERTICAL_SEPERATOR_LINE_COLOR = new Color(null, 162, 179, 195);
 
     static final Color LOCHMARA_COLOR = new Color(null, 6, 117, 193);
+
+    static final Color WATHET_COLOR = new Color(null, 135, 206, 235);
 }
