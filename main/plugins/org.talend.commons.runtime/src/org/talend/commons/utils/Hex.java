@@ -56,6 +56,19 @@ public class Hex {
 
         return out;
     }
+    
+    public static boolean isNeedConvertToHex(String value) {
+        if (value == null || "".equals(value.trim())) {
+            return false;
+        }
+        for (int i = 0; i < value.length(); i++) {
+            int ch = value.charAt(i);
+            if (ch < 32) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private static int toDigit(char ch, int index) {
         int digit = Character.digit(ch, 16);
