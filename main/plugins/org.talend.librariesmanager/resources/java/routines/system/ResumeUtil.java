@@ -16,10 +16,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -555,13 +555,13 @@ public class ResumeUtil {
          */
         public void flush() {
             try {
-                buf.flip();
+                ((Buffer) buf).flip();
                 channel.position(channel.size());
                 while(buf.hasRemaining()) {
                     channel.write(buf);
                 }
                 channel.force(true);
-                buf.clear();
+                ((Buffer) buf).clear();
             } catch (IOException e) {
                 e.printStackTrace();
             }
