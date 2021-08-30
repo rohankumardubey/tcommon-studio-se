@@ -41,7 +41,7 @@ import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryManager;
-import org.talend.core.model.repository.SVNConstant;
+import org.talend.core.model.repository.GITConstant;
 import org.talend.core.model.utils.TalendPropertiesUtil;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.util.URIHelper;
@@ -63,13 +63,13 @@ public final class ProjectManager {
 
     public static final String UNDER_LINE = "_"; //$NON-NLS-1$
 
-    public static final String SEP_CHAR = SVNConstant.SEP_CHAR;
+    public static final String SEP_CHAR = GITConstant.SEP_CHAR;
 
-    public static final String NAME_TRUNK = SVNConstant.NAME_TRUNK;
+    public static final String NAME_TRUNK = GITConstant.NAME_TRUNK;
 
-    public static final String NAME_BRANCHES = SVNConstant.NAME_BRANCHES;
+    public static final String NAME_BRANCHES = GITConstant.NAME_BRANCHES;
 
-    public static final String NAME_TAGS = SVNConstant.NAME_TAGS;
+    public static final String NAME_TAGS = GITConstant.NAME_TAGS;
 
     public static final String BRANCHES_PREFIX = "branches/";
 
@@ -627,8 +627,8 @@ public final class ProjectManager {
            */
 
         if (!branchSelection.contains(NAME_TAGS) && !branchSelection.contains(NAME_BRANCHES)
-                && !branchSelection.contains(NAME_TRUNK) && !branchSelection.contains(SVNConstant.NAME_MASTER)
-                && !branchSelection.contains(SVNConstant.NAME_MAIN)) {
+                && !branchSelection.contains(NAME_TRUNK) && !branchSelection.contains(GITConstant.NAME_MASTER)
+                && !branchSelection.contains(GITConstant.NAME_MAIN)) {
             branchSelection = NAME_BRANCHES + branchSelection;
         }
         return branchSelection;
@@ -656,7 +656,7 @@ public final class ProjectManager {
         if (fields == null || technicalLabel == null) {
             return branchForMainProject;
         }
-        String branchKey = IProxyRepositoryFactory.BRANCH_SELECTION + SVNConstant.UNDER_LINE_CHAR + technicalLabel;
+        String branchKey = IProxyRepositoryFactory.BRANCH_SELECTION + GITConstant.UNDER_LINE_CHAR + technicalLabel;
         if (fields.containsKey(branchKey)) {
             branchForMainProject = fields.get(branchKey);
         }
@@ -668,12 +668,12 @@ public final class ProjectManager {
 
     public String getFormatedBranchName(String branchName) {
         String formatedBranchName = branchName;
-        if (!branchName.startsWith(SVNConstant.NAME_TAGS + SVNConstant.SEP_CHAR)
-                && !branchName.startsWith(SVNConstant.NAME_BRANCHES + SVNConstant.SEP_CHAR)
-                && !branchName.startsWith(SVNConstant.NAME_ORIGIN + SVNConstant.SEP_CHAR)
-                && !branchName.equals(SVNConstant.NAME_TRUNK) && !branchName.equals(SVNConstant.NAME_MASTER)
-                && !branchName.equals(SVNConstant.NAME_MAIN)) {
-            formatedBranchName = SVNConstant.NAME_BRANCHES + SVNConstant.SEP_CHAR + branchName;
+        if (!branchName.startsWith(GITConstant.NAME_TAGS + GITConstant.SEP_CHAR)
+                && !branchName.startsWith(GITConstant.NAME_BRANCHES + GITConstant.SEP_CHAR)
+                && !branchName.startsWith(GITConstant.NAME_ORIGIN + GITConstant.SEP_CHAR)
+                && !branchName.equals(GITConstant.NAME_TRUNK) && !branchName.equals(GITConstant.NAME_MASTER)
+                && !branchName.equals(GITConstant.NAME_MAIN)) {
+            formatedBranchName = GITConstant.NAME_BRANCHES + GITConstant.SEP_CHAR + branchName;
         }
         return formatedBranchName;
     }
@@ -723,7 +723,7 @@ public final class ProjectManager {
         if (fields == null || technicalLabel == null) {
             return;
         }
-        String key = IProxyRepositoryFactory.BRANCH_SELECTION + SVNConstant.UNDER_LINE_CHAR + technicalLabel;
+        String key = IProxyRepositoryFactory.BRANCH_SELECTION + GITConstant.UNDER_LINE_CHAR + technicalLabel;
         // TDI-23291:when branchValue is null,should not set "" to the branchkey.
         if (branchValue != null) {
             fields.put(key, branchValue);

@@ -34,8 +34,6 @@ import org.talend.commons.ui.swt.formtools.LabelledText;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ILibraryManagerService;
-import org.talend.core.ISVNProviderServiceInCoreRuntime;
-import org.talend.core.PluginChecker;
 import org.talend.core.runtime.i18n.Messages;
 
 /**

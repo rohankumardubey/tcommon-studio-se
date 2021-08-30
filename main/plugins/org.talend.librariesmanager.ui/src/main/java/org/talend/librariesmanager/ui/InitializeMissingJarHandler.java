@@ -25,8 +25,6 @@ import org.osgi.framework.ServiceReference;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ILibraryManagerService;
-import org.talend.core.ISVNProviderServiceInCoreRuntime;
-import org.talend.core.PluginChecker;
 import org.talend.core.model.general.ILibrariesService;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.ModuleNeeded.ELibraryInstallStatus;

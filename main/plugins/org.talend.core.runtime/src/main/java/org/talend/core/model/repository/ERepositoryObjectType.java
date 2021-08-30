@@ -104,9 +104,6 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
     public final static ERepositoryObjectType GIT_ROOT = new ERepositoryObjectType("repository.gitroot", "", "GIT_ROOT", true, 1,
             new String[] { PROD_DI, PROD_DQ }, new String[] {}, false);
 
-    public final static ERepositoryObjectType SVN_ROOT = new ERepositoryObjectType("repository.svnroot", "", "SVN_ROOT", true, 1,
-            new String[] { PROD_DI, PROD_DQ }, new String[] {}, false);
-
     public final static ERepositoryObjectType SNIPPETS = new ERepositoryObjectType("repository.snippets", "code/snippets",
             "SNIPPETS", true, 10, new String[] { PROD_DI }, new String[] {}, false);
 

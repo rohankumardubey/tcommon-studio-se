@@ -72,11 +72,6 @@ public class RepositoryConstants {
 
     public static final String FOLDER_PATTERN = "^[a-zA-Z]+[a-zA-Z0-9\\_]*$"; //$NON-NLS-1$
 
-    public static final String SVN_POMS_FILE_INCLUDE_PATTERN =
-            "poms/.*(pom\\.xml|pom-bundle\\.xml|pom-feature\\.xml|pom-microservice\\.xml|pom-control-bundle\\.xml)"; //$NON-NLS-1$
-
-    public static final String SVN_POMS_FOLDER_EXCLUDE_PATTERN = "poms/.*(/\\.settings|/src|/target|/tests)"; //$NON-NLS-1$
-
     public static final String REPOSITORY_ITEM_PATTERN_INTERN = "a-zA-Z0-9\\.\\-\\_\\ \\(\\)\\[\\]="; //$NON-NLS-1$
 
     public static final String REPOSITORY_ITEM_PATTERN = "^[" + REPOSITORY_ITEM_PATTERN_INTERN + "]+$"; //$NON-NLS-1$ //$NON-NLS-2$

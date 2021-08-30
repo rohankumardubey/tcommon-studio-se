@@ -1468,7 +1468,6 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                 moveResource(resource, path);
             }
             IPath parentPath = getPhysicalProject(project).getFullPath().append(completeNewPath);
-            svnMoveResource(affectedResources, parentPath, resourceAndPathMap);
             // Save the cross references.
             saveCrossReference(crossReferences);
             affectedResources = xmiResourceManager.getAffectedResources(object.getProperty());
@@ -1589,7 +1588,6 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                             moveResource(resource, path);
                         }
                     }
-                    svnMoveResource(allResource, parentPath, resourceAndPathMap);
                     // Save cross references.
                     saveCrossReference(crossReferences);
 
@@ -1670,7 +1668,6 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
             moveResource(resource, path);
         }
         IPath parentPath = getPhysicalProject(project).getFullPath().append(completeNewPath);
-        svnMoveResource(affectedResources, parentPath, resourceAndPathMap);
         // Save the cross reference.
         saveCrossReference(crossReferences);
 
@@ -1969,7 +1966,6 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
             crossReferences.addAll(findCrossReference(resource));
             moveResource(resource, path);
         }
-        svnMoveResource(allResource, parentPath, resourceAndPathMap);
         // Save cross references.
         saveCrossReference(crossReferences);
 
@@ -2050,7 +2046,6 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                 moveResource(resource, path);
 
             }
-            svnMoveResource(affectedResources, parentPath, resourceAndPathMap);
             // Save cross references
             saveCrossReference(crossReferences);
             // all resources attached must be saved again after move the resources, or author will link to wrong path
@@ -2129,8 +2124,6 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
         xmiResourceManager.moveResource(resource, path);
     }
 
-    protected void svnMoveResource(List<Resource> resources, IPath path, Map<Resource, IPath> map) throws PersistenceException {
-    }
 
     @Override
     public boolean lock(Item item) throws PersistenceException {
@@ -2876,7 +2869,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                     }
                 };
                 repositoryWorkUnit.setForceTransaction(true);
-                repositoryWorkUnit.setAvoidSvnUpdate(true);
+                repositoryWorkUnit.setAvoidUpdate(true);
                 repositoryWorkUnit.setAvoidUnloadResources(true);
                 repositoryWorkUnit.setRefreshRepository(false);
                 executeRepositoryWorkUnit(repositoryWorkUnit);

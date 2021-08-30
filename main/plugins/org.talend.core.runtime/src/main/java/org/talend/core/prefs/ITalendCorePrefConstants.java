@@ -47,7 +47,6 @@ public interface ITalendCorePrefConstants {
     /** Last used project. */
     public static final String LAST_USED_PROJECT = "lastUSedProject"; //$NON-NLS-1$
 
-    public static final String LAST_USED_SVN_BRANCH = "lastUSedSVNBranch"; //$NON-NLS-1$
 
     /** Last used user. */
     public static final String LAST_USED_USER = "lastUSedUser"; //$NON-NLS-1$
@@ -164,10 +163,6 @@ public interface ITalendCorePrefConstants {
     public static final String CoreUIPlugin_ID = "org.talend.core.ui"; //$NON-NLS-1$
 
     public static final String TOP_INSTALL_DONE = "top.install.done"; //$NON-NLS-1$
-
-    public static final String SVN_UPDATE_INFO_AUTO_CHECK = "PerformancePreferencePage.svn_update_info_auto_check"; //$NON-NLS-1$
-
-    public static final String SVN_UPDATE_INFO_AUTO_CHECK_TIME_INTERVAL = "PerformancePreferencePage.svn_update_info_auto_check_time_interval"; //$NON-NLS-1$
 
     public static final String AUTO_REFRESH_LOCKS = "PerformancePreferencePage.auto_refresh_locks"; //$NON-NLS-1$
 
