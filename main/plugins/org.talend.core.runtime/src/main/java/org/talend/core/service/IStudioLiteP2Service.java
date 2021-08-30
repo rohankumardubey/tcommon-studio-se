@@ -73,6 +73,7 @@ public interface IStudioLiteP2Service extends IService {
 
     ValidatePotentialFeaturesHook validatePotentialFeatures(IProgressMonitor monitor, Project proj) throws Exception;
 
+    int installRequiredFeatures(IProgressMonitor monitor, ValidateRequiredFeaturesHook hook, Project proj) throws Exception;
     /**
      * selected features will be write into the required feature list of project
      * 

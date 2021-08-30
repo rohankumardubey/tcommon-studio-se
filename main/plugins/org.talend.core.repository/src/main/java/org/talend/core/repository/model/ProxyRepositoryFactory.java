@@ -2180,7 +2180,8 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                 ProjectManager.getInstance().getUpdatedRemoteHandlerRecords().clear();
                 ReferenceProjectProvider.clearTacReferenceList();
                 ReferenceProjectProblemManager.getInstance().clearAll();
-                this.repositoryFactoryFromProvider.beforeLogon(monitor, project);
+                currentMonitor = subMonitor.newChild(1, SubMonitor.SUPPRESS_NONE);
+                this.repositoryFactoryFromProvider.beforeLogon(currentMonitor, project);
                 ProjectManager.getInstance().getBeforeLogonRecords().clear();
                 ProjectManager.getInstance().getUpdatedRemoteHandlerRecords().clear();
                 ILibrariesService librariesService = getLibrariesService();
