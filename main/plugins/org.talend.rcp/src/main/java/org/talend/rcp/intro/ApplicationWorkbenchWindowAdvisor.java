@@ -640,6 +640,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
             }
         }
         super.postWindowClose();
+        
+        if (timer != null) {
+            timer.cancel();
+        }
     }
 
     /*
