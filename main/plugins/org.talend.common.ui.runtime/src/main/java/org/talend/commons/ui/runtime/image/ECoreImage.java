@@ -49,7 +49,6 @@ public enum ECoreImage implements IImage {
     FOLDER_CLOSE_ICON("/icons1/folder_close.png"), //$NON-NLS-1$
     FOLDER_WIZ("/icons1/folder_wiz.gif"), //$NON-NLS-1$
 
-    SVN_ROOT_ICON("/icons1/svn.gif"), //$NON-NLS-1$
     BUSINESS_PROCESS_ICON("/icons1/businessProcess.png"), //$NON-NLS-1$
     BUSINESS_PROCESS_WIZ("/icons1/business_wiz.png"), //$NON-NLS-1$
     PROCESS_ICON("/icons1/process_icon.png"), //$NON-NLS-1$

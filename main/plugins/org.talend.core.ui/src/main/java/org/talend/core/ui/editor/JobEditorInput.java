@@ -171,7 +171,7 @@ public abstract class JobEditorInput extends RepositoryEditorInput {
                     }
                 };
                 rwu.setAvoidUnloadResources(true);
-                rwu.setAvoidSvnUpdate(true);
+                rwu.setAvoidUpdate(true);
                 rwu.setAvoidUpdateLocks(true);
                 factory.executeRepositoryWorkUnit(rwu);
                 rwu.throwPersistenceExceptionIfAny();

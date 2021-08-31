@@ -200,7 +200,7 @@ public class RepositoryDropAdapter extends PluginDropAdapter {
                             }
                         }
                     };
-                    repositoryWorkUnit.setAvoidSvnUpdate(true);
+                    repositoryWorkUnit.setAvoidUpdate(true);
                     repositoryWorkUnit.setAvoidUnloadResources(true);
                     ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(repositoryWorkUnit);
                 }

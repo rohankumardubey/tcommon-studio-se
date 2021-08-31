@@ -111,7 +111,7 @@ public class CreateFolderAction extends AContextualAction {
                         || property.equals(ERepositoryObjectType.JOB_DOC) || property.equals(ERepositoryObjectType.JOBLET_DOC)
                         || ERepositoryObjectType.SQLPATTERNS.equals(property)
                         || ERepositoryObjectType.REFERENCED_PROJECTS.equals(property)
-                        || ERepositoryObjectType.SVN_ROOT.equals(property) || ERepositoryObjectType.ROUTINESJAR.equals(property)
+                        || ERepositoryObjectType.ROUTINESJAR.equals(property)
                         || property.equals(ERepositoryObjectType.BEANSJAR)) {
                     canWork = false;
                 } else if (property != null

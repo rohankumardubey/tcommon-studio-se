@@ -82,7 +82,7 @@ import org.talend.core.model.repository.RepositoryContentManager;
 import org.talend.core.model.repository.RepositoryManager;
 import org.talend.core.model.repository.RepositoryNodeProviderRegistryReader;
 import org.talend.core.model.repository.RepositoryViewObject;
-import org.talend.core.model.repository.SVNConstant;
+import org.talend.core.model.repository.GITConstant;
 import org.talend.core.repository.i18n.Messages;
 import org.talend.core.repository.model.repositoryObject.MetadataColumnRepositoryObject;
 import org.talend.core.repository.model.repositoryObject.MetadataTableRepositoryObject;
@@ -2189,8 +2189,8 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
             String branch = ProjectManager.getInstance().getMainProjectBranch(project);
             if ("".equals(branch) || branch == null) { //$NON-NLS-1$
                 branch = null;
-            } else if (!branch.contains(SVNConstant.NAME_TRUNK) && !branch.contains(SVNConstant.NAME_BRANCHES)
-                    && !branch.contains(SVNConstant.NAME_TAGS)) {
+            } else if (!branch.contains(GITConstant.NAME_TRUNK) && !branch.contains(GITConstant.NAME_BRANCHES)
+                    && !branch.contains(GITConstant.NAME_TAGS)) {
                 branch = null;
             }
             urlBranch = branch;

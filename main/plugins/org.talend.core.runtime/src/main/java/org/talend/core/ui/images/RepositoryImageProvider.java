@@ -28,9 +28,7 @@ public class RepositoryImageProvider {
 
     public static IImage getIcon(ERepositoryObjectType type) {
 
-        if (type == ERepositoryObjectType.SVN_ROOT) {
-            return ECoreImage.SVN_ROOT_ICON;
-        } else if (type == ERepositoryObjectType.PROCESS) {
+        if (type == ERepositoryObjectType.PROCESS) {
             return ECoreImage.PROCESS_ICON;
         } else if (type == ERepositoryObjectType.JOBLET) {
             return ECoreImage.JOBLET_STANDARD_ICON;

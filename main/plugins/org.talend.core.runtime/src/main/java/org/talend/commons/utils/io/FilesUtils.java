@@ -73,7 +73,7 @@ import org.talend.commons.utils.encoding.CharsetToolkit;
 import org.talend.commons.utils.network.NetworkUtil;
 import org.talend.commons.utils.system.EnvironmentUtils;
 import org.talend.core.model.metadata.builder.connection.FileConnection;
-import org.talend.core.model.repository.SVNConstant;
+import org.talend.core.model.repository.GITConstant;
 import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -912,7 +912,7 @@ public class FilesUtils {
             tarpath.mkdir();
             File[] dir = source.listFiles();
             for (File element : dir) {
-                if (element.getName().equals(SVNConstant.SVN_FOLDER)) {
+                if (element.getName().equals(GITConstant.SVN_FOLDER)) {
                     continue;
                 }
                 copyDirectoryWithoutSvnFolder(element, tarpath);

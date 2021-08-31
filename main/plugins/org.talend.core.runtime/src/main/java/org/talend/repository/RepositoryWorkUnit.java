@@ -52,7 +52,7 @@ public abstract class RepositoryWorkUnit<T> {
     /**
      * Usefull for some save only actions, where we're sure everything is up to date.
      */
-    private boolean avoidSvnUpdate;
+    private boolean avoidUpdate;
 
     public Object getStartingPoint() {
         return startingPoint;
@@ -159,8 +159,8 @@ public abstract class RepositoryWorkUnit<T> {
      *
      * @return the avoidSvnUpdate
      */
-    public boolean isAvoidSvnUpdate() {
-        return this.avoidSvnUpdate;
+    public boolean isAvoidUpdate() {
+        return this.avoidUpdate;
     }
 
     /**
@@ -168,8 +168,8 @@ public abstract class RepositoryWorkUnit<T> {
      *
      * @param avoidSvnUpdate the avoidSvnUpdate to set
      */
-    public void setAvoidSvnUpdate(boolean avoidSvnUpdate) {
-        this.avoidSvnUpdate = avoidSvnUpdate;
+    public void setAvoidUpdate(boolean avoidSvnUpdate) {
+        this.avoidUpdate = avoidSvnUpdate;
     }
 
     /**

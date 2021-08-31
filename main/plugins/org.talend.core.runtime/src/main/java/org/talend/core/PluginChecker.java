@@ -66,8 +66,6 @@ public class PluginChecker {
 
     private static final String REMOTE_PROVIDER_PLUGIN_ID = "org.talend.repository.remoteprovider"; //$NON-NLS-1$
 
-    private static final String SVN_PROVIDER_PLUGIN_ID = "org.talend.repository.svnprovider"; //$NON-NLS-1$
-
     private static final String GIT_PROVIDER_PLUGIN_ID = "org.talend.repository.gitprovider"; //$NON-NLS-1$
 
     public static final String CORE_TIS_PLUGIN_ID = "org.talend.core.tis"; //$NON-NLS-1$
@@ -283,10 +281,6 @@ public class PluginChecker {
 
     public static boolean isRemoteProviderPluginLoaded() {
         return isPluginLoaded(REMOTE_PROVIDER_PLUGIN_ID);
-    }
-
-    public static boolean isSVNProviderPluginLoaded() {
-        return isPluginLoaded(SVN_PROVIDER_PLUGIN_ID);
     }
 
     public static boolean isGITProviderPluginLoaded() {

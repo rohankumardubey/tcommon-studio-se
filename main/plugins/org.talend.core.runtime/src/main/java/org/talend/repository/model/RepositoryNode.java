@@ -293,9 +293,6 @@ public class RepositoryNode implements IRepositoryNode, IActionFilter {
         default:
             final ERepositoryObjectType contentType = getContentType();
             if (contentType != null) {
-                if ("SVN".equals(contentType.toString())) {
-                    return getProperties(EProperties.LABEL).toString();
-                }
                 if (contentType.equals(ERepositoryObjectType.PROCESS)) {
                     return getProperties(EProperties.LABEL).toString();
                 }

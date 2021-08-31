@@ -15,9 +15,7 @@ package org.talend.core.model.repository;
 /**
  * ggu class global comment. Detailled comment
  */
-public interface SVNConstant {
-
-    public static final String SVN = "svn"; //$NON-NLS-1$
+public interface GITConstant {
 
     public static final String NAME_TRUNK = "trunk"; //$NON-NLS-1$
 

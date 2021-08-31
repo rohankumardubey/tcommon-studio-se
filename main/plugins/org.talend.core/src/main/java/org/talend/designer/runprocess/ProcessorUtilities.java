@@ -107,7 +107,6 @@ import org.talend.core.runtime.repository.build.BuildExportManager;
 import org.talend.core.service.IResourcesDependenciesService;
 import org.talend.core.services.ICoreTisService;
 import org.talend.core.services.IGITProviderService;
-import org.talend.core.services.ISVNProviderService;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.utils.BitwiseOptionUtils;
@@ -1821,18 +1820,12 @@ public class ProcessorUtilities {
     }
     
     public static boolean isRemoteProject() {
-        ISVNProviderService svnService = null;
-        if (PluginChecker.isSVNProviderPluginLoaded()) {
-        	svnService = GlobalServiceRegister.getDefault().getService(ISVNProviderService.class);
-        }
-        
-        
         IGITProviderService gitService = null;
         if (PluginChecker.isGITProviderPluginLoaded()) {
         	gitService = GlobalServiceRegister.getDefault().getService(IGITProviderService.class);
         }
         
-        if ((svnService != null && svnService.isProjectInSvnMode()) || (gitService != null && gitService.isProjectInGitMode()) ) {
+        if ((gitService != null && gitService.isProjectInGitMode())) {
         	return true;
         }
         
