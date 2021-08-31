@@ -12,9 +12,11 @@
 // ============================================================================
 package org.talend.core.service;
 
+import java.io.File;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.talend.core.GlobalServiceRegister;
@@ -60,7 +62,7 @@ public interface IStudioLiteP2Service extends IService {
 
     boolean performUpdate(IProgressMonitor monitor, CheckUpdateHook hook) throws Exception;
 
-    ValidateRequiredFeaturesHook validateRequiredFeatures(IProgressMonitor monitor, Project proj) throws Exception;
+    ValidateRequiredFeaturesHook validateRequiredFeatures(IProgressMonitor monitor, Project proj, String oldRequireFeatureFile) throws Exception;
 
     /**
      * show required features, and choose what to do
@@ -140,6 +142,8 @@ public interface IStudioLiteP2Service extends IService {
         boolean isMissingRequiredFeatures();
 
         List<IInstallableUnitInfo> getMissingRequiredFeatures();
+        
+        Set<IInstallableUnitInfo> getDeActivatedFeatures();
 
     }
 
