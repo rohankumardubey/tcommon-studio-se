@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.IHandler;
@@ -147,6 +149,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
     public static final IExtensionPointLimiter GLOBAL_ACTIONS = new ExtensionPointLimiterImpl("org.talend.core.global_actions", //$NON-NLS-1$
             "GlobalAction"); //$NON-NLS-1$
 
+    private Timer timer = new Timer();
+    
     /**
      * constant from org.eclipse.ui.internal.IWorkbenchConstants;
      */
@@ -456,6 +460,23 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
                 }
             });
         }
+        
+        timer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                Display.getDefault().asyncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        // TODO Auto-generated method stub
+                        NotificationPopUp np = new NotificationPopUp(PlatformUI.getWorkbench().getDisplay());
+                        np.open();
+                    }
+                });
+            }
+
+        }, 20000);
     }
 
     private void showStarting() {
