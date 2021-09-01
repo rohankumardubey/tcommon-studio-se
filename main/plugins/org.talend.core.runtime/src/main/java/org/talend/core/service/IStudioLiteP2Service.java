@@ -16,6 +16,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
@@ -40,6 +41,10 @@ public interface IStudioLiteP2Service extends IService {
      * cancel current action
      */
     public static final int RESULT_CANCEL = 2;
+
+    String getProfileIdForProject(String projTechnicalName, boolean isRemoteProject);
+
+    void onProjectDeletion(IProgressMonitor monitor, IProject deletedProj) throws Exception;
 
     void setProfileKey(String profKey) throws Exception;
 
