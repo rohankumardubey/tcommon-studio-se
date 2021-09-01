@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SparkMetadataTalendTypeFilter extends MetadataTalendTypeFilter {
-
+	
     private final static List<String> UNSUPPORTED_TYPES = Arrays.asList(new String[] { "Document", "Dynamic" }); //$NON-NLS-1$ //$NON-NLS-2$
 
     private final static String ROWGENERATOR_COMPONENT_NAME = "tRowGenerator"; //$NON-NLS-1$
@@ -52,22 +52,39 @@ public class SparkMetadataTalendTypeFilter extends MetadataTalendTypeFilter {
         COMPONENT_UNSUPPORTED_TYPES.put(INPUTKUDU_COMPONENT_NAME, Arrays.asList(new String[] { "Object", "List", "Vector", "byte[]", "BigDecimal" })); //$NON-NLS-1$ //$NON-NLS-2$
         COMPONENT_UNSUPPORTED_TYPES.put(OUTPUTKUDU_COMPONENT_NAME, Arrays.asList(new String[] { "Object", "List", "Vector", "byte[]", "BigDecimal" })); //$NON-NLS-1$ //$NON-NLS-2$
     }
+    
+    public static String DYNAMIC = "Dynamic";
 
     public SparkMetadataTalendTypeFilter(String componentName) {
         this.mComponentName = componentName;
     }
 
-    @Override
-    protected List<String> getUnsupportedTypes() {
-        List<String> currentComponentUnsupportedType = COMPONENT_UNSUPPORTED_TYPES.get(this.mComponentName);
-        if (currentComponentUnsupportedType != null) {
-            List<String> unionList = new ArrayList<>();
-            unionList.addAll(currentComponentUnsupportedType);
-            unionList.addAll(UNSUPPORTED_TYPES);
-            return unionList;
-        } else {
-            return UNSUPPORTED_TYPES;
-        }
-    }
+	@Override
+	protected List<String> getUnsupportedTypes() {
+		List<String> unsupportedTypes = new ArrayList<String>(UNSUPPORTED_TYPES);
 
+		// Add component specific unsupported types
+		List<String> currentComponentUnsupportedType = COMPONENT_UNSUPPORTED_TYPES.get(this.mComponentName);
+		if (currentComponentUnsupportedType != null) {
+			unsupportedTypes.addAll(currentComponentUnsupportedType);
+		}
+
+		// Remove component specific supported types
+		List<String> componentSpecificTypes = getComponentSpecificTypes(this.mComponentName);
+		if (componentSpecificTypes != null) {
+			unsupportedTypes.removeIf(item -> componentSpecificTypes.contains(item));
+		}
+
+		return unsupportedTypes;
+	}
+    
+	/**
+	 * Get a list of types that are specifically supported by a component
+	 *  
+	 * @param componentName
+	 * @return
+	 */
+	protected List<String> getComponentSpecificTypes(String componentName) {
+		return null;
+	}
 }

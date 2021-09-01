@@ -34,6 +34,7 @@ import org.talend.core.model.metadata.DummyMetadataTalendTypeFilter;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataTalendTypeFilter;
 import org.talend.core.model.metadata.MrMetadataTalendTypeFilter;
+import org.talend.core.model.metadata.SparkBatchMetadataTalendTypeFilter;
 import org.talend.core.model.metadata.SparkMetadataTalendTypeFilter;
 import org.talend.core.model.metadata.StormMetadataTalendTypeFilter;
 import org.talend.core.model.process.AbstractNode;
@@ -1394,8 +1395,11 @@ public class NodeUtil {
             if (ComponentCategory.CATEGORY_4_MAPREDUCE == cat) {
                 return new MrMetadataTalendTypeFilter();
             }
-            if (ComponentCategory.CATEGORY_4_SPARK == cat || ComponentCategory.CATEGORY_4_SPARKSTREAMING == cat) {
-                return new SparkMetadataTalendTypeFilter(node.getComponent().getName());
+            if (ComponentCategory.CATEGORY_4_SPARK == cat) {
+                return new SparkBatchMetadataTalendTypeFilter(node.getComponent().getName());
+            }
+            if (ComponentCategory.CATEGORY_4_SPARKSTREAMING == cat) {
+            	return new SparkMetadataTalendTypeFilter(node.getComponent().getName());
             }
             if (ComponentCategory.CATEGORY_4_STORM == cat) {
                 return new StormMetadataTalendTypeFilter(node.getComponent().getName());
