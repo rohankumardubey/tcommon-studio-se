@@ -3180,6 +3180,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
         return xmiResourceManager.loadProperty(file);
     }
 
+    @Override
     public Property reload(Property property, IFile file) {
         // IFile file = URIHelper.getFile(property.eResource().getURI());
         List<Resource> affectedResources = xmiResourceManager.getAffectedResources(property);
@@ -3394,7 +3395,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
         try {
             IStudioLiteP2Service p2Service = IStudioLiteP2Service.get();
             if (p2Service != null) {
-                String profKey = "L_" + project.getTechnicalLabel();
+                String profKey = p2Service.getProfileIdForProject(project.getTechnicalLabel(), false);
                 p2Service.setProfileKey(profKey);
                 IProgressMonitor subMonitor = SubMonitor.convert(monitor);
                 int adaptResult = p2Service.adaptFeaturesForProject(subMonitor, project);
@@ -3874,6 +3875,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
         // nothing to do
     }
 
+    @Override
     public void initProjectRepository(Project project, String branchForMainProject) throws PersistenceException {
     }
 
@@ -3897,6 +3899,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
         }// else no bundle for this, should never happend.
     }
 
+    @Override
     public byte[] getReferenceSettingContent(Project project, String branch) throws PersistenceException {
         return null;
     }

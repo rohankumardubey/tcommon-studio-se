@@ -46,6 +46,10 @@ public class EclipseCommandLine {
 
     static public final String CLEAN = "-clean"; //$NON-NLS-1$
 
+    public static final String PROP_CLEAR_PERSISTED_STATE = "clearPersistedState";
+
+    public static final String PROP_DO_CLEAR_PERSISTED_STATE = "-talend.clearPersistedState";
+
     /**
      * Use it to specify the type of project that will be use to configure the studio when relaunched
      */
