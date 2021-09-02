@@ -22,7 +22,7 @@ public class SparkMetadataTalendTypeFilter extends MetadataTalendTypeFilter {
 	
     private final static List<String> UNSUPPORTED_TYPES = Arrays.asList(new String[] { "Document", "Dynamic" }); //$NON-NLS-1$ //$NON-NLS-2$
 
-    private final static String ROWGENERATOR_COMPONENT_NAME = "tRowGenerator"; //$NON-NLS-1$
+    public final static String ROWGENERATOR_COMPONENT_NAME = "tRowGenerator"; //$NON-NLS-1$
 
     protected final static String INPUTPARQUET_COMPONENT_NAME = "tFileInputParquet", INPUTSTREAMPARQUET_COMPONENT_NAME = "tFileStreamInputParquet", OUTPUTPARQUET_COMPONENT_NAME = "tFileOutputParquet"; //$NON-NLS-1$; //$NON-NLS-2$ //$NON-NLS-3$
 

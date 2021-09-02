@@ -5,7 +5,7 @@ import java.util.List;
 
 public class SparkBatchMetadataTalendTypeFilter extends SparkMetadataTalendTypeFilter{
 	
-	private static List<String> dynamicTypeCompatibleComponents = Arrays.asList(
+	public static List<String> dynamicTypeCompatibleComponents = Arrays.asList(
 			"tDeltaLakeInput", 
 			"tDeltaLakeOutput", 
 			"tFileInputParquet", 
