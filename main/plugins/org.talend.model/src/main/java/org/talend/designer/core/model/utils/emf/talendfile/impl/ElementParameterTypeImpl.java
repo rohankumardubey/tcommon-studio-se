@@ -302,7 +302,7 @@ public class ElementParameterTypeImpl extends EObjectImpl implements ElementPara
             if (StudioEncryption.hasEncryptionSymbol(value)) {
                 decrypt = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM).decrypt(value);
             } else {
-                // Some migration task: GenerateJobPomMigrationTask invokes this method
+                // Some migration tasks invokes this method
                 decrypt = CryptoMigrationUtil.decrypt(value);
             }
 

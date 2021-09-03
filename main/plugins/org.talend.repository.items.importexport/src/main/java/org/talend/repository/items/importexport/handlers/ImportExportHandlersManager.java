@@ -1013,7 +1013,7 @@ public class ImportExportHandlersManager {
             List<ImportItem> importedItems = ImportCacheHelper.getInstance().getImportedItemRecords();
             boolean needUpdateCode = importedItems.stream().anyMatch(item -> ERepositoryObjectType.getAllTypesOfCodes()
                     .contains(ERepositoryObjectType.getItemType(item.getItem())));
-            new AggregatorPomsHelper().updateCodeProjects(monitor, needUpdateCode, needUpdateCode);
+            new AggregatorPomsHelper().updateCodeProjects(monitor, needUpdateCode);
             Set<CodesJarInfo> codesJarsToUpdate = importedItems.stream()
                     .filter(item -> ERepositoryObjectType.getAllTypesOfCodesJar()
                             .contains(ERepositoryObjectType.getItemType(item.getItem())))
@@ -1021,7 +1021,7 @@ public class ImportExportHandlersManager {
             if (codesJarsToUpdate.isEmpty()) {
                 CodesJarM2CacheManager.updateCodesJarProject(monitor, false, true, false);
             } else {
-                CodesJarM2CacheManager.updateCodesJarProject(monitor, codesJarsToUpdate, false, false, false);
+                CodesJarM2CacheManager.updateCodesJarProject(monitor, codesJarsToUpdate, false, false);
             }
 
             progressMonitor.done();

@@ -68,7 +68,6 @@ import org.talend.designer.maven.tools.creator.CreateMavenRoutinesJarPom;
 import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IRunProcessService;
-import org.talend.repository.RepositoryWorkUnit;
 import org.talend.utils.io.FilesUtils;
 
 public class CodesJarM2CacheManager {
@@ -266,7 +265,7 @@ public class CodesJarM2CacheManager {
         // compile directly for the rest of jar projects
         allCodesJars.stream().map(info -> IRunProcessService.get().getExistingTalendCodesJarProject(info)).filter(p -> p != null)
                 .forEach(p -> p.buildWholeCodeProject());
-        updateCodesJarProject(monitor, toUpdate, false, false, false);
+        updateCodesJarProject(monitor, toUpdate, false, false);
     }
 
     public static void updateCodesJarProject(IProgressMonitor monitor, boolean forceBuild, boolean onlyCurrentProject,
@@ -280,32 +279,17 @@ public class CodesJarM2CacheManager {
             toUpdate = CodesJarResourceCache.getAllCodesJars().stream()
                     .filter(info -> forceBuild || needUpdateCodesJarProject(info)).collect(Collectors.toSet());
         }
-        updateCodesJarProject(monitor, toUpdate, false, syncCode, false);
+        updateCodesJarProject(monitor, toUpdate, syncCode, false);
     }
 
     public static void updateCodesJarProject(CodesJarInfo info, boolean needReSync) throws Exception {
         Set<CodesJarInfo> toUpdate = new HashSet<>();
         toUpdate.add(info);
-        updateCodesJarProject(new NullProgressMonitor(), toUpdate, false, needReSync, true);
+        updateCodesJarProject(new NullProgressMonitor(), toUpdate, needReSync, true);
     }
 
-    public static void updateCodesJarProject(IProgressMonitor monitor, Set<CodesJarInfo> toUpdate, boolean generatePom,
-            boolean syncCode, boolean keepNonExistingProject) {
-
-        RepositoryWorkUnit<Object> workUnit = new RepositoryWorkUnit<Object>("update codesjar project") { //$NON-NLS-1$
-
-            @Override
-            protected void run() {
-                internalUpdateCodesJarProject(monitor, toUpdate, generatePom, syncCode, keepNonExistingProject);
-            }
-
-        };
-        workUnit.setAvoidUnloadResources(true);
-        ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(workUnit);
-    }
-
-    public static void internalUpdateCodesJarProject(IProgressMonitor monitor, Set<CodesJarInfo> toUpdate, boolean generatePom,
-            boolean syncCode, boolean keepNonExistingProject) {
+    public static void updateCodesJarProject(IProgressMonitor monitor, Set<CodesJarInfo> toUpdate, boolean syncCode,
+            boolean keepNonExistingProject) {
         if (toUpdate.isEmpty()) {
             return;
         }
@@ -313,10 +297,7 @@ public class CodesJarM2CacheManager {
                 .map(info -> IRunProcessService.get().getExistingTalendCodesJarProject(info)).filter(p -> p != null)
                 .collect(Collectors.toSet());
         try {
-            if (generatePom) {
-                // only for git update
-                toUpdate.forEach(info -> updateCodesJarProjectPom(monitor, info));
-            }
+            toUpdate.forEach(info -> updateCodesJarProjectPom(monitor, info));
 
             if (syncCode) {
                 toUpdate.forEach(info -> syncSourceCode(info));

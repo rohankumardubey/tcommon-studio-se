@@ -26,10 +26,8 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.embedder.MavenModelManager;
-import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.general.ILibrariesService;
@@ -181,12 +179,7 @@ public class MavenPomSynchronizer {
 
                                 @Override
                                 public void afterChangingLibraries() {
-                                    try {
-                                        // update the dependencies
-                                        new AggregatorPomsHelper().updateCodeProjects(new NullProgressMonitor(), false, false);
-                                    } catch (Exception e) {
-                                        ExceptionHandler.process(e);
-                                    }
+                                    CodeM2CacheManager.updateAllCacheStatus(false);
                                 }
                             };
                         }

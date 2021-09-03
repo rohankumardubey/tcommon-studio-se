@@ -20,7 +20,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IESBService;
-import org.talend.core.PluginChecker;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.properties.Item;
@@ -294,25 +293,51 @@ public class PomIdsHelper {
     public static String getPomFilter() {
         String projectTechName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
         ProjectPreferenceManager manager = getPreferenceManager(projectTechName);
-        return manager.getValue(MavenConstants.POM_FILTER);
+        String filter = manager.getValue(MavenConstants.POM_FILTER);
+        if (filter == null) {
+            filter = "";
+        }
+        return filter;
     }
 
     public static boolean useProfileModule() {
+        String useProfileModule = System.getProperty("talend.profile.module");
+        if (useProfileModule != null) {
+            return Boolean.valueOf(useProfileModule);
+        }
         String projectTechName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
         ProjectPreferenceManager manager = getPreferenceManager(projectTechName);
         return manager.getBoolean(MavenConstants.USE_PROFILE_MODULE);
     }
 
     public static boolean getIfExcludeDeletedItems() {
+        String excludeDeleted = System.getProperty("talend.exclude.deleted");
+        if (excludeDeleted != null) {
+            return Boolean.valueOf(excludeDeleted);
+        }
         String projectTechName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
         ProjectPreferenceManager manager = getPreferenceManager(projectTechName);
-        return manager.getBoolean(MavenConstants.EXCLUDE_DELETED_ITEMS);
+        String excludeDeletedInPref = manager.getValue(MavenConstants.EXCLUDE_DELETED_ITEMS);
+        if (excludeDeletedInPref == null) {
+            // as default
+            return true;
+        }
+        return Boolean.valueOf(excludeDeletedInPref);
     }
 
     public static boolean getIfExcludeDeletedItems(Property property) {
+        String excludeDeleted = System.getProperty("talend.exclude.deleted");
+        if (excludeDeleted != null) {
+            return Boolean.valueOf(excludeDeleted);
+        }
         String projectTechName = ProjectManager.getInstance().getProject(property).getTechnicalLabel();
         ProjectPreferenceManager manager = getPreferenceManager(projectTechName);
-        return manager.getBoolean(MavenConstants.EXCLUDE_DELETED_ITEMS);
+        String excludeDeletedInPref = manager.getValue(MavenConstants.EXCLUDE_DELETED_ITEMS);
+        if (excludeDeletedInPref == null) {
+            // as default
+            return true;
+        }
+        return Boolean.valueOf(excludeDeletedInPref);
     }
 
     public static boolean getMavenPrefOptionStatus(String prefName) {
@@ -389,16 +414,9 @@ public class PomIdsHelper {
             if (StringUtils.isEmpty(preferenceStore.getString(MavenConstants.PROJECT_VERSION))) {
                 preferenceStore.setValue(MavenConstants.PROJECT_VERSION, PomUtil.getDefaultMavenVersion());
             }
-            if (preferenceStore.getString(MavenConstants.POM_FILTER) == null) {
-                preferenceStore.setValue(MavenConstants.POM_FILTER, "");
-            }
 
-            if (!preferenceManager.exist()
-                    && StringUtils.isBlank(preferenceStore.getString(MavenConstants.EXCLUDE_DELETED_ITEMS))) {
-                // for new project, set EXCLUDE_DELETED_ITEMS=true as default
-                if (PluginChecker.isTIS()) {
-                    preferenceStore.setValue(MavenConstants.EXCLUDE_DELETED_ITEMS, true);
-                }
+            if (!preferenceManager.exist()) {
+                // for new project, set SKIP_LOOP_DEPENDENCY_CHECK=true as default
                 preferenceStore.setValue(MavenConstants.SKIP_LOOP_DEPENDENCY_CHECK, true);
             }
             preferenceManager.save();

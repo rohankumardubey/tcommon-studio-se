@@ -13,7 +13,6 @@
 package org.talend.designer.maven.tools;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -27,9 +26,6 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.Profile;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -55,7 +51,6 @@ import org.talend.designer.core.model.utils.emf.talendfile.ParametersType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
 import org.talend.designer.maven.DesignerMavenPlugin;
-import org.talend.designer.maven.model.TalendJavaProjectConstants;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.runprocess.IRunProcessService;
@@ -102,70 +97,6 @@ public class AggregatorPomsHelperTest {
         defaultProjectGroupId = PomIdsHelper.getProjectGroupId();
         defaultProjectVersion = PomIdsHelper.getProjectVersion();
         defaultUseSnapshot = false;
-    }
-
-    @Test
-    public void testAddToAndRemoveFromParentModules() throws Exception {
-        String projectTechName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
-        IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-        final IProject project = root.getProject(projectTechName);
-        IFolder pomsFolder = project.getFolder(TalendJavaProjectConstants.DIR_POMS);
-        IFolder jobFolder = pomsFolder.getFolder("jobs").getFolder("process").getFolder("job1");
-        if (!jobFolder.exists()) {
-            jobFolder.create(true, true, null);
-        }
-        IFile jobPom = jobFolder.getFile("pom.xml");
-        AggregatorPomsHelper.addToParentModules(jobPom, null);
-
-        IFile projectPom = pomsFolder.getFile("pom.xml");
-        Model model = MavenPlugin.getMavenModelManager().readMavenModel(projectPom);
-        assertNotNull(model.getModules());
-        assertTrue(model.getModules().contains("jobs/process/job1"));
-
-        AggregatorPomsHelper.removeFromParentModules(jobPom);
-
-        model = MavenPlugin.getMavenModelManager().readMavenModel(projectPom);
-        assertNotNull(model.getModules());
-        assertFalse(model.getModules().contains("jobs/process/job1"));
-    }
-
-    @Test
-    public void testAddToParentModulesWithFilter() throws Exception {
-        String projectTechName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
-        IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-        final IProject project = root.getProject(projectTechName);
-        IFolder pomsFolder = project.getFolder(TalendJavaProjectConstants.DIR_POMS);
-        IFile projectPom = pomsFolder.getFile("pom.xml");
-        Model projectModel = MavenPlugin.getMavenModelManager().readMavenModel(projectPom);
-
-        IFolder jobFolder = pomsFolder.getFolder("jobs").getFolder("process").getFolder("job1");
-        if (!jobFolder.exists()) {
-            jobFolder.create(true, true, null);
-        }
-        IFile jobPom = jobFolder.getFile("pom.xml");
-        if (!jobPom.exists()) {
-            Model jobModel = new Model();
-            jobModel.setModelVersion("4.0.0");
-            jobModel.setGroupId("org.example.aa");
-            jobModel.setArtifactId(projectModel.getArtifactId());
-            jobModel.setVersion(projectModel.getVersion());
-            jobModel.setPackaging(TalendMavenConstants.PACKAGING_JAR);
-            MavenPlugin.getMavenModelManager().createMavenModel(jobPom, jobModel);
-        }
-        Property property = createJobProperty("job1", "0.1", false);
-
-        projectPreferenceManager.setValue(MavenConstants.POM_FILTER, "(label=other)");
-        AggregatorPomsHelper.addToParentModules(jobPom, property);
-        projectModel = MavenPlugin.getMavenModelManager().readMavenModel(projectPom);
-        assertNotNull(projectModel.getModules());
-        assertFalse(projectModel.getModules().contains("jobs/process/job1"));
-
-        projectPreferenceManager.setValue(MavenConstants.POM_FILTER, "(label=job1)");
-        AggregatorPomsHelper.addToParentModules(jobPom, property);
-        projectModel = MavenPlugin.getMavenModelManager().readMavenModel(projectPom);
-        assertNotNull(projectModel.getModules());
-        assertTrue(projectModel.getModules().contains("jobs/process/job1"));
-
     }
 
     @Test
@@ -243,7 +174,7 @@ public class AggregatorPomsHelperTest {
     }
 
     @Test
-    public void testUpdateRefProjectModules() throws Exception {
+    public void testSyncAllPomsForRefProjectModules() throws Exception {
         needResetPom = true;
         List<ProjectReference> references = new ArrayList<>();
         {
@@ -272,13 +203,13 @@ public class AggregatorPomsHelperTest {
             }
 
         };
-        _helper.updateRefProjectModules(references, new NullProgressMonitor());
+        _helper.syncAllPomsWithoutProgress(new NullProgressMonitor());
         validatePomContent(helper.getProjectRootPom().getLocation().toFile(), defaultProjectGroupId, null, defaultProjectVersion,
                 null, model.getModules(), null);
     }
 
     @Test
-    public void testUpdateRefProjectProfile() throws Exception {
+    public void testSyncAllPomsForRefProjectProfile() throws Exception {
         needResetPom = true;
         List<ProjectReference> references = new ArrayList<>();
         {
@@ -306,7 +237,7 @@ public class AggregatorPomsHelperTest {
         ProjectPreferenceManager preferenceManager = new ProjectPreferenceManager(
                 ProjectManager.getInstance().getCurrentProject(), DesignerMavenPlugin.PLUGIN_ID, false);
         preferenceManager.setValue(MavenConstants.USE_PROFILE_MODULE, true);
-        _helper.updateRefProjectModules(references, new NullProgressMonitor());
+        _helper.syncAllPomsWithoutProgress(new NullProgressMonitor());
         validatePomContent(helper.getProjectRootPom().getLocation().toFile(), defaultProjectGroupId, null, defaultProjectVersion,
                 null, null, references);
     }

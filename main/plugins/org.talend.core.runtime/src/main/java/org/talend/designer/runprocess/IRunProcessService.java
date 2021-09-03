@@ -275,6 +275,6 @@ public interface IRunProcessService extends IService {
     
     public void deleteOldVersionTalendJobProject(IRepositoryViewObject object);
 
-    public void checkAndUpdateDaikonDependencies();
+    void updateAllCodeCacheStatus(boolean isUpdated);
 
 }
