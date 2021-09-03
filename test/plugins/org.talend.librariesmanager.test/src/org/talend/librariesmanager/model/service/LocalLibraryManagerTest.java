@@ -757,5 +757,21 @@ public class LocalLibraryManagerTest {
         Assert.assertEquals(module2.getDeployStatus(), ELibraryInstallStatus.DEPLOYED);
 
     }
+    
+    @Test
+    public void testSetInitialized() throws Exception {
+        ILibraryManagerService libraryManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault().getService(ILibraryManagerService.class);
+
+        boolean orig = libraryManagerService.isInitialized();
+
+        libraryManagerService.setInitialized(false);
+        Assert.assertFalse(libraryManagerService.isInitialized());
+
+        libraryManagerService.setInitialized(true);
+        Assert.assertTrue(libraryManagerService.isInitialized());
+
+        libraryManagerService.setInitialized(orig);
+        Assert.assertEquals(orig, libraryManagerService.isInitialized());
+    }
 
 }

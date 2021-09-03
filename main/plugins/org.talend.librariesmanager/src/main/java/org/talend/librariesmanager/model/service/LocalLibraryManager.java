@@ -149,6 +149,14 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
         }
         return false;
     }
+    
+    @Override
+    public void setInitialized(boolean init) {
+        LibrariesIndexManager.getInstance().setStudioIndexInitialized(init);
+        LibrariesIndexManager.getInstance().saveStudioIndexResource();
+        LibrariesIndexManager.getInstance().setMavenIndexInitialized(init);
+        LibrariesIndexManager.getInstance().saveMavenIndexResource();
+    }
 
     @Override
     public void deploy(URI jarFileUri, IProgressMonitor... monitorWrap) {

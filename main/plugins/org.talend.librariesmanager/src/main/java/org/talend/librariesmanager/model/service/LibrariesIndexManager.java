@@ -130,7 +130,7 @@ public class LibrariesIndexManager {
     public void setMavenIndexInitialized(boolean init) {
         mavenLibLock.writeLock().lock();
         try {
-            mavenLibIndex.setInitialized(true);
+            mavenLibIndex.setInitialized(init);
         } finally {
             mavenLibLock.writeLock().unlock();
         }
