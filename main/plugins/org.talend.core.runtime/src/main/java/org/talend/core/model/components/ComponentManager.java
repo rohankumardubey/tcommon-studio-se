@@ -28,8 +28,6 @@ import org.eclipse.emf.ecore.xmi.impl.XMLParserPoolImpl;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.EmfHelper;
-import org.talend.core.GlobalServiceRegister;
-import org.talend.core.ILibraryManagerService;
 import org.talend.core.model.component_cache.ComponentCacheFactory;
 import org.talend.core.model.component_cache.ComponentCachePackage;
 import org.talend.core.model.component_cache.ComponentsCache;
@@ -68,9 +66,6 @@ public class ComponentManager {
                     ExceptionHandler.process(e);
                 }
             });
-            ILibraryManagerService repositoryBundleService = GlobalServiceRegister.getDefault()
-                    .getService(ILibraryManagerService.class);
-            repositoryBundleService.clearCache();
             modified.clear();
         }
     }
