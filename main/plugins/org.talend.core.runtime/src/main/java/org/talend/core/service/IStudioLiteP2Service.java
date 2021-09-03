@@ -67,7 +67,7 @@ public interface IStudioLiteP2Service extends IService {
 
     boolean performUpdate(IProgressMonitor monitor, CheckUpdateHook hook) throws Exception;
 
-    ValidateRequiredFeaturesHook validateRequiredFeatures(IProgressMonitor monitor, Project proj, String oldRequireFeatureFile) throws Exception;
+    ValidateRequiredFeaturesHook validateRequiredFeatures(IProgressMonitor monitor, Project proj, Set<String> backupedTempFeatureFiles) throws Exception;
 
     /**
      * show required features, and choose what to do
