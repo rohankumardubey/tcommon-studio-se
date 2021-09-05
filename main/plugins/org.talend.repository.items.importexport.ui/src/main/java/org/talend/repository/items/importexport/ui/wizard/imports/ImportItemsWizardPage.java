@@ -1152,7 +1152,7 @@ public class ImportItemsWizardPage extends WizardPage {
                     // remove this part later since no use to update here
                     // regression check must be done for TUP-25372 & TESB-27401
                     MavenPomSynchronizer.addChangeLibrariesListener();
-                    new AggregatorPomsHelper().updateCodeProjects(new NullProgressMonitor(), false, false);
+                    new AggregatorPomsHelper().updateCodeProjects(new NullProgressMonitor(), false);
                 }
             };
 

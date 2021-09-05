@@ -32,9 +32,11 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.embedder.IMaven;
 import org.eclipse.m2e.core.embedder.MavenModelManager;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.properties.Property;
-import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
@@ -80,14 +82,7 @@ public class BuildCacheManager {
 
     private Map<String, Date> currentJobletCache = new HashMap<>();
 
-    private Set<String> currentJobletmodules = new HashSet<>();
-
-    /**
-     * routines, beans cache
-     */
-    private Map<ERepositoryObjectType, Date> codesLastChangeCache = new HashMap<>();
-
-    private Map<ERepositoryObjectType, Date> codesLastBuildCache = new HashMap<>();
+    private Map<String, Property> currentJobletmodules = new HashMap<>();
 
     private IFile pomFile;
 
@@ -165,7 +160,7 @@ public class BuildCacheManager {
 
     public void putJobletCache(Property property) {
         currentJobletCache.put(getKey(property), getTimestamp(property));
-        currentJobletmodules.add(getModulePath(property));
+        currentJobletmodules.put(getModulePath(property), property);
     }
 
     public void removeJobletCache(Property property) {
@@ -196,7 +191,6 @@ public class BuildCacheManager {
     }
 
     public void performBuildFailure() {
-        restoreSubjobPoms();
         clearCurrentCache();
         clearCurrentJobletCache();
     }
@@ -204,6 +198,7 @@ public class BuildCacheManager {
     public void build(IProgressMonitor monitor, Map<String, Object> argumentsMap) throws Exception {
         if (needTempAggregator()) {
             createBuildAggregatorPom();
+            generateJobletPoms();
             try {
                 for (ITalendProcessJavaProject project : subjobProjects) {
                     MavenModelManager mavenModelManager = MavenPlugin.getMavenModelManager();
@@ -235,8 +230,16 @@ public class BuildCacheManager {
                 mavenLauncher.execute(monitor);
             } finally {
                 deleteBuildAggregatorPom();
-                // better do restore right after aggregator build.
-                restoreSubjobPoms();
+            }
+        }
+    }
+
+    private void generateJobletPoms() throws PersistenceException {
+        for (Property property : currentJobletmodules.values()) {
+            IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getSpecificVersion(property.getId(),
+                    property.getVersion(), true);
+            if (obj != null) {
+                IRunProcessService.get().generatePom(obj.getProperty().getItem());
             }
         }
     }
@@ -256,50 +259,10 @@ public class BuildCacheManager {
         return !currentJobmodules.isEmpty() || !currentJobletmodules.isEmpty();
     }
 
-    public void updateCodesLastChangeDate(ERepositoryObjectType codeType) {
-        Date currentLastChangeDate = new Date();
-        Date cacheLastChangeDate = codesLastChangeCache.get(codeType);
-        if (cacheLastChangeDate == null || currentLastChangeDate.compareTo(cacheLastChangeDate) > 0) {
-            codesLastChangeCache.put(codeType, currentLastChangeDate);
-        }
-    }
-
-    public void updateCodeLastBuildDate(ERepositoryObjectType codeType) {
-        Date cacheLastChangeDate = codesLastChangeCache.get(codeType);
-        if (cacheLastChangeDate == null) {
-            cacheLastChangeDate = new Date();
-            codesLastChangeCache.put(codeType, cacheLastChangeDate);
-        }
-        codesLastBuildCache.put(codeType, cacheLastChangeDate);
-    }
-
-    public void clearCodesCache(ERepositoryObjectType codeType) {
-        codesLastBuildCache.remove(codeType);
-    }
-
-    public void clearAllCodesCache() {
-        for (ERepositoryObjectType codeType : ERepositoryObjectType.getAllTypesOfCodes()) {
-            codesLastBuildCache.remove(codeType);
-        }
-    }
-
     public void clearAllCaches() {
         jobCache.clear();
         clearCurrentJobletCache();
         jobletCache.clear();
-        codesLastBuildCache.clear();
-    }
-
-    public boolean isCodesBuild(ERepositoryObjectType codeType) {
-        Date lastBuildDate = codesLastBuildCache.get(codeType);
-        if (lastBuildDate == null) {
-            return false;
-        }
-        Date cacheLastChangeDate = codesLastChangeCache.get(codeType);
-        if (cacheLastChangeDate == null) {
-            return false;
-        }
-        return lastBuildDate.compareTo(cacheLastChangeDate) == 0;
     }
 
     /**
@@ -307,7 +270,7 @@ public class BuildCacheManager {
      */
     public boolean isInCurrentJobletCache(Property property) {
         String key = getKey(property);
-        return currentJobletCache.containsKey(key) || currentJobletmodules.contains(getModulePath(property));
+        return currentJobletCache.containsKey(key) || currentJobletmodules.containsKey(getModulePath(property));
     }
 
     private void createBuildAggregatorPom() throws Exception {
@@ -320,7 +283,7 @@ public class BuildCacheManager {
         model.setPackaging(TalendMavenConstants.PACKAGING_POM);
         model.setModules(new ArrayList<String>());
         model.getModules().addAll(currentJobmodules);
-        model.getModules().addAll(currentJobletmodules);
+        model.getModules().addAll(currentJobletmodules.keySet());
         Parent parent = new Parent();      
         parent.setGroupId(PomIdsHelper.getProjectGroupId());
         parent.setArtifactId(PomIdsHelper.getProjectArtifactId());
@@ -363,13 +326,6 @@ public class BuildCacheManager {
         return modulePath;
     }
 
-    private void restoreSubjobPoms() {
-        // restore all modules pom file.
-        for (ITalendProcessJavaProject subjobProject : subjobProjects) {
-            PomUtil.restorePomFile(subjobProject);
-        }
-    }
-
     private ITalendProcessJavaProject getTalendJobJavaProject(Property property) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
             IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault()
@@ -396,7 +352,7 @@ public class BuildCacheManager {
     }
 
     public boolean containsMultipleVersionModules() {
-        return containsMultipleVersionModules(currentJobletmodules) || containsMultipleVersionModules(currentJobmodules);
+        return containsMultipleVersionModules(currentJobletmodules.keySet()) || containsMultipleVersionModules(currentJobmodules);
     }
 
     private static boolean containsMultipleVersionModules(Set<String> mods) {

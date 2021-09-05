@@ -26,7 +26,6 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.Profile;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.talend.commons.CommonsPlugin;
@@ -43,14 +42,12 @@ import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.runtime.projectsetting.IProjectSettingPreferenceConstants;
 import org.talend.core.runtime.projectsetting.IProjectSettingTemplateConstants;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.template.MavenTemplateManager;
-import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -207,24 +204,6 @@ public class CreateMavenStandardJobOSGiPom extends CreateMavenJobPom {
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.talend.designer.maven.tools.creator.CreateMavenJobPom#afterCreate(org.eclipse.core.runtime.IProgressMonitor)
-     */
-    @Override
-    protected void afterCreate(IProgressMonitor monitor) throws Exception {
-        ITalendProcessJavaProject jobProject = getJobProcessor().getTalendJavaProject();
-        if (jobProject != null) {
-            PomUtil.backupPomFile(jobProject);
-        } else {
-            IFolder jobPomFolder = AggregatorPomsHelper.getItemPomFolder(getJobProcessor().getProperty());
-            PomUtil.backupPomFile(jobPomFolder);
-        }
-        super.afterCreate(monitor);
     }
 
     /**

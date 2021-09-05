@@ -54,22 +54,15 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceRuleFactory;
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.core.runtime.jobs.MultiRule;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.embedder.MavenModelManager;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
-import org.talend.commons.runtime.utils.io.IOUtils;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
@@ -92,7 +85,6 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.maven.MavenUrlHelper;
-import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.designer.maven.model.TalendJavaProjectConstants;
 import org.talend.designer.maven.model.TalendMavenConstants;
@@ -946,7 +938,6 @@ public class PomUtil {
     public static void updateJobletDependencies4Loop(Property jobletProperty, Set<String> childJobUrls, IProgressMonitor monitor)
             throws Exception {
         IFolder pomFolder = AggregatorPomsHelper.getItemPomFolder(jobletProperty);
-        backupPomFile(pomFolder);
         // cached the backup pom file
         bakJobletFolderCache.add(pomFolder);
 
@@ -983,126 +974,8 @@ public class PomUtil {
         return relationshipItemBuilder;
     }
 
-    public static void restoreJobletPoms() {
-        for (IFolder folder : bakJobletFolderCache) {
-            IFile backFile = folder.getFile(TalendMavenConstants.POM_BACKUP_FILE_NAME);
-            IFile pomFile = folder.getFile(TalendMavenConstants.POM_FILE_NAME);
-            restorePomFile(pomFile, backFile);
-        }
-    }
-
     public static void clearBakJobletCache() {
         bakJobletFolderCache.clear();
-    }
-
-    public static void backupPomFile(ITalendProcessJavaProject talendProject) {
-        final IProject project = talendProject.getProject();
-        final IFile backFile = project.getFile(TalendMavenConstants.POM_BACKUP_FILE_NAME);
-        final IFile pomFile = project.getFile(TalendMavenConstants.POM_FILE_NAME);
-        backupPomFile(pomFile, backFile);
-    }
-
-    public static void backupPomFile(IFolder jobPomFolder) {
-        final IFile backFile = jobPomFolder.getFile(TalendMavenConstants.POM_BACKUP_FILE_NAME);
-        final IFile pomFile = jobPomFolder.getFile(TalendMavenConstants.POM_FILE_NAME);
-        backupPomFile(pomFile, backFile);
-    }
-
-    private static void backupPomFile(IFile pomFile, IFile backFile) {
-        try {
-            updateFilesInWorkspaceRunnable(null, new IWorkspaceRunnable() {
-
-                @Override
-                public void run(IProgressMonitor monitor) throws CoreException {
-                    try {
-                        if (backFile.exists()) {
-                            backFile.delete(true, false, null);
-                        }
-                        pomFile.copy(backFile.getFullPath(), true, null);
-                    } catch (CoreException e) {
-                        ExceptionHandler.process(e);
-                    }
-                }
-            }, backFile, pomFile);
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-        }
-    }
-
-    public static void restorePomFile(ITalendProcessJavaProject talendProject) {
-        final IProject project = talendProject.getProject();
-        final IFile backFile = project.getFile(TalendMavenConstants.POM_BACKUP_FILE_NAME);
-        final IFile pomFile = project.getFile(TalendMavenConstants.POM_FILE_NAME);
-        restorePomFile(pomFile, backFile);
-    }
-
-    public static void restorePomFile(IFile pomFile, IFile backFile) {
-        try {
-            updateFilesInWorkspaceRunnable(null, new IWorkspaceRunnable() {
-
-                @Override
-                public void run(IProgressMonitor monitor) throws CoreException {
-                    boolean isChanged = false;
-                    try {
-                        if (backFile.exists()) {
-                            if (pomFile.exists()) {
-                                isChanged = !IOUtils.contentEquals(backFile.getContents(), pomFile.getContents());
-                                if (isChanged) {
-                                    pomFile.delete(true, false, null);
-                                }
-                            } else {
-                                isChanged = true;
-                            }
-                            if (isChanged) {
-                                backFile.copy(pomFile.getFullPath(), true, null);
-                            }
-                        }
-                    } catch (CoreException | IOException e) {
-                        ExceptionHandler.process(e);
-                    } finally {
-                        try {
-                            if (backFile.exists()) {
-                                backFile.delete(true, false, null);
-                            }
-                        } catch (CoreException e) {
-                            System.gc();
-                            try {
-                                backFile.delete(true, false, null);
-                            } catch (CoreException e1) {
-                                //
-                            }
-                        }
-                    }
-                }
-            }, pomFile, backFile);
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-        }
-
-    }
-
-    private static void updateFilesInWorkspaceRunnable(IProgressMonitor monitor, IWorkspaceRunnable runnable,
-            IResource... resources) throws Exception {
-        ISchedulingRule rule = null;
-        if (resources != null && 0 < resources.length) {
-            IResourceRuleFactory ruleFactory = ResourcesPlugin.getWorkspace().getRuleFactory();
-            List<ISchedulingRule> resourceRules = new ArrayList<>();
-            for (IResource resource : resources) {
-                if (resource != null) {
-                    // use refresh rule instead of modify rule
-                    ISchedulingRule modifyRule = ruleFactory.refreshRule(resource);
-                    if (modifyRule != null) {
-                        resourceRules.add(modifyRule);
-                    } else {
-                        resourceRules.add(resource);
-                    }
-                }
-            }
-            if (!resourceRules.isEmpty()) {
-                rule = new MultiRule(resourceRules.toArray(new ISchedulingRule[0]));
-            }
-        }
-        ResourcesPlugin.getWorkspace().run(runnable, rule, IWorkspace.AVOID_UPDATE, monitor);
     }
 
     public static String getPomProperty(IFile pomFile, String key) {
@@ -1216,10 +1089,7 @@ public class PomUtil {
                     clean = true;
                 }
                 if (clean) {
-                    File cacheFile = CodeM2CacheManager.getCacheFile(projectTechName, ERepositoryObjectType.ROUTINES);
-                    if (cacheFile.exists()) {
-                        cacheFile.delete();
-                    }
+                    CodeM2CacheManager.updateCacheStatus(projectTechName, ERepositoryObjectType.ROUTINES, false);
                 }
             }
         } catch (CoreException e) {
