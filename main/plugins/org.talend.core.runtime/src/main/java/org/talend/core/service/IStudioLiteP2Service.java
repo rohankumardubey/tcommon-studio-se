@@ -151,6 +151,8 @@ public interface IStudioLiteP2Service extends IService {
         List<IInstallableUnitInfo> getMissingRequiredFeatures();
         
         Set<IInstallableUnitInfo> getDeActivatedFeatures();
+        
+        Set<IInstallableUnitInfo> getRequiredFeatures();
 
     }
 
