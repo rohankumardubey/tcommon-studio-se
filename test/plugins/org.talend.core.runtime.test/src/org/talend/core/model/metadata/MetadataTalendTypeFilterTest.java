@@ -17,7 +17,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -55,7 +54,7 @@ public class MetadataTalendTypeFilterTest {
         MetadataTalendTypeFilter sparkWithtFileInputParquetfilter = new SparkMetadataTalendTypeFilter("tFileInputParquet"); //$NON-NLS-1$
         MetadataTalendTypeFilter stormfilter = new StormMetadataTalendTypeFilter(""); //$NON-NLS-1$
         MetadataTalendTypeFilter sparkBatchFilter = new SparkBatchMetadataTalendTypeFilter(""); //$NON-NLS-1$
-        
+
         types = new String[] { INTEGER, DOCUMENT, STRING, OBJECT, LIST, DOUBLE, SHORT, DYNAMIC, VECTOR };
         assertEquals(Arrays.asList(dummyfilter.filter(types)),
                 Arrays.asList(new String[] { INTEGER, DOCUMENT, STRING, OBJECT, LIST, DOUBLE, SHORT, DYNAMIC }));
@@ -70,7 +69,7 @@ public class MetadataTalendTypeFilterTest {
                 Arrays.asList(new String[] { INTEGER, STRING, OBJECT, LIST, DOUBLE, SHORT }));
         assertEquals(Arrays.asList(sparkBatchFilter.filter(types)),
                 Arrays.asList(new String[] { INTEGER, STRING, OBJECT, LIST, DOUBLE, SHORT, VECTOR }));
-        
+
         types = new String[] {};
         assertEquals(Arrays.asList(dummyfilter.filter(types)), Arrays.asList(new String[] {}));
         assertEquals(Arrays.asList(mrfilter.filter(types)), Arrays.asList(new String[] {}));
@@ -97,18 +96,18 @@ public class MetadataTalendTypeFilterTest {
         assertEquals(Arrays.asList(sparkWithtFileInputParquetfilter.filter(types)), Arrays.asList(new String[] {}));
         assertEquals(Arrays.asList(stormfilter.filter(types)), Arrays.asList(new String[] { OBJECT, LIST }));
     }
-    
+
     @Test
     public void sparkDynamicTypeTest() {
-    	
-    	assertEquals(6, SparkBatchMetadataTalendTypeFilter.dynamicTypeCompatibleComponents.size());
-    	String[] types = new String[] { INTEGER, DOCUMENT, STRING, OBJECT, LIST, DOUBLE, SHORT, DYNAMIC, VECTOR };
-    	
+
+        assertEquals(7, SparkBatchMetadataTalendTypeFilter.dynamicTypeCompatibleComponents.size());
+        String[] types = new String[] { INTEGER, DOCUMENT, STRING, OBJECT, LIST, DOUBLE, SHORT, DYNAMIC, VECTOR };
+
         for (String componentName: SparkBatchMetadataTalendTypeFilter.dynamicTypeCompatibleComponents) {
-        	System.out.println(componentName);
-        	assertTrue(Arrays.asList(new SparkBatchMetadataTalendTypeFilter(componentName).filter(types)).contains(DYNAMIC));	
+            System.out.println(componentName);
+            assertTrue(Arrays.asList(new SparkBatchMetadataTalendTypeFilter(componentName).filter(types)).contains(DYNAMIC));
         }
-    	
+
         assertFalse(Arrays.asList(new SparkBatchMetadataTalendTypeFilter(SparkBatchMetadataTalendTypeFilter.ROWGENERATOR_COMPONENT_NAME).filter(types)).contains(DYNAMIC));
     }
 
