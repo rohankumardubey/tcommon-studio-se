@@ -76,7 +76,7 @@ import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.services.IMavenUIService;
 import org.talend.core.utils.TalendQuoteUtils;
-import org.talend.designer.maven.tools.BuildCacheManager;
+import org.talend.designer.maven.tools.CodeM2CacheManager;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.librariesmanager.i18n.Messages;
@@ -148,6 +148,14 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                     && LibrariesIndexManager.getInstance().isMavenLibInitialized();
         }
         return false;
+    }
+    
+    @Override
+    public void setInitialized(boolean init) {
+        LibrariesIndexManager.getInstance().setStudioIndexInitialized(init);
+        LibrariesIndexManager.getInstance().saveStudioIndexResource();
+        LibrariesIndexManager.getInstance().setMavenIndexInitialized(init);
+        LibrariesIndexManager.getInstance().saveMavenIndexResource();
     }
 
     @Override
@@ -728,9 +736,9 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                         ILibrariesService librariesService = GlobalServiceRegister.getDefault()
                                 .getService(ILibrariesService.class);
                         if (codeType != null) {
-                            BuildCacheManager.getInstance().clearCodesCache(codeType);
+                            CodeM2CacheManager.updateCacheStatus(null, codeType, false);
                         } else {
-                            BuildCacheManager.getInstance().clearAllCodesCache();
+                            CodeM2CacheManager.updateAllCacheStatus(false);
                         }
                         librariesService.checkLibraries();
                     }

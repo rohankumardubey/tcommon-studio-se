@@ -84,7 +84,7 @@ public class CodeM2CacheManagerTest {
 
     private void updateCodeProject() {
         Project project = ProjectManager.getInstance().getCurrentProject();
-        CodeM2CacheManager.updateCodeProjectCache(project, ERepositoryObjectType.ROUTINES);
+        CodeM2CacheManager.updateCacheStatus(project.getTechnicalLabel(), ERepositoryObjectType.ROUTINES, true);
         assertFalse(CodeM2CacheManager.needUpdateCodeProject(project, ERepositoryObjectType.ROUTINES));
     }
 

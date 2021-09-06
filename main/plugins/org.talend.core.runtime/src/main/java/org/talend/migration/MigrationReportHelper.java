@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -141,11 +142,19 @@ public class MigrationReportHelper {
 
     public boolean isRequireDefaultRecord(IProjectMigrationTask task, Item item) {
         boolean require = true;
+        if (task.getOrder() != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(task.getOrder());
+            int year = calendar.get(Calendar.YEAR);
+            if (year <= 2016) {
+                return false;
+            }
+        }
         if (item.getProperty() != null) {
             Property property = item.getProperty();
             String key = task.getId() + "_" + property.getId() + "_" + property.getVersion();
             if (taskItemRecords.contains(key)) {
-                require = false;
+                return false;
             }
         }
         return require;
