@@ -12,11 +12,7 @@
 // ============================================================================
 package org.talend.migration;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,10 +34,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.service.prefs.BackingStoreException;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.report.ItemsReportUtil;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
-import org.talend.core.utils.TalendQuoteUtils;
 
 /**
  * DOC jding  class global comment. Detailled comment
@@ -78,37 +74,24 @@ public class MigrationReportHelper {
             return;
         }
 
-        BufferedWriter printWriter = null;
         File exportFolder = null;
         File reportFile = null;
         try {
             String currentTime = getCurrentTime();
-            String folderPath = getReportExportFolder(currentTime);
-            exportFolder = new File(folderPath);
-            if (!exportFolder.exists()) {
-                exportFolder.mkdirs();
-            }
-            String filePath = folderPath + "/" + getReportFileName(currentTime, projectTecName);
+            String filePath = getReportExportFolder(currentTime) + "/" + getReportFileName(currentTime, projectTecName);
             reportGeneratedPath = filePath;
             reportFile = new File(filePath);
-            reportFile.createNewFile();
-            FileOutputStream fos = new FileOutputStream(reportFile);
-            fos.write(new byte[] { (byte) 0xEF, (byte) 0xBB, (byte) 0xBF });
-            OutputStreamWriter outputWriter = new OutputStreamWriter(fos, "UTF-8");
-            printWriter = new BufferedWriter(outputWriter);
-            printWriter.write(MIGRATION_REPORT_HEAD);
-            printWriter.newLine();
+            List<String> recordLines = new ArrayList<String>();
             for (MigrationReportRecorder record : migrationReportRecorders) {
                 StringBuffer buffer = new StringBuffer();
-                buffer.append(handleQuotes(record.getTaskClassName())).append(COMMA);
-                buffer.append(handleQuotes(record.getTaskDescription())).append(COMMA);
-                buffer.append(handleQuotes(record.getItemType())).append(COMMA);
-                buffer.append(handleQuotes(record.getItemPath())).append(COMMA);
-                buffer.append(handleQuotes(record.getMigrationDetails()));
-                printWriter.write(buffer.toString());
-                printWriter.newLine();
+                buffer.append(ItemsReportUtil.handleColumnQuotes(record.getTaskClassName())).append(COMMA);
+                buffer.append(ItemsReportUtil.handleColumnQuotes(record.getTaskDescription())).append(COMMA);
+                buffer.append(ItemsReportUtil.handleColumnQuotes(record.getItemType())).append(COMMA);
+                buffer.append(ItemsReportUtil.handleColumnQuotes(record.getItemPath())).append(COMMA);
+                buffer.append(ItemsReportUtil.handleColumnQuotes(record.getDetailMessage()));
+                recordLines.add(buffer.toString());
             }
-            printWriter.flush();
+            ItemsReportUtil.generateReportFile(reportFile, MIGRATION_REPORT_HEAD, recordLines);
         } catch (Exception e) {
             ExceptionHandler.process(e);
             if (reportFile != null && reportFile.exists()) {
@@ -118,26 +101,10 @@ public class MigrationReportHelper {
                 exportFolder.delete();
             }
         } finally {
-            try {
-                if (printWriter != null) {
-                    printWriter.close();
-                }
-            } catch (IOException e) {
-                ExceptionHandler.process(e);
-            }
             migrationReportRecorders.clear();
             taskItemRecords.clear();
         }
 
-    }
-
-    private String handleQuotes(String text) {
-        String quoteMark = TalendQuoteUtils.QUOTATION_MARK;
-        if (text.contains(quoteMark)) {
-            // replace to double quote surround
-            text = text.replace(quoteMark, quoteMark + quoteMark);
-        }
-        return quoteMark + text + quoteMark;
     }
 
     public boolean isRequireDefaultRecord(IProjectMigrationTask task, Item item) {
@@ -178,14 +145,11 @@ public class MigrationReportHelper {
     }
 
     public synchronized void checkMigrationReport(boolean onStartUp) {
-        if (StringUtils.isBlank(reportGeneratedPath) || !PluginChecker.isTIS()) {
+        if (StringUtils.isBlank(reportGeneratedPath) || !PluginChecker.isTIS() || !onStartUp && isReportDialogDisable()) {
             return;
         }
         File reportFile = new File(reportGeneratedPath);
         if (reportFile == null || !reportFile.exists()) {
-            return;
-        }
-        if (!onStartUp && isReportDialogDisable()) {
             return;
         }
         Job job = new Job("Check migration report") {
