@@ -301,6 +301,8 @@ public class ConnParameterKeys {
 
     public static final String CONN_PARA_KEY_QUBOLE_CLUSTER = "CONN_PARA_KEY_QUBOLE_CLUSTER";
 
+    public static final String CONN_PARA_KEY_DATABRICKS_SUBMIT_MODE = "CONN_PARA_KEY_DATABRICKS_SUBMIT_MODE";
+    
     public static final String CONN_PARA_KEY_QUBOLE_CLUSTER_LABEL = "CONN_PARA_KEY_QUBOLE_CLUSTER_LABEL";
 
     public static final String CONN_PARA_KEY_QUBOLE_ENDPOINT = "CONN_PARA_KEY_QUBOLE_ENDPOINT";
