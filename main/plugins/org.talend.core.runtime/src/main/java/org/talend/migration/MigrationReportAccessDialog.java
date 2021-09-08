@@ -29,9 +29,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
+import org.talend.analysistask.ItemAnalysisReportManager;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.runtime.i18n.Messages;
+import org.talend.repository.ProjectManager;
 
 /**
  * DOC jding  class global comment. Detailled comment
@@ -53,12 +55,12 @@ public class MigrationReportAccessDialog extends Dialog {
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText("Project items migration");
+        newShell.setText(Messages.getString("MigrationReportAccessDialog.title"));
     }
 
     @Override
     protected void initializeBounds() {
-        getShell().setSize(780, 390);
+        getShell().setSize(890, 350);
         Point location = getInitialLocation(getShell().getSize());
         getShell().setLocation(location.x, location.y);
     }
@@ -84,7 +86,7 @@ public class MigrationReportAccessDialog extends Dialog {
         createMessageLabel(migrationInfoArea, Messages.getString("MigrationReportAccessDialog.migrateSuccess"));
         Link accessLink = new Link(migrationInfoArea, SWT.NONE);
         accessLink.setText(Messages.getString("MigrationReportAccessDialog.completeReportAvailable") + " <a>"
-                + Messages.getString("MigrationReportAccessDialog.accessReport") + "</a> ");
+                + Messages.getString("MigrationReportAccessDialog.accessReport") + "</a> .");
         accessLink.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.FILL_VERTICAL));
         accessLink.addSelectionListener(new SelectionAdapter() {
 
@@ -153,20 +155,24 @@ public class MigrationReportAccessDialog extends Dialog {
     private Label createMessageLabel(Composite parent, String message) {
         Label messageLabel = new Label(parent, SWT.NONE);
         messageLabel.setText(message);
-        GridData gridData = new GridData(GridData.GRAB_HORIZONTAL | GridData.FILL_VERTICAL);
+        GridData gridData = new GridData(GridData.GRAB_HORIZONTAL);
         messageLabel.setLayoutData(gridData);
         return messageLabel;
     }
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.YES_ID, IDialogConstants.YES_LABEL, true);
-        createButton(parent, IDialogConstants.NO_ID, IDialogConstants.NO_LABEL, true);
+        createButton(parent, IDialogConstants.YES_ID, Messages.getString("MigrationReportAccessDialog.runAnalysisButton"), true);
+        createButton(parent, IDialogConstants.NO_ID, Messages.getString("MigrationReportAccessDialog.notNowButton"), true);
     }
 
     @Override
     protected void buttonPressed(int buttonId) {
         setReturnCode(OK);
+        if (IDialogConstants.YES_ID == buttonId) {
+            ItemAnalysisReportManager.getInstance()
+                    .generateAnalysisReport(ProjectManager.getInstance().getCurrentProject().getTechnicalLabel());
+        }
         close();
     }
 

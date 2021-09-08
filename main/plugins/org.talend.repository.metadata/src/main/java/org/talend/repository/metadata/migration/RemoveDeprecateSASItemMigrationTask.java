@@ -66,11 +66,9 @@ public class RemoveDeprecateSASItemMigrationTask extends AbstractItemMigrationTa
                 return ExecutionResult.FAILURE;
             }
 
-        } else {
-            return ExecutionResult.NOTHING_TO_DO;
+            return ExecutionResult.SUCCESS_NO_ALERT;
         }
-
-        return ExecutionResult.SUCCESS_NO_ALERT;
+        return ExecutionResult.NOTHING_TO_DO;
     }
 
 }
