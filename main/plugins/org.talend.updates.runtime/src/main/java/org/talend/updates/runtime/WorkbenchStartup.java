@@ -10,6 +10,11 @@ public class WorkbenchStartup implements IStartup {
     @Override
     public void earlyStartup() {
         MigrationReportHelper.getInstance().checkMigrationReport(true);
+   
+        if (!PluginChecker.isTIS() && !PluginChecker.isStudioLite()) {
+            CheckExtraFeaturesToInstallJob checkExtraFeaturesToInstallJob = new CheckExtraFeaturesToInstallJob();
+            checkExtraFeaturesToInstallJob.schedule();
+        }
     }
 
 }
