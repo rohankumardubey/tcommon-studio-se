@@ -33,7 +33,7 @@ public enum EDatabaseConnTemplate {
     MYSQL(new DbConnStr(EDatabaseTypeName.MYSQL, //
             "jdbc:mysql://<host>:<port>/<sid>?<property>", //$NON-NLS-1$
             "3306", //$NON-NLS-1$
-            "noDatetimeStringSync=true")), //$NON-NLS-1$
+            "noDatetimeStringSync=true&enabledTLSProtocols=TLSv1.2,TLSv1.1,TLSv1")), //$NON-NLS-1$
 
     AMAZON_AURORA(new DbConnStr(EDatabaseTypeName.AMAZON_AURORA, //
             "jdbc:mysql://<host>:<port>/<sid>?<property>", //$NON-NLS-1$
