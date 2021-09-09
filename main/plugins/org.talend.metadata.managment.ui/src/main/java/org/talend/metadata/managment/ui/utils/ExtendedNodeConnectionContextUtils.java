@@ -84,6 +84,19 @@ public class ExtendedNodeConnectionContextUtils {
         KeyAzuresUser,
         KeyAzurePassword,
         KeyAzureDeployBlob,
+        
+        // Azure Synapse param
+        SynapseHostName,
+        SynapseAuthToken,
+        SynapseSparkPools,
+        SynapseFsHostName,
+        SynapseFsContainer,
+        SynapseFSUserName,
+        SynapseFSPassword,
+        SynapseDeployBlob,
+        SynapseDriverMemory,
+        SynapseDriverCores,
+        SynapseExecutorMemory,
 
         // Hcatalog param
         HCatalogHostName,

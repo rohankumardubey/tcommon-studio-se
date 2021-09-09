@@ -214,6 +214,32 @@ public class ConnParameterKeys {
 
     /******************************************/
 
+    /*********** Azure Synapse keys ***************/
+    
+    public static final String CONN_PARA_KEY_SYNAPSE_HOST = "CONN_PARA_KEY_SYNAPSE_HOST"; //$NON-NLS-1$
+    
+    public static final String CONN_PARA_KEY_SYNAPSE_AUTH_TOKEN = "CONN_PARA_KEY_SYNAPSE_AUTH_TOKEN"; //$NON-NLS-1$
+
+    public static final String CONN_PARA_KEY_SYNAPSE_SPARK_POOLS = "CONN_PARA_KEY_SYNAPSE_SPARK_POOLS"; //$NON-NLS-1$
+
+    public static final String CONN_PARA_KEY_SYNAPSE_FS_HOSTNAME = "CONN_PARA_KEY_SYNAPSE_FS_HOSTNAME"; //$NON-NLS-1$
+
+    public static final String CONN_PARA_KEY_SYNAPSE_FS_CONTAINER = "CONN_PARA_KEY_SYNAPSE_FS_CONTAINER"; //$NON-NLS-1$
+
+    public static final String CONN_PARA_KEY_SYNAPSE_FS_USERNAME = "CONN_PARA_KEY_SYNAPSE_FS_USERNAME"; //$NON-NLS-1$
+
+    public static final String CONN_PARA_KEY_SYNAPSE_FS_PASSWORD = "CONN_PARA_KEY_SYNAPSE_FS_PASSWORD"; //$NON-NLS-1$
+
+    public static final String CONN_PARA_KEY_SYNAPSE_DEPLOY_BLOB = "CONN_PARA_KEY_SYNAPSE_DEPLOY_BLOB"; //$NON-NLS-1$
+    
+    public static final String CONN_PARA_KEY_DRIVER_MEMORY = "CONN_PARA_KEY_DRIVER_MEMORY"; //$NON-NLS-1$
+    
+    public static final String CONN_PARA_KEY_DRIVER_CORES = "CONN_PARA_KEY_DRIVER_CORES"; //$NON-NLS-1$
+    
+    public static final String CONN_PARA_KEY_EXECUTOR_MEMORY = "CONN_PARA_KEY_EXECUTOR_MEMORY"; //$NON-NLS-1$
+
+    /******************************************/
+
     /**
      * HBase keys.
      */
