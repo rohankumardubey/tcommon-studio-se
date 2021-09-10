@@ -36,7 +36,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.properties.ProcessItem;
-import org.talend.core.model.properties.Project;
 import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
@@ -173,75 +172,6 @@ public class AggregatorPomsHelperTest {
         assertEquals("/" + projectTechName + "/poms/jobs/process/testitemfolderjob_0.2", folder.getFullPath().toPortableString());
     }
 
-    @Test
-    public void testSyncAllPomsForRefProjectModules() throws Exception {
-        needResetPom = true;
-        List<ProjectReference> references = new ArrayList<>();
-        {
-            ProjectReference reference = PropertiesFactory.eINSTANCE.createProjectReference();
-            Project project = PropertiesFactory.eINSTANCE.createProject();
-            project.setTechnicalLabel("TESTPROJECT1");
-            reference.setReferencedProject(project);
-            references.add(reference);
-        }
-        {
-            ProjectReference reference = PropertiesFactory.eINSTANCE.createProjectReference();
-            Project project = PropertiesFactory.eINSTANCE.createProject();
-            project.setTechnicalLabel("TESTPROJECT2");
-            reference.setReferencedProject(project);
-            references.add(reference);
-        }
-        Model model = MavenPlugin.getMavenModelManager().readMavenModel(helper.getProjectRootPom());
-        List<String> modules = model.getModules();
-        modules.add("../../TESTPROJECT1/poms");
-        modules.add("../../TESTPROJECT2/poms");
-        AggregatorPomsHelper _helper = new AggregatorPomsHelper() {
-
-            @Override
-            public boolean needUpdateRefProjectModules() {
-                return true;
-            }
-
-        };
-        _helper.syncAllPomsWithoutProgress(new NullProgressMonitor());
-        validatePomContent(helper.getProjectRootPom().getLocation().toFile(), defaultProjectGroupId, null, defaultProjectVersion,
-                null, model.getModules(), null);
-    }
-
-    @Test
-    public void testSyncAllPomsForRefProjectProfile() throws Exception {
-        needResetPom = true;
-        List<ProjectReference> references = new ArrayList<>();
-        {
-            ProjectReference reference = PropertiesFactory.eINSTANCE.createProjectReference();
-            Project project = PropertiesFactory.eINSTANCE.createProject();
-            project.setTechnicalLabel("TESTPROJECT1");
-            reference.setReferencedProject(project);
-            references.add(reference);
-        }
-        {
-            ProjectReference reference = PropertiesFactory.eINSTANCE.createProjectReference();
-            Project project = PropertiesFactory.eINSTANCE.createProject();
-            project.setTechnicalLabel("TESTPROJECT2");
-            reference.setReferencedProject(project);
-            references.add(reference);
-        }
-        AggregatorPomsHelper _helper = new AggregatorPomsHelper() {
-
-            @Override
-            public boolean needUpdateRefProjectModules() {
-                return true;
-            }
-
-        };
-        ProjectPreferenceManager preferenceManager = new ProjectPreferenceManager(
-                ProjectManager.getInstance().getCurrentProject(), DesignerMavenPlugin.PLUGIN_ID, false);
-        preferenceManager.setValue(MavenConstants.USE_PROFILE_MODULE, true);
-        _helper.syncAllPomsWithoutProgress(new NullProgressMonitor());
-        validatePomContent(helper.getProjectRootPom().getLocation().toFile(), defaultProjectGroupId, null, defaultProjectVersion,
-                null, null, references);
-    }
-
     /**
      * test change of project groupId, project version, with-snapshot.
      */
@@ -263,7 +193,12 @@ public class AggregatorPomsHelperTest {
         String jobGroupId = PomIdsHelper.getJobGroupId(jobProperty);
         String jobVersion = PomIdsHelper.getJobVersion(jobProperty);
 
-        helper.syncAllPomsWithoutProgress(new NullProgressMonitor());
+        System.setProperty("ci.mode", "true");
+        try {
+            helper.syncAllPomsWithoutProgress(new NullProgressMonitor());
+        } finally {
+            System.setProperty("ci.mode", "false");
+        }
 
         // check project pom.
         IFile projectPomFile = new AggregatorPomsHelper().getProjectRootPom();
