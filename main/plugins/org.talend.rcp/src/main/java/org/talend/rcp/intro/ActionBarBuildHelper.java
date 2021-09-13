@@ -239,10 +239,7 @@ public class ActionBarBuildHelper implements IActionBarHelper {
                 Messages.getString("ApplicationActionBarAdvisor.menuHelpLabel"), IWorkbenchActionConstants.M_HELP); //$NON-NLS-1$
         menuBar.add(helpMenu);
 
-        introAction = ActionFactory.INTRO.create(window);
         // Help
-        helpMenu.add(introAction);
-        helpMenu.add(new Separator());
         helpMenu.add(ActionFactory.HELP_CONTENTS.create(window));
         helpMenu.add(new Separator());
 
