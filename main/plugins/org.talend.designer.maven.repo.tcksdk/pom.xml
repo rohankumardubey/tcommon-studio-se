@@ -11,7 +11,18 @@
 	<packaging>eclipse-plugin</packaging>
 	<properties>
 		<tcomp.version>${component-runtime.version}</tcomp.version>
-		<slf4j.version>1.7.28</slf4j.version>
+		<cxf.version>3.4.4</cxf.version>
+		<geronimo.version>1.0.2</geronimo.version>
+		<jackson.version>2.12.1</jackson.version>
+		<jcache.version>1.0.5</jcache.version>
+		<jcache_spec.version>1.0-alpha-1</jcache_spec.version>
+		<johnzon.version>1.2.10</johnzon.version>
+		<meecrowave.version>1.2.12</meecrowave.version>
+		<microprofile.version>1.2.1</microprofile.version>
+		<owb.version>2.0.23</owb.version>
+		<slf4j.version>1.7.32</slf4j.version>
+		<tomcat.version>9.0.50</tomcat.version>
+		<xbean.version>4.20</xbean.version>
 	</properties>
 	<repositories>
 		<repository>
@@ -51,7 +62,7 @@
 			<dependency>
 				<groupId>org.talend.sdk.component</groupId>
 				<artifactId>component-runtime</artifactId>
-				<version>${tcomp.version}</version>
+				<version>${component-runtime.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -60,24 +71,254 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.talend.sdk.component</groupId>
-			<artifactId>component-server</artifactId>
-			<version>${tcomp.version}</version>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-core</artifactId>
+			<version>${cxf.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.talend.sdk.component</groupId>
-			<artifactId>component-runtime-di</artifactId>
-			<version>${tcomp.version}</version>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-integration-cdi</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-rs-client</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-security</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo</groupId>
+			<artifactId>geronimo-jcache-simple</artifactId>
+			<version>${jcache.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo</groupId>
+			<artifactId>geronimo-opentracing-common</artifactId>
+			<version>${geronimo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo</groupId>
+			<artifactId>geronimo-opentracing</artifactId>
+			<version>${geronimo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jcache_1.0_spec</artifactId>
+			<version>${jcache_spec.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.johnzon</groupId>
+			<artifactId>johnzon-core</artifactId>
+			<version>${johnzon.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.johnzon</groupId>
+			<artifactId>johnzon-jaxrs</artifactId>
+			<version>${johnzon.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.johnzon</groupId>
+			<artifactId>johnzon-jsonb</artifactId>
+			<version>${johnzon.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.johnzon</groupId>
+			<artifactId>johnzon-mapper</artifactId>
+			<version>${johnzon.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.meecrowave</groupId>
+			<artifactId>meecrowave-core</artifactId>
+			<version>${meecrowave.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>openwebbeans-el22</artifactId>
+			<version>${owb.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>openwebbeans-impl</artifactId>
+			<version>${owb.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>openwebbeans-se</artifactId>
+			<version>${owb.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>openwebbeans-spi</artifactId>
+			<version>${owb.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.openwebbeans</groupId>
+			<artifactId>openwebbeans-web</artifactId>
+			<version>${owb.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-api</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-catalina</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-coyote</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-jaspic-api</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-jni</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-juli</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-servlet-api</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-util-scan</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-util</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-websocket-api</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-websocket</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xbean</groupId>
+			<artifactId>xbean-asm9-shaded</artifactId>
+			<version>${xbean.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xbean</groupId>
+			<artifactId>xbean-finder-shaded</artifactId>
+			<version>${xbean.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xbean</groupId>
+			<artifactId>xbean-finder</artifactId>
+			<version>${xbean.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xbean</groupId>
+			<artifactId>xbean-reflect</artifactId>
+			<version>${xbean.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.microprofile.opentracing</groupId>
+			<artifactId>microprofile-opentracing-api</artifactId>
+			<version>${microprofile.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.talend.sdk.component</groupId>
 			<artifactId>component-api</artifactId>
-			<version>${tcomp.version}</version>
+			<version>${component-runtime.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.talend.sdk.component</groupId>
+			<artifactId>component-runtime-design-extension</artifactId>
+			<version>${component-runtime.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.talend.sdk.component</groupId>
+			<artifactId>component-runtime-di</artifactId>
+			<version>${component-runtime.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.talend.sdk.component</groupId>
+			<artifactId>component-runtime-impl</artifactId>
+			<version>${component-runtime.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.talend.sdk.component</groupId>
+			<artifactId>component-runtime-manager</artifactId>
+			<version>${component-runtime.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.talend.sdk.component</groupId>
+			<artifactId>component-server</artifactId>
+			<version>${component-runtime.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.talend.sdk.component</groupId>
+			<artifactId>component-server-api</artifactId>
+			<version>${component-runtime.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.talend.sdk.component</groupId>
+			<artifactId>component-server-extension-api</artifactId>
+			<version>${component-runtime.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.talend.sdk.component</groupId>
+			<artifactId>component-server-model</artifactId>
+			<version>${component-runtime.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.talend.sdk.component</groupId>
+			<artifactId>component-spi</artifactId>
+			<version>${component-runtime.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.talend.sdk.component</groupId>
+			<artifactId>container-core</artifactId>
+			<version>${component-runtime.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.talend.sdk.component</groupId>
 			<artifactId>slf4j-standard</artifactId>
-			<version>${tcomp.version}</version>
+			<version>${component-runtime.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.talend.sdk.component</groupId>
+			<artifactId>vault-client</artifactId>
+			<version>${component-runtime.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>

@@ -66,12 +66,12 @@ public class CodeM2CacheManagerTest {
 
         // delete logical
         factory.deleteObjectLogical(factory.getLastVersion(testRoutine.getProperty().getId()));
-        assertTrue(CodeM2CacheManager.needUpdateCodeProject(project, ERepositoryObjectType.ROUTINES));
+        assertFalse(CodeM2CacheManager.needUpdateCodeProject(project, ERepositoryObjectType.ROUTINES));
         updateCodeProject();
 
         // restore
         factory.restoreObject(factory.getLastVersion(testRoutine.getProperty().getId()), new Path(""));
-        assertTrue(CodeM2CacheManager.needUpdateCodeProject(project, ERepositoryObjectType.ROUTINES));
+        assertFalse(CodeM2CacheManager.needUpdateCodeProject(project, ERepositoryObjectType.ROUTINES));
         updateCodeProject();
 
         // delete physical
