@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -52,12 +53,14 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.service.prefs.BackingStoreException;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.VersionUtils;
+import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.services.IGenericService;
 import org.talend.core.services.ICoreTisService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.rcp.i18n.Messages;
+import org.talend.repository.ProjectManager;
 import org.talend.repository.ui.utils.ZipToFile;
 import org.talend.repository.ui.wizards.exportjob.util.ExportJobUtil;
 import org.talend.utils.json.JSONArray;
@@ -223,6 +226,7 @@ public class ExportLogsWizardPage extends WizardPage {
             exportLogs(new File(lastPath));
             exportPerformanceLogs(new File(lastPath));
             exportStudioInfo(new File(lastPath));
+            exportRequiredJson(new File(lastPath));
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
@@ -390,6 +394,16 @@ public class ExportLogsWizardPage extends WizardPage {
             }
         }
         writeToFile(dest, "studioInfo.log", info); //$NON-NLS-1$
+    }
+    
+    private void exportRequiredJson(File dest) throws Exception {
+        IFile featureFile = ResourceUtils.getProject(ProjectManager.getInstance().getCurrentProject()).getFolder(".settings") //$NON-NLS-1$
+                .getFile("requiredFeatures.json"); //$NON-NLS-1$
+        if (featureFile.exists()) {
+            String zipFile = dest.getAbsolutePath();
+            String tmpFolder = ExportJobUtil.getTmpFolder();
+            zipLogFile(zipFile, tmpFolder, featureFile.getLocation().toPortableString());
+        }
     }
 
     private void exportSysconfig(File dest) {
