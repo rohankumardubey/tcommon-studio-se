@@ -99,8 +99,6 @@ public class MetadataTalendTypeFilterTest {
 
     @Test
     public void sparkDynamicTypeTest() {
-
-        assertEquals(7, SparkBatchMetadataTalendTypeFilter.dynamicTypeCompatibleComponents.size());
         String[] types = new String[] { INTEGER, DOCUMENT, STRING, OBJECT, LIST, DOUBLE, SHORT, DYNAMIC, VECTOR };
 
         for (String componentName: SparkBatchMetadataTalendTypeFilter.dynamicTypeCompatibleComponents) {
