@@ -4,6 +4,7 @@ Bundle-Name: -Talend Open Studio -
 Bundle-SymbolicName: org.talend.rcp;singleton:=true
 Bundle-Version: 8.0.1.M12
 Bundle-Activator: org.talend.rcp.Activator
+Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.intro,
  org.talend.core,

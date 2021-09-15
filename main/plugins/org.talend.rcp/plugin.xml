@@ -366,5 +366,23 @@
          id="org.talend.rcp.perspective">
    </perspective>
 </extension>
+<extension point="org.eclipse.ui.actionSets">
+
+    <actionSet
+            label="Talend Resources"
+            visible="true"
+            id="org.talend.actionSet">
+
+
+         <action
+               id="org.eclipse.debug.internal.ui.actions.Resources"
+               toolbarPath="talend.group"
+               class="org.talend.rcp.action.toolbar.CreatResourcesToolbarAction"
+               label="%resources.label"
+               style="pulldown">
+         </action>
+
+      </actionSet>
+</extension>
 
 </plugin>
