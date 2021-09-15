@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.Platform;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.utils.MojoType;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IESBService;
@@ -121,13 +122,7 @@ public class CreateMavenStandardJobOSGiPom extends CreateMavenJobPom {
 					List<Plugin> plugins = profile.getBuild().getPlugins();
 					for (Plugin plugin : plugins) {
 						if ("osgihelper-maven-plugin".equals(plugin.getArtifactId())) {
-							String talendVersion = VersionUtils.getTalendVersion();
-							String productVersion = VersionUtils.getInternalVersion();
-							if (productVersion.endsWith("-SNAPSHOT") || CommonsPlugin.isJUnitTest() //$NON-NLS-1$
-									|| Platform.inDevelopmentMode()) {
-								talendVersion += "-SNAPSHOT"; //$NON-NLS-1$
-							}
-							plugin.setVersion(talendVersion);
+							plugin.setVersion(VersionUtils.getMojoVersion(MojoType.OSGI_HELPER));
 							break;
 						}
 					}
