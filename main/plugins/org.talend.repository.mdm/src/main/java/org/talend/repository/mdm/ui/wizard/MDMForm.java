@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.repository.mdm.ui.wizard;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -26,7 +27,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.swt.formtools.Form;
-import org.talend.commons.ui.swt.formtools.LabelledCombo;
 import org.talend.commons.ui.swt.formtools.LabelledText;
 import org.talend.commons.ui.swt.formtools.UtilsButton;
 import org.talend.core.model.metadata.builder.connection.MDMConnection;
@@ -296,7 +296,14 @@ public class MDMForm extends AbstractForm {
             serverURLText.setText(mdmConn.getServerUrl());
         } else {
             mdmConn.setVersion(MDMVersions.MDM_S60.getKey());
-            mdmConn.setServerUrl(SERVER_RUL_S60);
+            String serverUrl = mdmConn.getServerUrl();
+            if (creation) {
+                mdmConn.setServerUrl(SERVER_RUL_S60);
+            } else {
+                if (StringUtils.isBlank(serverUrl)) {
+                    mdmConn.setServerUrl(SERVER_RUL_S60);
+                }
+            }
             mdmUsernameText.setText(mdmConn.getUsername());
             mdmPasswordText.setText(mdmConn.getValue(mdmConn.getPassword(), false));
             serverURLText.setText(mdmConn.getServerUrl());

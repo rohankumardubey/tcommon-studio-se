@@ -3466,7 +3466,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                 contents = new String[] {
                         Messages.getString("LocalRepositoryFactory.productionNewer02", toOpenProjectVersion, productVersion) };
             }
-
+            ProjectManager.getInstance().getProjectLabelWithOriginVersion().put(localProject.getLabel(), localProject.getEmfProject().getProductVersion());
             ELoginInfoCase.STUDIO_HIGHER_THAN_PROJECT.setContents(contents);
             DialogUtils.setWarningInfo(ELoginInfoCase.STUDIO_HIGHER_THAN_PROJECT);// $NON-NLS-1$
         }
