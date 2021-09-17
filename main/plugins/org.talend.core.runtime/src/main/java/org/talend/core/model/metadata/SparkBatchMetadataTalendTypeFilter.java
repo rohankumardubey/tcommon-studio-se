@@ -26,13 +26,14 @@ public class SparkBatchMetadataTalendTypeFilter extends SparkMetadataTalendTypeF
 
     @Override
     public List<String> getComponentSpecificTypes() {
-
+        // For the moment only dynamic type is a component specific type
+        // dynamic type is available under 2 conditions : job uses Dataset API and component is listed in
+        // dynamicTypeCompatibleComponents
         INode configNode = node.getProcess().getNodesOfType("tSparkConfiguration").get(0);
         IElementParameter param = configNode.getElementParameter("USE_DATASET_API");
         if (Boolean.FALSE.equals(param.getValue())) {
             return null;
         }
-
         if (dynamicTypeCompatibleComponents.contains(node.getComponent().getName())) {
             return  Arrays.asList(SparkMetadataTalendTypeFilter.DYNAMIC);
         }
