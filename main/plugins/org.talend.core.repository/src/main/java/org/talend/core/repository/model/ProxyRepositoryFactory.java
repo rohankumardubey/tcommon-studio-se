@@ -2205,6 +2205,19 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                     ExceptionHandler.process(e);
                 }
                 
+                // need to set m2
+                LoginTaskRegistryReader loginTaskRegistryReader = new LoginTaskRegistryReader();
+                ILoginTask[] allLoginTasks = loginTaskRegistryReader.getAllCommandlineTaskListInstance();
+                for (ILoginTask task : allLoginTasks) {
+                    if (task.getClass().getCanonicalName().endsWith("M2eUserSettingForTalendLoginTask")) {
+                        try {
+                            task.execute(new NullProgressMonitor());
+                        } catch (Exception e) {
+                            ExceptionHandler.process(e);
+                        }
+                    }
+                }
+                
                 ICoreService coreService = getCoreService();
                 if (coreService != null) {
                     currentMonitor = subMonitor.newChild(1, SubMonitor.SUPPRESS_NONE);

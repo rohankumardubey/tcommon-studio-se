@@ -48,6 +48,8 @@ abstract public class BaseComponentInstallerTask implements IComponentInstallerT
     private static final String SYS_PROP_TCOMPV0 = "tcompv0.update";
     private static final String SYS_PROP_OVERWRITE = "m2.overwrite";
     private static final String SYS_PROP_OVERWRITE_DEFAULT = "false";
+
+    private static final String SYS_CUSTOM_MAVEN_REPO = "maven.local.repository";
     
     private int order;
     
@@ -216,19 +218,27 @@ abstract public class BaseComponentInstallerTask implements IComponentInstallerT
      * @return local maven repository path
      */
     protected File getM2RepositoryPath() {
+        
+        String mavenRepo = System.getProperty(SYS_CUSTOM_MAVEN_REPO);
+
         File m2Repo = null;
-        final IMaven maven = MavenPlugin.getMaven();
-        try {
-            maven.reloadSettings();
-        } catch (CoreException e) {
-            LOGGER.error("getM2RepositoryPath error", e);
-        }
-        String localRepository = maven.getLocalRepositoryPath();
 
-        if (!StringUtils.isEmpty(localRepository)) {
-            m2Repo = new File(localRepository);
-        }
+        if (StringUtils.isEmpty(mavenRepo)) {
+            final IMaven maven = MavenPlugin.getMaven();
+            try {
+                maven.reloadSettings();
+            } catch (CoreException e) {
+                LOGGER.error("getM2RepositoryPath error", e);
+            }
+            String localRepository = maven.getLocalRepositoryPath();
 
+            if (!StringUtils.isEmpty(localRepository)) {
+                m2Repo = new File(localRepository);
+            }
+        } else {
+            m2Repo = new File(mavenRepo);
+        }
+        
         if (m2Repo != null && !m2Repo.exists()) {
             m2Repo.mkdirs();
         }

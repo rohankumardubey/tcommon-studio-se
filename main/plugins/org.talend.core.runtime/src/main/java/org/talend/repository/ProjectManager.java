@@ -94,6 +94,8 @@ public final class ProjectManager {
     private Set<Object> updatedRemoteHandlerRecords;
 
     private Set<Project> tempProjects;
+    
+    private static final Map<String, String> projectLabelWithOriginVersion = new HashMap<String, String> ();
 
     private WeakHashMap<IRepositoryViewObject, Boolean> cachedObjects = new WeakHashMap<IRepositoryViewObject, Boolean>();
 
@@ -735,6 +737,7 @@ public final class ProjectManager {
      */
     public void clearAll() {
         mapProjectUrlToBranchUrl.clear();
+        projectLabelWithOriginVersion.clear();
         clearFolderCache();
     }
 
@@ -832,4 +835,9 @@ public final class ProjectManager {
 		}
 		return null;
 	}
+
+    
+    public Map<String, String> getProjectLabelWithOriginVersion() {
+        return projectLabelWithOriginVersion;
+    }	
 }
