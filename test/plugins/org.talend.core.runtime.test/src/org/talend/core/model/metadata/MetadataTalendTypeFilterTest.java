@@ -13,12 +13,20 @@
 package org.talend.core.model.metadata;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.talend.core.model.components.IComponent;
+import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.INode;
+import org.talend.core.model.process.IProcess;
 
 /**
  * created by rdubois on 30 juil. 2015 Detailled comment
@@ -44,6 +52,21 @@ public class MetadataTalendTypeFilterTest {
 
     private static final String VECTOR = "Vector"; //$NON-NLS-1$
 
+    private INode node;
+
+    @Before
+    public void createMocks() {
+        IElementParameter param = mock(IElementParameter.class);
+        when(param.getValue()).thenReturn(Boolean.TRUE);
+        INode configNode = mock(INode.class);
+        when(configNode.getElementParameter("USE_DATASET_API")).thenReturn(param);
+        IProcess process = mock(IProcess.class);
+        List<INode> configNodes = Arrays.asList(configNode);
+        doReturn(configNodes).when(process).getNodesOfType("tSparkConfiguration");
+        node = mock(INode.class);
+        when(node.getProcess()).thenReturn(process);
+    }
+
     @Test
     public void filterStringTest() {
         String[] types;
@@ -53,7 +76,11 @@ public class MetadataTalendTypeFilterTest {
         MetadataTalendTypeFilter sparkWithtRowGeneratorfilter = new SparkMetadataTalendTypeFilter("tRowGenerator"); //$NON-NLS-1$
         MetadataTalendTypeFilter sparkWithtFileInputParquetfilter = new SparkMetadataTalendTypeFilter("tFileInputParquet"); //$NON-NLS-1$
         MetadataTalendTypeFilter stormfilter = new StormMetadataTalendTypeFilter(""); //$NON-NLS-1$
-        MetadataTalendTypeFilter sparkBatchFilter = new SparkBatchMetadataTalendTypeFilter(""); //$NON-NLS-1$
+        IComponent component = mock(IComponent.class);
+        when(component.getName()).thenReturn("");
+        when(node.getComponent()).thenReturn(component);
+
+        MetadataTalendTypeFilter sparkBatchFilter = new SparkBatchMetadataTalendTypeFilter(node);
 
         types = new String[] { INTEGER, DOCUMENT, STRING, OBJECT, LIST, DOUBLE, SHORT, DYNAMIC, VECTOR };
         assertEquals(Arrays.asList(dummyfilter.filter(types)),
@@ -100,13 +127,15 @@ public class MetadataTalendTypeFilterTest {
     @Test
     public void sparkDynamicTypeTest() {
         String[] types = new String[] { INTEGER, DOCUMENT, STRING, OBJECT, LIST, DOUBLE, SHORT, DYNAMIC, VECTOR };
-
+        IComponent component = mock(IComponent.class);
+        when(node.getComponent()).thenReturn(component);
         for (String componentName: SparkBatchMetadataTalendTypeFilter.dynamicTypeCompatibleComponents) {
-            System.out.println(componentName);
-            assertTrue(Arrays.asList(new SparkBatchMetadataTalendTypeFilter(componentName).filter(types)).contains(DYNAMIC));
+            when(component.getName()).thenReturn(componentName);
+            assertTrue(Arrays.asList(new SparkBatchMetadataTalendTypeFilter(node).filter(types)).contains(DYNAMIC));
         }
 
-        assertFalse(Arrays.asList(new SparkBatchMetadataTalendTypeFilter(SparkBatchMetadataTalendTypeFilter.ROWGENERATOR_COMPONENT_NAME).filter(types)).contains(DYNAMIC));
+        // assertFalse(Arrays.asList(new
+        // SparkBatchMetadataTalendTypeFilter(SparkBatchMetadataTalendTypeFilter.ROWGENERATOR_COMPONENT_NAME).filter(types)).contains(DYNAMIC));
     }
 
 }
