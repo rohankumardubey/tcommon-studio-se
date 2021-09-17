@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.core.service;
 
-import java.io.File;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
@@ -67,8 +66,7 @@ public interface IStudioLiteP2Service extends IService {
 
     boolean performUpdate(IProgressMonitor monitor, CheckUpdateHook hook) throws Exception;
 
-    // update api
-    ValidateRequiredFeaturesHook validateRequiredFeatures(IProgressMonitor monitor, Project proj, Set<String> backupedTempFeatureFiles) throws Exception;
+    ValidateRequiredFeaturesHook validateRequiredFeatures(IProgressMonitor monitor, Project proj) throws Exception;
 
     /**
      * show required features, and choose what to do
@@ -83,6 +81,17 @@ public interface IStudioLiteP2Service extends IService {
 
     int installRequiredFeatures(IProgressMonitor monitor, ValidateRequiredFeaturesHook hook, Project proj) throws Exception;
 
+    ValidateMergingFeaturesHook validateMergingFeatures(IProgressMonitor monitor, Project proj, Set<String> backupedFeaturesTempFiles) throws Exception;
+    
+    /**
+     * show merging features wizard
+     * 
+     * @return {@link IStudioLiteP2Service#RESULT_DONE}<br/>
+     * {@link IStudioLiteP2Service#RESULT_SKIP}<br/>
+     * {@link IStudioLiteP2Service#RESULT_CANCEL}<br/>
+     */
+    int showMergingFeaturesWizard(ValidateMergingFeaturesHook hook, Project proj) throws Exception;
+    
     /**
      * selected features will be write into the required feature list of project
      * 
@@ -150,10 +159,15 @@ public interface IStudioLiteP2Service extends IService {
         boolean isMissingRequiredFeatures();
 
         List<IInstallableUnitInfo> getMissingRequiredFeatures();
-        
+
+    }
+    
+    public static interface ValidateMergingFeaturesHook {
+
+        boolean showWizard();
+
+        Set<IInstallableUnitInfo> getNewlyActivatedFeatures();
         Set<IInstallableUnitInfo> getDeActivatedFeatures();
-        
-        Set<IInstallableUnitInfo> getRequiredFeatures();
 
     }
 
