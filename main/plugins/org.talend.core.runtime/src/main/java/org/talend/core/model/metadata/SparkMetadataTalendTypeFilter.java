@@ -80,8 +80,6 @@ public class SparkMetadataTalendTypeFilter extends MetadataTalendTypeFilter {
 
     /**
      * Get a list of types that are specifically supported by the component
-     *
-     * @return
      */
     protected List<String> getComponentSpecificTypes() {
         return null;
