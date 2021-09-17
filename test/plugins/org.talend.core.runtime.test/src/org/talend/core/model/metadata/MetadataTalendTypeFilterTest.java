@@ -13,6 +13,7 @@
 package org.talend.core.model.metadata;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -134,8 +135,8 @@ public class MetadataTalendTypeFilterTest {
             assertTrue(Arrays.asList(new SparkBatchMetadataTalendTypeFilter(node).filter(types)).contains(DYNAMIC));
         }
 
-        // assertFalse(Arrays.asList(new
-        // SparkBatchMetadataTalendTypeFilter(SparkBatchMetadataTalendTypeFilter.ROWGENERATOR_COMPONENT_NAME).filter(types)).contains(DYNAMIC));
+        when(component.getName()).thenReturn(SparkBatchMetadataTalendTypeFilter.ROWGENERATOR_COMPONENT_NAME);
+        assertFalse(Arrays.asList(new SparkBatchMetadataTalendTypeFilter(node).filter(types)).contains(DYNAMIC));
     }
 
 }
