@@ -13,14 +13,13 @@
 package org.talend.core.model.metadata;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -128,15 +127,16 @@ public class MetadataTalendTypeFilterTest {
     @Test
     public void sparkDynamicTypeTest() {
         String[] types = new String[] { INTEGER, DOCUMENT, STRING, OBJECT, LIST, DOUBLE, SHORT, DYNAMIC, VECTOR };
+        List<String> components = Arrays.asList(
+                "tAggregateRow","tAlgoTemplate","tAvroInput","tAvroMap","tAvroOutput","tBigQueryInput","tBigQueryOutput","tCacheIn","tCacheOut","tCassandraInput","tCassandraOutput","tCollectAndCheck","tConvertType","tDataprepRun","tDeltaLakeInput","tDeltaLakeOutput","tDenormalize","tDynamoDBInput","tDynamoDBOutput","tElasticSearchInput","tElasticSearchOutput","tExtractDelimitedFields","tExtractFullRow","tExtractJSONFields","tExtractPositionalFields","tExtractRegexFields","tExtractXMLField","tFileInputDelimited","tFileInputFullRow","tFileInputJSON","tFileInputParquet","tFileInputPositional","tFileInputRegex","tFileInputXML","tFileOutputDelimited","tFileOutputJSON","tFileOutputParquet","tFileOutputPositional","tFileOutputXML","tFilterColumns","tFilterRow","tFixedFlowInput","tHBaseInput","tHBaseOutput","tHiveInput","tHiveOutput","tInputFormatAvro","tInputFormatJSON","tInputFormatXML","tJava","tJavaRow","tJDBCInput","tJDBCOutput","tKuduInput","tKuduOutput","tLogRow","tMap","tMapRDBInput","tMapRDBOutput","tMongoDBInput","tMongoDBOutput","tMysqlInput","tMysqlOutput","tNormalize","tOracleInput","tOracleOutput","tPartition","tPredictTemplate","tRedshiftInput","tRedshiftOutput","tReplace","tReplicate","tRowGenerator","tSample","tSchemaComplianceCheck","tSnowflakeInput","tSnowflakeOutput","tSortRow","tSparkOutput","tSqlRow","tTeradataInput","tTeradataOutput","tTop","tTopBy","tUniqRow","tUnite","tWriteJSONField"
+                );
         IComponent component = mock(IComponent.class);
         when(node.getComponent()).thenReturn(component);
-        for (String componentName: SparkBatchMetadataTalendTypeFilter.dynamicTypeCompatibleComponents) {
+        List<String> compatibleComponents = components.stream().filter(componentName -> {
             when(component.getName()).thenReturn(componentName);
-            assertTrue(Arrays.asList(new SparkBatchMetadataTalendTypeFilter(node).filter(types)).contains(DYNAMIC));
-        }
-
-        when(component.getName()).thenReturn(SparkBatchMetadataTalendTypeFilter.ROWGENERATOR_COMPONENT_NAME);
-        assertFalse(Arrays.asList(new SparkBatchMetadataTalendTypeFilter(node).filter(types)).contains(DYNAMIC));
+            return Arrays.asList(new SparkBatchMetadataTalendTypeFilter(node).filter(types)).contains(DYNAMIC);
+        }).collect(Collectors.toList());
+        assertEquals(SparkBatchMetadataTalendTypeFilter.dynamicTypeCompatibleComponents, compatibleComponents);
     }
 
 }
