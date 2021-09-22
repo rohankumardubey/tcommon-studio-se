@@ -31,12 +31,7 @@
       <import plugin="org.eclipse.xtend.lib" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.xtext.xbase.lib" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.xtend.lib.macro" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.talend.rcp"/>
    </requires>
-
-   <plugin
-         id="org.talend.rcp"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
 
 </feature>
