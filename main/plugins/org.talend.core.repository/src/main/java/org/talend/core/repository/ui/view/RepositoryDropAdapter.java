@@ -145,7 +145,7 @@ public class RepositoryDropAdapter extends PluginDropAdapter {
                         frameworkNewValue = ConvertJobsUtil.JobStreamingFramework.SPARKSTREAMINGFRAMEWORK.getDisplayName();
                     } else if (targetNode.getContentType() == ERepositoryObjectType.PROCESS_MR) {
                         jobTypeValue = ConvertJobsUtil.JobType.BIGDATABATCH.getDisplayName();
-                        frameworkNewValue = ConvertJobsUtil.JobBatchFramework.MAPREDUCEFRAMEWORK.getDisplayName();
+                        frameworkNewValue = ConvertJobsUtil.JobBatchFramework.SPARKFRAMEWORK.getDisplayName();
                     }
                     final Item newItem = ConvertJobsUtil.createOperation(sourceNode.getObject().getLabel(), jobTypeValue,
                             frameworkNewValue, sourceNode.getObject());

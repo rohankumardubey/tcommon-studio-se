@@ -21,11 +21,11 @@
     <import plugin="org.junit" version="4.13.2" match="greaterOrEqual"/>
     <import plugin="org.slf4j.api" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.apache.commons.configuration" version="2.0.0" match="greaterOrEqual"/>
+    <import plugin="org.talend.daikon"/>
+    <import plugin="org.talend.daikon.exception"/>
+    <import plugin="org.talend.daikon.crypto.utils"/>
+    <import plugin="org.talend.studio.studio-utils"/>
+    <import plugin="org.talend.utils"/>
+    <import plugin="org.talend.platform.logging"/>
   </requires>  
-  <plugin id="org.talend.daikon" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.daikon.exception" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.daikon.crypto.utils" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.studio.studio-utils" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.utils" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.platform.logging" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
 </feature>
