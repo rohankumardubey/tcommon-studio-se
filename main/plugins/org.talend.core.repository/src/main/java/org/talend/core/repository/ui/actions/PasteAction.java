@@ -88,7 +88,7 @@ public class PasteAction extends AContextualAction {
                         frameworkNewValue = ConvertJobsUtil.JobStreamingFramework.SPARKSTREAMINGFRAMEWORK.getDisplayName();
                     } else if (target.getContentType() == ERepositoryObjectType.PROCESS_MR) {
                         jobTypeValue = ConvertJobsUtil.JobType.BIGDATABATCH.getDisplayName();
-                        frameworkNewValue = ConvertJobsUtil.JobBatchFramework.MAPREDUCEFRAMEWORK.getDisplayName();
+                        frameworkNewValue = ConvertJobsUtil.JobBatchFramework.SPARKFRAMEWORK.getDisplayName();
                     }
                     try {
                         jobNewName = ConvertJobsUtil.getDuplicateName(sourceNode, sourceNode.getObject().getLabel());

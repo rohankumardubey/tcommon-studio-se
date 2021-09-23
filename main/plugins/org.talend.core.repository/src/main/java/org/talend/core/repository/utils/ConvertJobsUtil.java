@@ -212,7 +212,6 @@ public class ConvertJobsUtil {
     }
 
     public static enum JobBatchFramework {
-        MAPREDUCEFRAMEWORK("MapReduce (deprecated)", "_MAPREDUCE_FRAMEWORK_"), //$NON-NLS-1$ //$NON-NLS-2$
         SPARKFRAMEWORK("Spark", "_SPARK_FRAMEWORK_"); //$NON-NLS-1$ //$NON-NLS-2$
 
         private String displayName;
@@ -356,8 +355,7 @@ public class ConvertJobsUtil {
      * @return
      */
     public static String getJobTypeFromFramework(String frameworkObj) {
-        if (JobBatchFramework.MAPREDUCEFRAMEWORK.getDisplayName().equals(frameworkObj)
-                || JobBatchFramework.SPARKFRAMEWORK.getDisplayName().equals(frameworkObj)) {
+        if (JobBatchFramework.SPARKFRAMEWORK.getDisplayName().equals(frameworkObj)) {
             return JobType.BIGDATABATCH.getDisplayName();
         } else if (JobStreamingFramework.SPARKSTREAMINGFRAMEWORK.getName().equals(frameworkObj)) {
             return JobType.BIGDATASTREAMING.getDisplayName();

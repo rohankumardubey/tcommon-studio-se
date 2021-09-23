@@ -217,9 +217,12 @@ public abstract class MavenCommandLauncher {
             }
 
             String vmargs = System.getProperty(mavenArgs);
-            if (vmargs != null) {
-                workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmargs);
+            if (vmargs == null) {
+                vmargs = "";
             }
+            vmargs += " --add-opens java.base/sun.security.x509=ALL-UNNAMED --add-opens java.base/sun.security.pkcs=ALL-UNNAMED";
+
+            workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmargs);
 
             // ignore test failures
             if (this.ignoreTestFailure) {
