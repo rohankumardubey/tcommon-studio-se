@@ -1056,7 +1056,7 @@ public class PomUtil {
     }
 
     public static void checkExistingLog4j2Dependencies4RoutinePom(String projectTechName, IFile pomFile) {
-        if (!PluginChecker.isBigdataRoutineLoaded()) {
+        if (!PluginChecker.isBigdataRoutineLoaded() && !PluginChecker.isStudioLite()) {
             return;
         }
         try {
