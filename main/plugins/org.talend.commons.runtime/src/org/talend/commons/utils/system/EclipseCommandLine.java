@@ -86,6 +86,8 @@ public class EclipseCommandLine {
     static public final String TALEND_DISABLE_EXTERNAL_MODULE_INSTALL_DIALOG_COMMAND = "--disableExternalModuleInstallDialog"; //$NON-NLS-1$
 
     static public final String TALEND_NOSPLASH_COMMAND = "-nosplash"; //$NON-NLS-1$
+    
+    static public final String TALEND_RESTART_FLAG = "-talendRestart";
 
     /**
      * for TUP-2218, enable to open the job auto, when open studio. the args should be name of job. if want to open
