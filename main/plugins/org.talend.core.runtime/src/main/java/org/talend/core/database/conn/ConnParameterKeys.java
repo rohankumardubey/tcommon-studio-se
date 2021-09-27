@@ -229,6 +229,8 @@ public class ConnParameterKeys {
     public static final String CONN_PARA_KEY_SYNAPSE_FS_USERNAME = "CONN_PARA_KEY_SYNAPSE_FS_USERNAME"; //$NON-NLS-1$
 
     public static final String CONN_PARA_KEY_SYNAPSE_FS_PASSWORD = "CONN_PARA_KEY_SYNAPSE_FS_PASSWORD"; //$NON-NLS-1$
+    
+    public static final String CONN_PARA_KEY_SYNAPSE_FS_STORAGE = "CCONN_PARA_KEY_SYNAPSE_FS_STORAGE"; //$NON-NLS-1$
 
     public static final String CONN_PARA_KEY_SYNAPSE_DEPLOY_BLOB = "CONN_PARA_KEY_SYNAPSE_DEPLOY_BLOB"; //$NON-NLS-1$
     
