@@ -283,7 +283,7 @@ public class Application implements IApplication {
                         EclipseCommandLine.TALEND_PROJECT_TYPE_COMMAND, null, true);
                 // if relaunch, should delete the "disableLoginDialog" argument in eclipse data for bug TDI-19214
                 EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(
-                        EclipseCommandLine.TALEND_DISABLE_LOGINDIALOG_COMMAND, null, true, true);
+                        EclipseCommandLine.TALEND_RESTART_FLAG, Boolean.TRUE.toString(), false);
                 // TDI-8426, fix the swith project failure, when in dev also.
                 // if dev, can't be restart, so specially for dev.
                 if (Platform.inDevelopmentMode()) {

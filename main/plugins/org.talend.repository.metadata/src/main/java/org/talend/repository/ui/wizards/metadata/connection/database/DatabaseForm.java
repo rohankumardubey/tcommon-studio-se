@@ -128,6 +128,7 @@ import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.hd.IHDistribution;
 import org.talend.core.runtime.hd.IHDistributionVersion;
 import org.talend.core.runtime.hd.hive.HiveMetadataHelper;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.cwm.helper.ConnectionHelper;
@@ -778,10 +779,14 @@ public class DatabaseForm extends AbstractForm {
         if (jarPath != null) {
             final String[] split = jarPath.split(";");
             for (String oneJarPath : split) {
-                path = Path.fromOSString(oneJarPath);
-                if (path.lastSegment() != null) {
-                    lastSegments = lastSegments + path.lastSegment() + ";";
-                }
+            	 if (oneJarPath.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
+            		 lastSegments=oneJarPath+ ";";
+					} else {
+						path = Path.fromOSString(oneJarPath);
+						if (path.lastSegment() != null) {
+							lastSegments = lastSegments + path.lastSegment() + ";";
+						}
+					}
             }
             if (lastSegments.length() > 0) {
                 lastSegments = lastSegments.substring(0, lastSegments.length() - 1);
@@ -2803,7 +2808,7 @@ public class DatabaseForm extends AbstractForm {
                     File file = new File(stringToFile);
                     if (file != null) {
                         try {
-                            MyURLClassLoader cl = new MyURLClassLoader(file.toURL());
+                            MyURLClassLoader cl = new MyURLClassLoader(new URL[] { file.toURL() }, ClassLoader.getPlatformClassLoader());
                             Class[] classes = cl.getAssignableClasses(Driver.class);
                             for (Class classe : classes) {
                                 driverClassTxt.add(classe.getName());
@@ -5983,9 +5988,13 @@ public class DatabaseForm extends AbstractForm {
                                 buffer.append(";");
                             }
                             String path = jarNames[i];
-                            IPath ipath = Path.fromOSString(path);
-                            String lastSegment = ipath.lastSegment();
-                            buffer.append(lastSegment);
+							if (path.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
+								buffer.append(path);
+							} else {
+								IPath ipath = Path.fromOSString(path);
+								String lastSegment = ipath.lastSegment();
+								buffer.append(lastSegment);
+							}
                         }
                         getConnection().setDriverJarPath(buffer.toString());
                     }
@@ -6122,7 +6131,7 @@ public class DatabaseForm extends AbstractForm {
                     File file = new File(stringToFile);
                     if (file != null) {
                         try {
-                            MyURLClassLoader cl = new MyURLClassLoader(file.toURL());
+                            MyURLClassLoader cl = new MyURLClassLoader(new URL[] { file.toURL() }, ClassLoader.getPlatformClassLoader());
                             Class[] classes = cl.getAssignableClasses(Driver.class);
                             for (Class classe : classes) {
                                 generalJdbcClassNameText.add(classe.getName());
