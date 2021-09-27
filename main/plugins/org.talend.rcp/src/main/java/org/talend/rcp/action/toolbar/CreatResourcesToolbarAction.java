@@ -179,11 +179,6 @@ public  class CreatResourcesToolbarAction implements IWorkbenchWindowPulldownDel
     }
 
     protected void fillMenu(Menu menu) {
-
-        IRepositoryView repositoryView = RepositoryManagerHelper.findRepositoryView();
-        if (repositoryView == null) {
-            return;
-        }
         addToMenu(menu, new ResourceImageTextAction(this.window, "/icons/demo.png", LEARN_ORIG_URL, LEARN,
                 Messages.getString("LinksToolbarItem_Learn")), -1);
         addToMenu(menu, new ResourceImageTextAction(this.window, "/icons/irc_protocol.png", ASK_ORIG_URL, ASK,
