@@ -147,7 +147,9 @@ public enum EHadoopProperties {
     DATABRICKS_ENDPOINT,
     
     DATABRICKS_CLOUD_PROVIDER,
-    
+
+    DATABRICKS_RUN_MODE,
+
     DATABRICKS_CLUSTER_ID,
     
     DATABRICKS_TOKEN,
