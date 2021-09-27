@@ -108,6 +108,8 @@ public interface IStudioLiteP2Service extends IService {
 
     void setLocalPatches(Collection<String> localPatchUris) throws Exception;
 
+    URI toURI(String path) throws Exception;
+
     public static IStudioLiteP2Service get() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IStudioLiteP2Service.class)) {
             return GlobalServiceRegister.getDefault().getService(IStudioLiteP2Service.class);
