@@ -1492,4 +1492,29 @@ public class NodeUtil {
         }
         return false;
     }
+    
+    /**
+     * TUP-32758:Used to judge if two components are compatible from name 
+     * for example tAmazonMysqlConnection and tMysqlConnection ,tAmazonOracleCommit and tOracleCommit
+     */
+    public static boolean isCompatibleByName(String componentName1, String componentName2) {
+        boolean isCompatable = false;
+        if ( componentName1 ==null || componentName2 == null 
+                || componentName1.length()<1 || componentName2.length() < 1) return false;
+        if (componentName1.replaceFirst("t", "tAmazon").equals(componentName2) ||
+                componentName2.replaceFirst("t", "tAmazon").equals(componentName1)) {
+            isCompatable = true;
+        }
+        return isCompatable;
+    }
+    
+    public static boolean isDatabaseFamily(String orginalFamilyName) {
+        boolean isDatabaseFamily = false;
+        String rootFamily = "";
+        rootFamily = orginalFamilyName != null ? orginalFamilyName.split("/")[0] : "";
+        if (rootFamily.equals("Databases")) {
+            isDatabaseFamily = true;
+        }
+        return isDatabaseFamily;
+    }
 }
