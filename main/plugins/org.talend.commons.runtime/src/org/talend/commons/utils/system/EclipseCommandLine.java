@@ -88,6 +88,8 @@ public class EclipseCommandLine {
     static public final String TALEND_NOSPLASH_COMMAND = "-nosplash"; //$NON-NLS-1$
     
     static public final String TALEND_RESTART_FLAG = "-talendRestart";
+    
+    static public final String TALEND_SKIP_PROJECT_VERSION_CHECK_FLAG = "-skipProjectVersionCheck";
 
     /**
      * for TUP-2218, enable to open the job auto, when open studio. the args should be name of job. if want to open
