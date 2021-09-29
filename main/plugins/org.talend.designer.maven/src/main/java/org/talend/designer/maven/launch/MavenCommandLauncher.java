@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.maven.launch;
 
+import java.io.File;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,6 +44,7 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.jdt.launching.IVMInstall2;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.m2e.actions.MavenLaunchConstants;
 import org.eclipse.m2e.core.MavenPlugin;
@@ -57,7 +59,10 @@ import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.debug.TalendDebugHandler;
 import org.talend.commons.ui.runtime.CommonUIPlugin;
+import org.talend.core.GlobalServiceRegister;
+import org.talend.core.PluginChecker;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
+import org.talend.core.services.ICoreTisService;
 import org.talend.designer.maven.model.TalendMavenConstants;
 
 /**
@@ -220,7 +225,13 @@ public abstract class MavenCommandLauncher {
             if (vmargs == null) {
                 vmargs = "";
             }
-            vmargs += " --add-opens java.base/sun.security.x509=ALL-UNNAMED --add-opens java.base/sun.security.pkcs=ALL-UNNAMED";
+            if (JavaRuntime.getDefaultVMInstall() instanceof IVMInstall2) {
+            	String javaVersion = ((IVMInstall2)JavaRuntime.getDefaultVMInstall()).getJavaVersion();
+                if (javaVersion != null && !javaVersion.startsWith(JavaCore.VERSION_1_8)) {
+                	// setup the add-opens only for Java 9+
+                    vmargs += " --add-opens java.base/sun.security.x509=ALL-UNNAMED --add-opens java.base/sun.security.pkcs=ALL-UNNAMED";
+                }
+            }
 
             workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmargs);
 
@@ -253,6 +264,11 @@ public abstract class MavenCommandLauncher {
                 } else if (!StringUtils.contains(programArgs, TalendMavenConstants.ARG_SKIP_CI_BUILDER)) {
                     programArgs += " " + TalendMavenConstants.ARG_SKIP_CI_BUILDER; //$NON-NLS-1$
                 }
+                
+                if (canSignJob()) {
+                	programArgs+=" " + TalendMavenConstants.ARG_LICENSE_PATH + "=\"" + getLicenseFile().getAbsolutePath() + "\"";
+                	programArgs+=" " + TalendMavenConstants.ARG_SESSION_ID + "=" + getSessionId();
+                }
                 workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, programArgs);
             }
 
@@ -266,6 +282,35 @@ public abstract class MavenCommandLauncher {
         }
         return null;
     }
+    
+    public boolean canSignJob() {
+        if (PluginChecker.isTIS() && getLicenseFile() != null) {
+            return true;
+        }
+        return false;
+    }
+
+    protected File getLicenseFile() {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
+            ICoreTisService coreTisService = (ICoreTisService) GlobalServiceRegister.getDefault()
+                    .getService(ICoreTisService.class);
+            File licenseFile = coreTisService.getLicenseFile();
+            if (licenseFile.exists() && !coreTisService.isLicenseExpired()) {
+                return licenseFile;
+            }
+        }
+        return null;
+    }
+
+    private String getSessionId() {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
+            ICoreTisService coreTisService = (ICoreTisService) GlobalServiceRegister.getDefault()
+                    .getService(ICoreTisService.class);
+            return coreTisService.generateSignerSessionId();
+        }
+        return null;
+    }
+
 
     protected void setProjectConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IContainer basedir) {
         IMavenProjectRegistry projectManager = MavenPlugin.getMavenProjectRegistry();
