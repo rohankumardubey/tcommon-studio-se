@@ -28,8 +28,6 @@ import org.talend.core.model.general.Project;
  */
 public interface IStudioLiteP2Service extends IService {
 
-    public static final String PROP_USE_NEW_UPDATE_SYSTEM = "talend.studio.update.useNewUpdateSystem";
-
     public static final String CONFIG_STORAGE_FOLDER = "talend/studioLite/";
 
     public static final String BUNDLES_INFOS_STORAGE_FOLDER = CONFIG_STORAGE_FOLDER + "bundlesInfo/";
@@ -109,12 +107,24 @@ public interface IStudioLiteP2Service extends IService {
     void setLocalPatches(Collection<String> localPatchUris) throws Exception;
 
     URI toURI(String path) throws Exception;
+    
+    Set<String> getStudioInstalledFeatures(IProgressMonitor monitor, boolean includeTransitive) throws Exception;
+
+    void registCheckUpdateListener(AbsCheckUpdateListener listener) throws Exception;
+
+    void unregistCheckUpdateListener(AbsCheckUpdateListener listener) throws Exception;
 
     public static IStudioLiteP2Service get() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IStudioLiteP2Service.class)) {
             return GlobalServiceRegister.getDefault().getService(IStudioLiteP2Service.class);
         }
         return null;
+    }
+
+    public static abstract class AbsCheckUpdateListener {
+
+        abstract public void beforeCheckUpdate(IProgressMonitor monitor) throws Exception;
+
     }
 
     public static interface IInstallableUnitInfo {

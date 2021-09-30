@@ -26,6 +26,7 @@ import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
@@ -208,12 +209,18 @@ public class OnBoardingShell {
             isOpened = true;
         }
 
+        if (parentShell == null || parentShell.isDisposed()) {
+            close();
+            return;
+        }
+        
         Rectangle clientArea = parentShell.getClientArea();
 
         Rectangle contentArea = presentationData.getContentArea();
 
         Rectangle highlightArea = null;
-        if (focusedWidget == null || focusedWidget.isDisposed()) {
+        if (focusedWidget == null || focusedWidget.isDisposed()
+                || (focusedWidget instanceof Control && !((Control) focusedWidget).isVisible())) {
             contentArea.x = clientArea.x + ((clientArea.width - contentArea.width) / 2);
             contentArea.y = clientArea.y + ((clientArea.height - contentArea.height) / 2);
             prevHighlightArea = new Rectangle(0, 0, 0, 0);

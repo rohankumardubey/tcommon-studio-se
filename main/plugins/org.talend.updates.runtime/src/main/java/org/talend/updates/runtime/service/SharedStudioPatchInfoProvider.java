@@ -21,9 +21,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.resource.FileExtensions;
-import org.talend.core.GlobalServiceRegister;
-import org.talend.core.runtime.maven.MavenArtifact;
-import org.talend.core.ui.IInstalledPatchService;
 import org.talend.updates.runtime.utils.PathUtils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -91,18 +88,6 @@ public class SharedStudioPatchInfoProvider {
 
     }
 
-    public File getNeedInstallStudioPatchFiles() {
-        File patchFolder = PathUtils.getPatchesFolder();
-        String patchName = getStudioInstalledLatestPatchFileName();
-        if (patchFolder.exists() && patchFolder.isDirectory() && patchName != null) {
-            File patchFile = new File (patchFolder, patchName);
-            if (patchFile.exists() && !isInstalled(patchFile.getName(), PATCH_TYPE_STUDIO)) {
-                return patchFile;
-            }
-        }
-        return null;
-    }
-
     public List<File> getNeedInstallCarFiles() {
         List<File> files = new ArrayList<File>();
         File patchFolder = PathUtils.getComponentsInstalledFolder();
@@ -116,22 +101,6 @@ public class SharedStudioPatchInfoProvider {
         return files;
     }
 
-    public String getStudioInstalledLatestPatchFileName() {
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IInstalledPatchService.class)) {
-            IInstalledPatchService installedPatchService = GlobalServiceRegister.getDefault()
-                    .getService(IInstalledPatchService.class);
-            MavenArtifact artifact = installedPatchService.getLastIntalledP2Patch();
-            if (artifact != null) {
-                String artifactId = artifact.getArtifactId();
-                if (!artifactId.endsWith(FileExtensions.ZIP_EXTENSION)) {
-                    return artifactId + "." + FileExtensions.ZIP_EXTENSION;
-                }
-                return artifactId;
-            }
-        }
-        return null;
-    }
-    
     public boolean updateArtifactsFileSha256Hex(String artifactsFileSha256Hex) {
         String savedCode = installedPatchInfo.getLastArtifactsFileSha256Hex();
         if (!StringUtils.equals(savedCode, artifactsFileSha256Hex)) {

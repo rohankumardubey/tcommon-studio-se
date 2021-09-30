@@ -60,7 +60,10 @@ public enum ETalendMavenVariables {
     PigudfGroupId
     //
     , ProjectDistributionManagementRepositoryId,
-    ProjectDistributionManagementRepositoryUrl
+    ProjectDistributionManagementRepositoryUrl,
+    GitAuthor,
+    GitCommitId,
+    GitCommitDate
     ;
 
     public String getName() {

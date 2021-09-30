@@ -70,6 +70,8 @@ public class EclipseCommandLine {
 
     static public final String TALEND_CLEAN_UNINSTALLED_BUNDLES = "-talendCleanUninstalledBundles";
 
+    static public final String PROP_KEY_PROFILE_ID = "eclipse.p2.profile";
+
     static public final String LOGIN_ONLINE_UPDATE = "--loginOnlineUpdate";
 
     static public final String ARG_TALEND_BUNDLES_CLEANED = "-talend.studio.bundles.cleaned"; //$NON-NLS-1$

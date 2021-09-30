@@ -264,6 +264,40 @@ public final class TalendQuoteUtils {
         }
     }
 
+    public static boolean isStartEndsWithQuotation(String expression, boolean checkStart, boolean checkEnd) {
+        if (StringUtils.isBlank(expression)) {
+            return false;
+        }
+        boolean startsWith = false;
+        boolean endsWith = false;
+
+        ECodeLanguage language = LanguageManager.getCurrentLanguage();
+        switch (language) {
+        case JAVA:
+            startsWith = expression.startsWith(QUOTATION_MARK);
+            endsWith = expression.endsWith(QUOTATION_MARK);
+            if (checkStart && checkEnd) {
+                return startsWith & endsWith;
+            } else if (checkStart) {
+                return startsWith;
+            } else if (checkEnd) {
+                return endsWith;
+            }
+        default: // PERL
+            startsWith = expression.startsWith(SINGLE_QUOTE);
+            endsWith = expression.endsWith(SINGLE_QUOTE);
+            if (checkStart && checkEnd) {
+                return startsWith & endsWith;
+            } else if (checkStart) {
+                return startsWith;
+            } else if (checkEnd) {
+                return endsWith;
+            }
+        }
+
+        return false;
+    }
+
     public static String removeQuotes(String text, String quotation) {
         if (text == null) {
             return null;

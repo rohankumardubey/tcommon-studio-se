@@ -3459,6 +3459,8 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
             ELoginInfoCase.STUDIO_LOWER_THAN_PROJECT.setContents(contents);
             DialogUtils.setWarningInfo(ELoginInfoCase.STUDIO_LOWER_THAN_PROJECT);
         }
+        
+        ProjectManager.getInstance().getProjectLabelWithOriginVersion().put(localProject.getLabel(), localProject.getEmfProject().getProductVersion());
         if (VersionUtils.productVersionIsNewer(localProject.getEmfProject().getProductVersion())) {
             String[] contents;
             if (StringUtils.isEmpty(remoteLastPatchName)) {
@@ -3468,7 +3470,6 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                 contents = new String[] {
                         Messages.getString("LocalRepositoryFactory.productionNewer02", toOpenProjectVersion, productVersion) };
             }
-            ProjectManager.getInstance().getProjectLabelWithOriginVersion().put(localProject.getLabel(), localProject.getEmfProject().getProductVersion());
             
             boolean skipCheck = Boolean.parseBoolean(EclipseCommandLine.getEclipseArgument(EclipseCommandLine.TALEND_SKIP_PROJECT_VERSION_CHECK_FLAG));
             if (!skipCheck) {

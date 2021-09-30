@@ -15,6 +15,7 @@ package org.talend.commons.utils.resource;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -44,6 +45,8 @@ public class ZipFileStatus {
 
     String pluginsEntryName = null;
 
+    private Properties props = new Properties();
+
     public ZipFileStatus(File file) {
         super();
         this.file = file;
@@ -58,6 +61,11 @@ public class ZipFileStatus {
                 Enumeration<ZipEntry> enumeration = (Enumeration<ZipEntry>) zipFile.entries();
                 while (enumeration.hasMoreElements()) {
                     judgeZipEntry(zipFile,enumeration.nextElement());
+                }
+
+                ZipEntry propEntry = zipFile.getEntry("patch.properties");
+                if (propEntry != null) {
+                    props.load(zipFile.getInputStream(propEntry));
                 }
 
                 judgePathes();
@@ -138,6 +146,22 @@ public class ZipFileStatus {
         }
 
         return null; // means no plugins
+    }
+
+    public boolean isHasArtfacts() {
+        return hasArtfacts;
+    }
+
+    public boolean isHasContents() {
+        return hasContents;
+    }
+
+    public boolean isHasPlugins() {
+        return hasPlugins;
+    }
+
+    public Properties getProps() {
+        return props;
     }
 
 }
