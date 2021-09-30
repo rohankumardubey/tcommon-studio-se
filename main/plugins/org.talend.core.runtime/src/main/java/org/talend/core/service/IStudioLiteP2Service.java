@@ -107,6 +107,8 @@ public interface IStudioLiteP2Service extends IService {
     void setLocalPatches(Collection<String> localPatchUris) throws Exception;
 
     URI toURI(String path) throws Exception;
+    
+    Set<String> getStudioInstalledFeatures(IProgressMonitor monitor, boolean includeTransitive) throws Exception;
 
     void registCheckUpdateListener(AbsCheckUpdateListener listener) throws Exception;
 
