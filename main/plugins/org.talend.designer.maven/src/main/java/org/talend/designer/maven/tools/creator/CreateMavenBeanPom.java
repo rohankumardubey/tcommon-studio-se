@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Exclusion;
 import org.apache.maven.model.Model;
 import org.eclipse.core.resources.IFile;
 import org.talend.core.GlobalServiceRegister;
@@ -63,14 +64,21 @@ public class CreateMavenBeanPom extends AbstractMavenCodesTemplatePom {
 
     @Override
     protected void addDependencies(Model model) {
+        super.addDependencies(model);
+        // APPINT-33796 exclude transitive dependencies
+        model.getDependencies().forEach(d-> {
+            Exclusion ex = new Exclusion();
+            ex.setArtifactId("*");
+            ex.setGroupId("*");
+            d.addExclusion(ex);	
+        });
+
         String projectTechName = getProjectName();
         String codeVersion = PomIdsHelper.getCodesVersion(projectTechName);
         String routinesGroupId = PomIdsHelper.getCodesGroupId(projectTechName, TalendMavenConstants.DEFAULT_CODE);
         String routinesArtifactId = TalendMavenConstants.DEFAULT_ROUTINES_ARTIFACT_ID;
         Dependency routinesDependency = PomUtil.createDependency(routinesGroupId, routinesArtifactId, codeVersion, null);
         model.getDependencies().add(routinesDependency);
-
-        super.addDependencies(model);
     }
 
 }
