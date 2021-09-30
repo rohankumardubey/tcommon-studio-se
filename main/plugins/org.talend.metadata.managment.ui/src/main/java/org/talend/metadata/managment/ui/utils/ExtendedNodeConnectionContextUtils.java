@@ -45,6 +45,11 @@ public class ExtendedNodeConnectionContextUtils {
         ReplicaSets,
         ReplicaHost,
         ReplicaPort,
+        
+        AuthenticationDatabase,
+        UserPrincipal,
+        Realm,
+        KDCServer,
 
         // Hadoop standard param
         NameNodeUri,
