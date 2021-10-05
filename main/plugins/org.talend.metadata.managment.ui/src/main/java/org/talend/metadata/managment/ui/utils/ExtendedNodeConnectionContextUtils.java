@@ -102,6 +102,7 @@ public class ExtendedNodeConnectionContextUtils {
         SynapseDriverMemory,
         SynapseDriverCores,
         SynapseExecutorMemory,
+        UseTuningProperties,
 
         // Hcatalog param
         HCatalogHostName,
@@ -165,7 +166,7 @@ public class ExtendedNodeConnectionContextUtils {
         KnoxUrl,
         KnoxUsername,
         KnoxPassword,
-        KnoxDirectory
+        KnoxDirectory,
     }
 
     static List<IContextParameter> getContextVariables(final String prefixName, Connection conn, Set<IConnParamName> paramSet) {
