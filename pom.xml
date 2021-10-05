@@ -37,6 +37,7 @@
         <module>main/features/org.talend.fragment.jars.common.feature</module>
 		<module>main/features/org.talend.help.feature</module>
 		<module>main/features/org.talend.libraries.jdbc.feature</module>
+		<module>main/features/org.talend.platform.feature</module>
 		<module>main/features/org.talend.rcp.feature</module>
 		<module>main/features/org.talend.update.p2.feature</module>
 		<module>main/features/org.talend.updates.feature</module>
