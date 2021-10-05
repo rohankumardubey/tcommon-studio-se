@@ -18,6 +18,13 @@
 	</repositories>
 
 	<dependencies>
+	
+		<dependency>
+		    <groupId>aopalliance</groupId>
+		    <artifactId>aopalliance</artifactId>
+		    <version>1.0</version>
+		</dependency>
+	
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-core</artifactId>
@@ -59,6 +66,17 @@
 			<version>3.4.4</version>
 		</dependency>
 		<dependency>
+		    <groupId>org.apache.cxf</groupId>
+		    <artifactId>cxf-rt-features-logging</artifactId>
+		    <version>3.4.4</version>
+			    <exclusions>
+				    <exclusion>
+					    <groupId>org.slf4j</groupId>
+					    <artifactId>slf4j-api</artifactId>
+				    </exclusion>
+			    </exclusions>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-features-clustering</artifactId>
 			<version>3.4.4</version>
@@ -75,6 +93,21 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-rs-extension-providers</artifactId>
+			<version>3.4.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-rs-security-oauth2</artifactId>
+			<version>3.4.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-rs-security-xml</artifactId>
+			<version>3.4.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-security</artifactId>
 			<version>3.4.4</version>
 		</dependency>
@@ -82,6 +115,21 @@
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-security-saml</artifactId>
 			<version>3.4.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http-jetty</artifactId>
+			<version>3.4.4</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.jetty</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
@@ -184,7 +232,7 @@
 							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
-							<includeGroupIds>org.apache.cxf,com.sun.activation,jakarta.activation,jakarta.xml.soap,com.sun.istack,org.glassfish.jaxb,jakarta.xml.bind,jakarta.jws,org.apache.ws.xmlschema,javax.ws.rs,com.fasterxml.woodstox,org.codehaus.woodstox,org.apache.neethi,jakarta.annotation,jakarta.ws.rs</includeGroupIds>
+							<includeGroupIds>org.apache.cxf,com.sun.activation,jakarta.activation,jakarta.xml.soap,com.sun.istack,org.glassfish.jaxb,jakarta.xml.bind,jakarta.jws,org.apache.ws.xmlschema,javax.ws.rs,com.fasterxml.woodstox,org.codehaus.woodstox,org.apache.neethi,jakarta.annotation,jakarta.ws.rs,aopalliance</includeGroupIds>
 							<excludeTypes>pom</excludeTypes>
 							<excludeTransitive>true</excludeTransitive>
 							<outputDirectory>${project.basedir}/lib</outputDirectory>
