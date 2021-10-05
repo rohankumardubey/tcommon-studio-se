@@ -60,9 +60,79 @@
 			<version>1.4.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>joda-time</groupId>
-		    <artifactId>joda-time</artifactId>
-		    <version>2.9</version>
+		    	<groupId>joda-time</groupId>
+		    	<artifactId>joda-time</artifactId>
+		    	<version>2.9</version>
+		</dependency>
+		<dependency>
+		    	<groupId>org.opensaml</groupId>
+		    	<artifactId>opensaml-core</artifactId>
+		    	<version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    	<groupId>org.opensaml</groupId>
+		    	<artifactId>opensaml-profile-api</artifactId>
+		    	<version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    	<groupId>org.opensaml</groupId>
+		    	<artifactId>opensaml-saml-api</artifactId>
+		    	<version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    	<groupId>org.opensaml</groupId>
+		    	<artifactId>opensaml-saml-impl</artifactId>
+		    	<version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    	<groupId>org.opensaml</groupId>
+		    	<artifactId>opensaml-security-api</artifactId>
+		    	<version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    	<groupId>org.opensaml</groupId>
+		    	<artifactId>opensaml-security-impl</artifactId>
+		    	<version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    	<groupId>org.opensaml</groupId>
+		    	<artifactId>opensaml-soap-api</artifactId>
+		    	<version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    	<groupId>org.opensaml</groupId>
+		    	<artifactId>opensaml-xacml-api</artifactId>
+		    	<version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    	<groupId>org.opensaml</groupId>
+		    	<artifactId>opensaml-xacml-impl</artifactId>
+		    	<version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    	<groupId>org.opensaml</groupId>
+		    	<artifactId>opensaml-xacml-saml-api</artifactId>
+		    	<version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    	<groupId>org.opensaml</groupId>
+		    	<artifactId>opensaml-xacml-saml-impl</artifactId>
+		    	<version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    	<groupId>org.opensaml</groupId>
+		    	<artifactId>opensaml-xmlsec-api</artifactId>
+		    	<version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    	<groupId>org.opensaml</groupId>
+		    	<artifactId>opensaml-xmlsec-impl</artifactId>
+		    	<version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    	<groupId>org.opensaml</groupId>
+		    	<artifactId>opensaml-core</artifactId>
+		    	<version>3.3.0</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.opensaml</groupId>
@@ -70,90 +140,187 @@
 		    <version>3.3.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.opensaml</groupId>
-		    <artifactId>opensaml-profile-api</artifactId>
-		    <version>3.3.0</version>
+		    	<groupId>org.opensaml</groupId>
+		    	<artifactId>opensaml-core</artifactId>
+		    	<version>3.3.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.opensaml</groupId>
-		    <artifactId>opensaml-saml-api</artifactId>
-		    <version>3.3.0</version>
+		    	<groupId>org.opensaml</groupId>
+		    	<artifactId>opensaml-core</artifactId>
+		    	<version>3.3.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.opensaml</groupId>
-		    <artifactId>opensaml-saml-impl</artifactId>
-		    <version>3.3.0</version>
+		    	<groupId>org.opensaml</groupId>
+		    	<artifactId>opensaml-core</artifactId>
+		    	<version>3.3.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.opensaml</groupId>
-		    <artifactId>opensaml-security-api</artifactId>
-		    <version>3.3.0</version>
+			<groupId>org.apache.servicemix.bundles</groupId>
+			<artifactId>org.apache.servicemix.bundles.javax-inject</artifactId>
+			<version>1_2</version>
+		</dependency>
+	        <dependency>
+			<groupId>org.apache.servicemix.specs</groupId>
+			<artifactId>org.apache.servicemix.specs.jaxws-api-2.2</artifactId>
+			<version>2.9.0</version>
+	       	</dependency>
+		<dependency>
+		    <groupId>org.apache.wss4j</groupId>
+		    <artifactId>wss4j-bindings</artifactId>
+			<version>2.3.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.opensaml</groupId>
-		    <artifactId>opensaml-security-impl</artifactId>
-		    <version>3.3.0</version>
+			<groupId>org.apache.wss4j</groupId>
+			<artifactId>wss4j-policy</artifactId>
+			<version>2.3.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.opensaml</groupId>
-		    <artifactId>opensaml-soap-api</artifactId>
-		    <version>3.3.0</version>
+			<groupId>org.apache.wss4j</groupId>
+			<artifactId>wss4j-ws-security-policy-stax</artifactId>
+			<version>2.3.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.opensaml</groupId>
-		    <artifactId>opensaml-xacml-api</artifactId>
-		    <version>3.3.0</version>
+			<groupId>org.apache.wss4j</groupId>
+			<artifactId>wss4j-ws-security-stax</artifactId>
+			<version>2.3.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-		    <groupId>org.opensaml</groupId>
-		    <artifactId>opensaml-xacml-impl</artifactId>
-		    <version>3.3.0</version>
+		    <groupId>org.apache.wss4j</groupId>
+		    <artifactId>wss4j-ws-security-common</artifactId>
+		    <version>2.3.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.opensaml</groupId>
-		    <artifactId>opensaml-xacml-saml-api</artifactId>
-		    <version>3.3.0</version>
+		    <groupId>org.apache.wss4j</groupId>
+		    <artifactId>wss4j-ws-security-dom</artifactId>
+		    <version>2.3.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.opensaml</groupId>
-		    <artifactId>opensaml-xacml-saml-impl</artifactId>
-		    <version>3.3.0</version>
+		    <groupId>org.apache.ws.xmlschema</groupId>
+		    <artifactId>xmlschema-core</artifactId>
+		    <version>2.2.5</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.opensaml</groupId>
-		    <artifactId>opensaml-xmlsec-api</artifactId>
-		    <version>3.3.0</version>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-beans</artifactId>
+		    <version>5.2.15.RELEASE</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.opensaml</groupId>
-		    <artifactId>opensaml-xmlsec-impl</artifactId>
-		    <version>3.3.0</version>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-core</artifactId>
+		    <version>5.2.15.RELEASE</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.opensaml</groupId>
-		    <artifactId>opensaml-core</artifactId>
-		    <version>3.3.0</version>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-context</artifactId>
+		    <version>5.2.15.RELEASE</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.opensaml</groupId>
-		    <artifactId>opensaml-core</artifactId>
-		    <version>3.3.0</version>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-web</artifactId>
+		    <version>5.2.15.RELEASE</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.opensaml</groupId>
-		    <artifactId>opensaml-core</artifactId>
-		    <version>3.3.0</version>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-webmvc</artifactId>
+		    <version>5.2.15.RELEASE</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.opensaml</groupId>
-		    <artifactId>opensaml-core</artifactId>
-		    <version>3.3.0</version>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-aop</artifactId>
+		    <version>5.2.15.RELEASE</version>
+		</dependency>
+	        <dependency>
+		    <groupId>org.osgi</groupId>
+		    <artifactId>org.osgi.compendium</artifactId>
+		    <version>4.3.1</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.opensaml</groupId>
-		    <artifactId>opensaml-core</artifactId>
-		    <version>3.3.0</version>
+		    <groupId>org.osgi</groupId>
+		    <artifactId>org.osgi.core</artifactId>
+		    <version>4.3.1</version>
 		</dependency>
+		<dependency>
+		    <groupId>org.ops4j.pax.cdi</groupId>
+		    <artifactId>pax-cdi-api</artifactId>
+		    <version>1.0.0.RC1</version>
+		</dependency>
+	    	<dependency>
+		    <groupId>org.codehaus.woodstox</groupId>
+		    <artifactId>stax2-api</artifactId>
+		    <version>3.1.4</version>
+	    	</dependency>
+		<dependency>
+		    <groupId>org.jvnet.staxex</groupId>
+		    <artifactId>stax-ex</artifactId>
+		    <version>1.8.3</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.glassfish.jaxb</groupId>
+		    <artifactId>txw2</artifactId>
+		    <version>2.3.3</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.codehaus.woodstox</groupId>
+		    <artifactId>woodstox-core-asl</artifactId>
+		    <version>4.4.1</version>
+		</dependency>
+		<dependency>		
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-api</artifactId>
+		    <version>1.7.25</version>
+		</dependency>		
+		<dependency>
+		    <groupId>org.apache.santuario</groupId>
+		    <artifactId>xmlsec</artifactId>
+		    <version>2.1.6</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.talend.esb.policies</groupId>
+		    <artifactId>correlationid-policy</artifactId>
+		    <version>7.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.talend.esb</groupId>
+			<artifactId>security-common</artifactId>
+			<version>7.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.talend.esb</groupId>
+			<artifactId>sam-common</artifactId>
+			<version>7.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.talend.esb</groupId>
+			<artifactId>locator</artifactId>
+			<version>7.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.zookeeper</groupId>
+			<artifactId>zookeeper</artifactId>
+			<version>3.4.14</version>
+		</dependency>
+		<dependency>
+			<groupId>org.talend.esb</groupId>
+			<artifactId>sam-agent</artifactId>
+			<version>7.3.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-lang</groupId>
+					<artifactId>commons-lang</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-lang3</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
 			
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
@@ -362,7 +529,7 @@
 							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
-							<includeGroupIds>org.apache.cxf,com.sun.activation,jakarta.activation,jakarta.xml.soap,com.sun.istack,org.glassfish.jaxb,jakarta.xml.bind,jakarta.jws,org.apache.ws.xmlschema,javax.ws.rs,com.fasterxml.woodstox,org.codehaus.woodstox,org.apache.neethi,jakarta.annotation,jakarta.ws.rs,aopalliance,commons-jxpath,org.cryptacular,net.sf.ehcache,org.jasypt,com.sun.activation,org.codehaus.jettison,joda-time,org.opensaml</includeGroupIds>
+							<includeGroupIds>org.apache.cxf,com.sun.activation,jakarta.activation,jakarta.xml.soap,com.sun.istack,org.glassfish.jaxb,jakarta.xml.bind,jakarta.jws,org.apache.ws.xmlschema,javax.ws.rs,com.fasterxml.woodstox,org.codehaus.woodstox,org.apache.neethi,jakarta.annotation,jakarta.ws.rs,aopalliance,commons-jxpath,org.cryptacular,net.sf.ehcache,org.jasypt,com.sun.activation,org.codehaus.jettison,joda-time,org.opensaml,org.apache.servicemix.bundles,org.apache.servicemix.specs,org.apache.wss4j,org.osgi,org.ops4j.pax.cdi,org.jvnet.staxex,org.glassfish.jaxb,org.slf4j,org.apache.santuario</includeGroupIds>
 							<excludeTypes>pom</excludeTypes>
 							<excludeTransitive>true</excludeTransitive>
 							<outputDirectory>${project.basedir}/lib</outputDirectory>
