@@ -24,7 +24,137 @@
 		    <artifactId>aopalliance</artifactId>
 		    <version>1.0</version>
 		</dependency>
-	
+	    <dependency>
+	        <groupId>org.cryptacular</groupId>
+	        <artifactId>cryptacular</artifactId>
+	        <version>1.2.4</version>
+	    </dependency>
+		<dependency>
+		    <groupId>commons-jxpath</groupId>
+		    <artifactId>commons-jxpath</artifactId>
+		    <version>1.3</version>
+		</dependency>
+		<dependency>
+		    <groupId>net.sf.ehcache</groupId>
+		    <artifactId>ehcache</artifactId>
+		    <version>2.10.6</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>30.0-jre</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.jasypt</groupId>
+		    <artifactId>jasypt</artifactId>
+		    <version>1.9.3</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.sun.activation</groupId>
+		    <artifactId>javax.activation</artifactId>
+		    <version>1.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jettison</groupId>
+			<artifactId>jettison</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>joda-time</groupId>
+		    <artifactId>joda-time</artifactId>
+		    <version>2.9</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.opensaml</groupId>
+		    <artifactId>opensaml-core</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.opensaml</groupId>
+		    <artifactId>opensaml-profile-api</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.opensaml</groupId>
+		    <artifactId>opensaml-saml-api</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.opensaml</groupId>
+		    <artifactId>opensaml-saml-impl</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.opensaml</groupId>
+		    <artifactId>opensaml-security-api</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.opensaml</groupId>
+		    <artifactId>opensaml-security-impl</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.opensaml</groupId>
+		    <artifactId>opensaml-soap-api</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.opensaml</groupId>
+		    <artifactId>opensaml-xacml-api</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.opensaml</groupId>
+		    <artifactId>opensaml-xacml-impl</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.opensaml</groupId>
+		    <artifactId>opensaml-xacml-saml-api</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.opensaml</groupId>
+		    <artifactId>opensaml-xacml-saml-impl</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.opensaml</groupId>
+		    <artifactId>opensaml-xmlsec-api</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.opensaml</groupId>
+		    <artifactId>opensaml-xmlsec-impl</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.opensaml</groupId>
+		    <artifactId>opensaml-core</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.opensaml</groupId>
+		    <artifactId>opensaml-core</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.opensaml</groupId>
+		    <artifactId>opensaml-core</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.opensaml</groupId>
+		    <artifactId>opensaml-core</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.opensaml</groupId>
+		    <artifactId>opensaml-core</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
+			
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-core</artifactId>
@@ -232,7 +362,7 @@
 							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
-							<includeGroupIds>org.apache.cxf,com.sun.activation,jakarta.activation,jakarta.xml.soap,com.sun.istack,org.glassfish.jaxb,jakarta.xml.bind,jakarta.jws,org.apache.ws.xmlschema,javax.ws.rs,com.fasterxml.woodstox,org.codehaus.woodstox,org.apache.neethi,jakarta.annotation,jakarta.ws.rs,aopalliance</includeGroupIds>
+							<includeGroupIds>org.apache.cxf,com.sun.activation,jakarta.activation,jakarta.xml.soap,com.sun.istack,org.glassfish.jaxb,jakarta.xml.bind,jakarta.jws,org.apache.ws.xmlschema,javax.ws.rs,com.fasterxml.woodstox,org.codehaus.woodstox,org.apache.neethi,jakarta.annotation,jakarta.ws.rs,aopalliance,commons-jxpath,org.cryptacular,net.sf.ehcache,org.jasypt,com.sun.activation,org.codehaus.jettison,joda-time,org.opensaml</includeGroupIds>
 							<excludeTypes>pom</excludeTypes>
 							<excludeTransitive>true</excludeTransitive>
 							<outputDirectory>${project.basedir}/lib</outputDirectory>
