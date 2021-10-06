@@ -287,22 +287,22 @@
 		<dependency>
 		    <groupId>org.talend.esb.policies</groupId>
 		    <artifactId>correlationid-policy</artifactId>
-		    <version>8.0.1</version>
+		    <version>8.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.talend.esb</groupId>
 			<artifactId>security-common</artifactId>
-			<version>8.0.1</version>
+			<version>8.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.talend.esb</groupId>
 			<artifactId>sam-common</artifactId>
-			<version>8.0.1</version>
+			<version>8.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.talend.esb</groupId>
 			<artifactId>locator</artifactId>
-			<version>8.0.1</version>
+			<version>8.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.zookeeper</groupId>
@@ -312,7 +312,7 @@
 		<dependency>
 			<groupId>org.talend.esb</groupId>
 			<artifactId>sam-agent</artifactId>
-			<version>8.0.1</version>
+			<version>8.0.1-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-lang</groupId>
