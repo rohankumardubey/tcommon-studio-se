@@ -118,11 +118,11 @@ public enum EHadoopProperties {
     
     REMOTE_FOLDER,
     
-    SYNAPSE_DRIVER_MEMORY,
+    SPARK_DRIVER_MEM,
     
-    SYNAPSE_DRIVER_CORES,
+    SPARK_DRIVER_CORES,
     
-    SYNAPSE_EXECUTOR_MEMORY,
+    SPARK_EXECUTOR_MEMORY,
     
     QUBOLE_API_TOKEN,
     
