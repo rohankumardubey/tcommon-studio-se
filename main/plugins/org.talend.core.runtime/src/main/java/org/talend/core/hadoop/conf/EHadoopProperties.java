@@ -116,7 +116,7 @@ public enum EHadoopProperties {
     
     SYNAPSE_STORAGE_PASSWORD,
     
-    REMOTE_FOLDER,
+    DEPLOY_FOLDER,
     
     SPARK_DRIVER_MEM,
     
