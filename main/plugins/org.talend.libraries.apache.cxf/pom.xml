@@ -521,7 +521,7 @@
 							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
-							<includeGroupIds>org.apache.cxf,com.sun.activation,jakarta.activation,jakarta.xml.soap,com.sun.istack,org.glassfish.jaxb,jakarta.xml.bind,jakarta.jws,org.apache.ws.xmlschema,javax.ws.rs,com.fasterxml.woodstox,org.codehaus.woodstox,org.apache.neethi,jakarta.annotation,jakarta.ws.rs,aopalliance,commons-jxpath,org.cryptacular,net.sf.ehcache,org.jasypt,com.sun.activation,org.codehaus.jettison,joda-time,org.opensaml,org.apache.servicemix.bundles,org.apache.servicemix.specs,org.apache.wss4j,org.osgi,org.ops4j.pax.cdi,org.jvnet.staxex,org.glassfish.jaxb,org.slf4j,org.apache.santuario,org.talend.esb,org.talend.esb.policies,org.apache.zookeeper,org.springframework,org.apache.camel</includeGroupIds>
+							<includeGroupIds>org.apache.cxf,com.sun.activation,jakarta.activation,jakarta.xml.soap,com.sun.istack,org.glassfish.jaxb,jakarta.xml.bind,jakarta.jws,org.apache.ws.xmlschema,javax.ws.rs,com.fasterxml.woodstox,org.codehaus.woodstox,org.apache.neethi,jakarta.annotation,jakarta.ws.rs,aopalliance,commons-jxpath,org.cryptacular,net.sf.ehcache,org.jasypt,com.sun.activation,org.codehaus.jettison,joda-time,org.opensaml,org.apache.servicemix.bundles,org.apache.servicemix.specs,org.apache.wss4j,org.osgi,org.ops4j.pax.cdi,org.jvnet.staxex,org.glassfish.jaxb,org.slf4j,org.apache.santuario,org.talend.esb,org.talend.esb.policies,org.apache.zookeeper,org.springframework,org.apache.camel,org.ehcache</includeGroupIds>
 							<excludeTypes>pom</excludeTypes>
 							<excludeTransitive>true</excludeTransitive>
 							<outputDirectory>${project.basedir}/lib</outputDirectory>
