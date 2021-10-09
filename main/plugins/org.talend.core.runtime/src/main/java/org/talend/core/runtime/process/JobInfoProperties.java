@@ -61,6 +61,12 @@ public class JobInfoProperties extends Properties {
 
     public static final String ADD_STATIC_CODE = "statistics"; //$NON-NLS-1$
 
+    public static final String GIT_AUTHOR = "gitAuthor";
+
+    public static final String GIT_COMMIT_ID = "gitCommitId";
+
+    public static final String GIT_COMMIT_DATE = "gitCommitDate";
+
     private final ProcessItem processItem;
 
     private final String contextName;
@@ -114,6 +120,9 @@ public class JobInfoProperties extends Properties {
             setProperty(ADD_STATIC_CODE, Boolean.TRUE.toString()); // TDI-23641, in studio, false always.
         }
         setProperty(COMMANDLINE_VERSION, VersionUtils.getVersion());
-
+        // add init git info for jobInfo
+        setProperty(GIT_AUTHOR, "");
+        setProperty(GIT_COMMIT_ID, "");
+        setProperty(GIT_COMMIT_DATE, "");
     }
 }

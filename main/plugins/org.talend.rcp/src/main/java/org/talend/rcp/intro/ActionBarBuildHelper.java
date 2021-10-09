@@ -31,7 +31,9 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.IActionBarConfigurer;
@@ -247,8 +249,8 @@ public class ActionBarBuildHelper implements IActionBarHelper {
     @Override
     public void fillCoolBar(ICoolBarManager coolBar) {
         IToolBarManager toolBar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
-        coolBar.add(new ToolBarContributionItem(toolBar, Messages.getString("ApplicationActionBarAdvisor.save"))); //$NON-NLS-1$
-        toolBar.add(ActionFactory.SAVE.create(window));       
+        toolBar.add(ActionFactory.SAVE.create(window));   
+        coolBar.add(new ToolBarContributionItem(toolBar, "save")); //$NON-NLS-1$
     }
 
     /**

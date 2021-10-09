@@ -327,7 +327,12 @@ public class VersionUtils {
         String talendVersion = getTalendVersion();
         String majorVersion = StringUtils.substringBeforeLast(talendVersion, "."); //$NON-NLS-1$
         String artifactIdFolder = mojoType.getMojoArtifactIdFolder();
-        Optional<File> optional = Stream.of(new File(artifactIdFolder).listFiles())
+        File[] artifactFiles = new File[0];
+        File folder = new File(artifactIdFolder);
+        if (folder.exists()) {
+            artifactFiles = folder.listFiles();
+        }
+        Optional<File> optional = Stream.of(artifactFiles)
                 .filter(f -> f.isDirectory() && f.getName().startsWith(majorVersion))
                 .sorted((f1, f2) -> new DefaultArtifactVersion(f2.getName()).compareTo(new DefaultArtifactVersion(f1.getName())))
                 .findFirst();

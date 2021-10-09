@@ -3403,6 +3403,8 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                     // when switch product,need to set --disableLoginDialog to avoid pop up logindialog
                     EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(
                             EclipseCommandLine.TALEND_DISABLE_LOGINDIALOG_COMMAND, null, false, true);
+                    EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(
+                            EclipseCommandLine.TALEND_SKIP_PROJECT_VERSION_CHECK_FLAG, Boolean.TRUE.toString(), false);
                     throw new LoginException(LoginException.RESTART);
                 } else if (IStudioLiteP2Service.RESULT_CANCEL == adaptResult) {
                     throw new LoginException(Messages.getString("LocalRepositoryFactory.login.userCancel"));
@@ -3457,6 +3459,8 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
             ELoginInfoCase.STUDIO_LOWER_THAN_PROJECT.setContents(contents);
             DialogUtils.setWarningInfo(ELoginInfoCase.STUDIO_LOWER_THAN_PROJECT);
         }
+        
+        ProjectManager.getInstance().getProjectLabelWithOriginVersion().put(localProject.getLabel(), localProject.getEmfProject().getProductVersion());
         if (VersionUtils.productVersionIsNewer(localProject.getEmfProject().getProductVersion())) {
             String[] contents;
             if (StringUtils.isEmpty(remoteLastPatchName)) {
@@ -3466,9 +3470,12 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                 contents = new String[] {
                         Messages.getString("LocalRepositoryFactory.productionNewer02", toOpenProjectVersion, productVersion) };
             }
-            ProjectManager.getInstance().getProjectLabelWithOriginVersion().put(localProject.getLabel(), localProject.getEmfProject().getProductVersion());
-            ELoginInfoCase.STUDIO_HIGHER_THAN_PROJECT.setContents(contents);
-            DialogUtils.setWarningInfo(ELoginInfoCase.STUDIO_HIGHER_THAN_PROJECT);// $NON-NLS-1$
+            
+            boolean skipCheck = Boolean.parseBoolean(EclipseCommandLine.getEclipseArgument(EclipseCommandLine.TALEND_SKIP_PROJECT_VERSION_CHECK_FLAG));
+            if (!skipCheck) {
+                ELoginInfoCase.STUDIO_HIGHER_THAN_PROJECT.setContents(contents);
+                DialogUtils.setWarningInfo(ELoginInfoCase.STUDIO_HIGHER_THAN_PROJECT);// $NON-NLS-1$
+            }
         }
         DialogUtils.syncOpenWarningDialog(Messages.getString("LocalRepositoryFactory.logonWarningTitle"));//$NON-NLS-1$
 

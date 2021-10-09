@@ -55,6 +55,8 @@ public class UpdateTools {
 
     public static String PATCH_PROPUCT_VERSION = "product.version"; //$NON-NLS-1$
 
+    public static final String PATCH_NAME = "patch.name"; //$NON-NLS-1$
+
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
     private static final String SIGNATURE_FILE_NAME_SUFFIX = ".sig";

@@ -23,7 +23,7 @@ public interface PatchComponent extends P2InstallComponent {
 
     static final String FOLDER_PATCHES = "patches"; //$NON-NLS-1$
 
-    boolean install(IProgressMonitor monitor, File patchFile) throws Exception;
+    boolean install(IProgressMonitor monitor, File... patchFiles) throws Exception;
 
     boolean isPlainZipInstalled(IProgressMonitor monitor, String patchName) throws Exception;
 }

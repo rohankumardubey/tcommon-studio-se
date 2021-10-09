@@ -70,6 +70,8 @@ public class EclipseCommandLine {
 
     static public final String TALEND_CLEAN_UNINSTALLED_BUNDLES = "-talendCleanUninstalledBundles";
 
+    static public final String PROP_KEY_PROFILE_ID = "eclipse.p2.profile";
+
     static public final String LOGIN_ONLINE_UPDATE = "--loginOnlineUpdate";
 
     static public final String ARG_TALEND_BUNDLES_CLEANED = "-talend.studio.bundles.cleaned"; //$NON-NLS-1$
@@ -88,6 +90,8 @@ public class EclipseCommandLine {
     static public final String TALEND_NOSPLASH_COMMAND = "-nosplash"; //$NON-NLS-1$
     
     static public final String TALEND_RESTART_FLAG = "-talendRestart";
+    
+    static public final String TALEND_SKIP_PROJECT_VERSION_CHECK_FLAG = "-skipProjectVersionCheck";
 
     /**
      * for TUP-2218, enable to open the job auto, when open studio. the args should be name of job. if want to open

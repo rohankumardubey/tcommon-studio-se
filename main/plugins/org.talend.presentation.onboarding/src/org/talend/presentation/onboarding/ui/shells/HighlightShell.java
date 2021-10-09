@@ -24,6 +24,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Region;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -101,12 +102,11 @@ public class HighlightShell {
                     removeListeners();
                     return;
                 }
-                if (currentFocusedWidget == null || currentFocusedWidget.isDisposed()) {
-                    Rectangle clientArea = parentShell.getClientArea();
-                    Rectangle mappedClientArea = parentShell.getDisplay().map(parentShell, null, clientArea);
-                    hlShell.setBounds(mappedClientArea);
-                    hlShell.setRegion(getNewRegion(clientArea, new Rectangle(0, 0, 0, 0)));
+                if (moveThread != null && !moveThread.isInterrupted()) {
+                    moveThread.interrupt();
                 }
+
+                onBoardingManager.getUiManager().refreshShellsBound();
             }
 
             @Override
@@ -165,7 +165,8 @@ public class HighlightShell {
     }
 
     private Rectangle getCurrentWidgetBounds() {
-        if (currentFocusedWidget != null && !currentFocusedWidget.isDisposed()) {
+        if (currentFocusedWidget != null && !currentFocusedWidget.isDisposed()
+                && (!(currentFocusedWidget instanceof Control) || ((Control) currentFocusedWidget).isVisible())) {
             return WidgetFinder.getBoundsInUIThread(currentFocusedWidget);
         }
         return new Rectangle(0, 0, 0, 0);
@@ -185,23 +186,40 @@ public class HighlightShell {
 
                     @Override
                     public void handleEvent(Event event) {
-                        if (widget.isDisposed()) {
-                            return;
-                        }
-                        if (hlShell.isDisposed() || widget != currentFocusedWidget) {
-                            // remove this listener
-                            widget.removeListener(SWT.Resize, this);
-                            return;
-                        }
+                        Widget widgetToRemoveListener = null;
+                        try {
+                            if (hlShell.isDisposed() || widget != currentFocusedWidget) {
+                                // remove this listener
+                                widgetToRemoveListener = widget;
+                                return;
+                            }
 
-                        if (moveThread != null && !moveThread.isInterrupted()) {
-                            moveThread.interrupt();
-                        }
+                            if (moveThread != null && !moveThread.isInterrupted()) {
+                                moveThread.interrupt();
+                            }
 
-                        onBoardingManager.getUiManager().refreshShellsBound();
+                            onBoardingManager.getUiManager().refreshShellsBound();
+                            if (currentFocusedWidget != null && currentFocusedWidget.isDisposed()) {
+                                widgetToRemoveListener = currentFocusedWidget;
+                            }
+                        } finally {
+                            if (widgetToRemoveListener != null) {
+                                widgetToRemoveListener.removeListener(SWT.Resize, this);
+                                widgetToRemoveListener.removeListener(SWT.Hide, this);
+                                widgetToRemoveListener.removeListener(SWT.Move, this);
+                                widgetToRemoveListener.removeListener(SWT.Show, this);
+                                widgetToRemoveListener.removeListener(SWT.Close, this);
+                                widgetToRemoveListener.removeListener(SWT.Dispose, this);
+                            }
+                        }
                     }
                 };
                 widget.addListener(SWT.Resize, widgetResizeListener);
+                widget.addListener(SWT.Hide, widgetResizeListener);
+                widget.addListener(SWT.Move, widgetResizeListener);
+                widget.addListener(SWT.Show, widgetResizeListener);
+                widget.addListener(SWT.Close, widgetResizeListener);
+                widget.addListener(SWT.Dispose, widgetResizeListener);
             } else {
                 widgetResizeListener = null;
             }
