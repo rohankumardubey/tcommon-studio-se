@@ -132,7 +132,13 @@ Shell.MTrimmedWindow {
     jtool-item-color : #000000;
 }
 
+#org-talend-studiolite-p2-featmanage-toolbar {
+    color : black;
+}
 
+#org-talend-resoruses-toolbar-base-toolbar-after-feat {
+    color : black;
+}
 
 /**************************************************
  * Status Bar
