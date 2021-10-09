@@ -91,6 +91,7 @@ import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.maven.utils.SortableDependency;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.IRunProcessService;
+import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.RepositoryConstants;
 import org.talend.utils.io.FilesUtils;
@@ -591,7 +592,8 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
         if (serviceRegister.isServiceRegistered(IGITProviderService.class)) {
             gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault().getService(IGITProviderService.class);
         }
-        if (!project.isLocal() && gitProviderService != null && gitProviderService.isGITProject(project)) {
+        if (!ProcessorUtilities.isCIMode() && !project.isLocal() && gitProviderService != null
+                && gitProviderService.isGITProject(project)) {
             try {
                 if (serviceRegister.isServiceRegistered(IGitInfoService.class)) {
                     IGitInfoService gitInfoService = serviceRegister.getService(IGitInfoService.class);
