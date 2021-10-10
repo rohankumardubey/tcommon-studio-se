@@ -177,6 +177,7 @@ import org.talend.core.runtime.constants.UpdateConstants;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.service.IStudioLiteP2Service;
+import org.talend.core.service.IStudioLiteP2Service.AbsStudioLiteP2Exception;
 import org.talend.core.ui.IInstalledPatchService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.utils.DialogUtils;
@@ -3410,14 +3411,23 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                     throw new LoginException(Messages.getString("LocalRepositoryFactory.login.userCancel"));
                 }
             }
+        } catch (AbsStudioLiteP2Exception e) {
+            if (e.needBreakProcess()) {
+                throw new LoginException(e.getMessage(), e);
+            } else {
+                ExceptionHandler.process(e);
+            }
         } catch (LoginException e) {
             throw e;
         } catch (Exception e) {
-            ExceptionHandler.process(e);
+            throw new LoginException(e.getMessage(), e);
         }
     }
 
     protected void checkProjectVersion(Project localProject) throws PersistenceException {
+        if (PluginChecker.isStudioLite()) {
+            return;
+        }
         ProjectPreferenceManager prefManager = new ProjectPreferenceManager(localProject, PluginChecker.CORE_TIS_PLUGIN_ID,
                 false);
         String remoteLastPatchName = prefManager.getValue(UpdateConstants.KEY_PREF_LAST_PATCH);
@@ -3430,10 +3440,6 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                     .getProductVersionWithoutBranding(localProject.getEmfProject().getProductVersion());
         } else {
             toOpenProjectVersion = remoteLastPatchName;
-            String simplifiedPatchName = VersionUtils.getSimplifiedPatchName(remoteLastPatchName);
-            if (StringUtils.isNotEmpty(simplifiedPatchName)) {
-                toOpenProjectVersion = simplifiedPatchName;
-            }
         }
         String productVersion = VersionUtils.getInternalVersion();
         String productLastestPatchVersion = null;

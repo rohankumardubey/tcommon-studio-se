@@ -114,6 +114,10 @@ public interface IStudioLiteP2Service extends IService {
 
     void unregistCheckUpdateListener(AbsCheckUpdateListener listener) throws Exception;
 
+    void resetRestartParams();
+
+    void closingStudioGUI(boolean restart);
+
     public static IStudioLiteP2Service get() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IStudioLiteP2Service.class)) {
             return GlobalServiceRegister.getDefault().getService(IStudioLiteP2Service.class);
@@ -129,11 +133,7 @@ public interface IStudioLiteP2Service extends IService {
 
     public static interface IInstallableUnitInfo {
 
-        String getName();
-
         String getId();
-
-        List<String> getRequired();
 
     }
 
@@ -196,6 +196,36 @@ public interface IStudioLiteP2Service extends IService {
         Collection<URI> getUpdates(IProgressMonitor monitor) throws Exception;
 
         void setUpdates(IProgressMonitor monitor, Collection<URI> uris) throws Exception;
+
+    }
+
+    public static abstract class AbsStudioLiteP2Exception extends Exception {
+
+        public final static String ERR_CODE_UPDATE_REQUIRED = "UPDATE_REQUIRED";
+
+        private String errorCode;
+
+        /**
+         * if it is a critical issue which need to break/forbid the process
+         */
+        private boolean breakProcess = false;
+
+        public AbsStudioLiteP2Exception(String errCode, String errMessage) {
+            super(errMessage);
+            this.errorCode = errCode;
+        }
+
+        public String getErrorCode() {
+            return this.errorCode;
+        }
+
+        public void setBreakProcess(boolean breakProcess) {
+            this.breakProcess = breakProcess;
+        }
+
+        public boolean needBreakProcess() {
+            return breakProcess;
+        }
 
     }
 
