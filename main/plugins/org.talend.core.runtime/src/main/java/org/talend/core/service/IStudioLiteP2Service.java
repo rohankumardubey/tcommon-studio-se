@@ -196,6 +196,8 @@ public interface IStudioLiteP2Service extends IService {
 
         void setUpdates(IProgressMonitor monitor, Collection<URI> uris) throws Exception;
 
+        void resetToDefault(IProgressMonitor monitor) throws Exception;
+
     }
     
     
