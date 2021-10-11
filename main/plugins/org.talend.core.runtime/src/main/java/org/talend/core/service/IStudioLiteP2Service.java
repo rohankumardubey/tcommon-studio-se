@@ -155,7 +155,6 @@ public interface IStudioLiteP2Service extends IService {
         Collection<?> getUninstalledIUs();
 
         boolean performUpdate(IProgressMonitor monitor) throws Exception;
-
     }
 
     public static interface ValidatePotentialFeaturesHook {
@@ -198,6 +197,11 @@ public interface IStudioLiteP2Service extends IService {
         void setUpdates(IProgressMonitor monitor, Collection<URI> uris) throws Exception;
 
     }
+    
+    
+    Set<IInstallableUnitInfo> calAllRequiredFeature(IProgressMonitor monitor, String projectPath, boolean isFilteByLicense) throws Exception;
+    
+    public boolean showMissingFeatureWizard(IProgressMonitor monitor, Set<IInstallableUnitInfo> requiredFeatureSet) throws Exception;
 
     public static abstract class AbsStudioLiteP2Exception extends Exception {
 
