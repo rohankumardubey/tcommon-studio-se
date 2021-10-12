@@ -381,6 +381,10 @@
 			id="org.talend.resoruses.toolbar.Learn">
 		</command>
 		<command 
+            name="%Documentation" 
+            id="org.talend.resoruses.toolbar.Documentation">
+        </command>
+		<command 
 			name="%Ask" 
 			id="org.talend.resoruses.toolbar.Ask">
 		</command>
@@ -408,6 +412,10 @@
    <handler
          class="org.talend.rcp.action.toolbar.ResourceToolbarHandler"
          commandId="org.talend.resoruses.toolbar.Learn">
+   </handler>
+   <handler
+         class="org.talend.rcp.action.toolbar.ResourceToolbarHandler"
+         commandId="org.talend.resoruses.toolbar.Documentation">
    </handler>
    <handler
          class="org.talend.rcp.action.toolbar.ResourceToolbarHandler"
@@ -487,7 +495,15 @@
         style="push" 
         mode="FORCE_TEXT" 
         tooltip="%LinksToolbarItem_Learn">
-    </command>  
+    </command>
+    <command 
+        commandId="org.talend.resoruses.toolbar.Documentation" 
+        icon="icons/demo.png" 
+        label="%Documentation" 
+        style="push" 
+        mode="FORCE_TEXT" 
+        tooltip="%LinksToolbarItem_Documentation">
+    </command>   
     <command 
         commandId="org.talend.resoruses.toolbar.Ask" 
         icon="icons/irc_protocol.png" 
