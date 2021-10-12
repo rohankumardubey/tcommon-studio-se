@@ -15,8 +15,6 @@ package org.talend.core.utils;
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Platform;
 import org.talend.commons.utils.system.EclipseCommandLine;
-import org.talend.core.BrandingChecker;
-import org.talend.core.model.utils.TalendPropertiesUtil;
 
 /**
  * DOC ggu class global comment. Detailled comment <br/>
@@ -37,7 +35,8 @@ public final class TalendCacheUtils {
     }
 
     public static boolean cleanComponentCache() {
-        return TalendPropertiesUtil.isCleanCache() || isSetCleanComponentCache() || isSetClean()
-                || BrandingChecker.isBrandingChanged();
+        // return TalendPropertiesUtil.isCleanCache() || isSetCleanComponentCache() || isSetClean()
+        // || BrandingChecker.isBrandingChanged();
+        return Boolean.getBoolean("talend.clean.index");
     }
 }
