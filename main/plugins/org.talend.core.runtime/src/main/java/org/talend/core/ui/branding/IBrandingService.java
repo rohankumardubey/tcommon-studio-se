@@ -50,6 +50,10 @@ public interface IBrandingService extends IService {
 
     public boolean isPoweredOnlyCamel();
 
+    public default boolean isCloudLicense() {
+        return false;
+    }
+
     public String getStartingBrowserId();
 
     public URL getStartingHtmlURL();

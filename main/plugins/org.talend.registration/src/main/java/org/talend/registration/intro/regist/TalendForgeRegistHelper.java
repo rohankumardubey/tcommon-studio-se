@@ -22,6 +22,7 @@ import org.eclipse.ui.internal.intro.impl.model.loader.IntroContentParser;
 import org.eclipse.ui.intro.config.IIntroContentProviderSite;
 import org.eclipse.ui.intro.config.IIntroXHTMLContentProvider;
 import org.talend.commons.ui.html.TalendHtmlModelUtil;
+import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.branding.StartingConstants;
 import org.talend.registration.RegistrationPlugin;
 import org.talend.registration.i18n.Messages;
@@ -66,6 +67,11 @@ public class TalendForgeRegistHelper {
                 IntroContentParser parser = new IntroContentParser(result);
                 Document dom = parser.getDocument();
                 if (dom != null) {
+                    boolean cloudLicense = IBrandingService.get().isCloudLicense();
+                    Element ele = dom.createElement("licensetype");
+                    ele.setAttribute("id", "license_cloud");
+                    ele.setAttribute("isCloud",""+cloudLicense);
+                    dom.getDocumentElement().appendChild(ele);
                     resolveInternationalization(dom);
                     resolveDynamicContent(dom, null);
                     content = IntroContentParser.convertToString(dom);

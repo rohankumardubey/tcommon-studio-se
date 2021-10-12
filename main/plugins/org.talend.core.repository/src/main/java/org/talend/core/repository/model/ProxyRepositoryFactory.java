@@ -2390,16 +2390,32 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
             String str[] = new String[] { getRepositoryContext().getUser() + "", projectManager.getCurrentProject() + "" }; //$NON-NLS-1$ //$NON-NLS-2$
             log.info(Messages.getString("ProxyRepositoryFactory.log.loggedOn", str)); //$NON-NLS-1$
         } catch (LoginException e) {
-            logOffProject();
+            try {
+                logOffProject();
+            } catch (Exception e1) {
+                ExceptionHandler.process(e1);
+            }
             throw e;
         } catch (PersistenceException e) {
-            logOffProject();
+            try {
+                logOffProject();
+            } catch (Exception e1) {
+                ExceptionHandler.process(e1);
+            }
             throw e;
         } catch (BusinessException e) {
-            logOffProject();
+            try {
+                logOffProject();
+            } catch (Exception e1) {
+                ExceptionHandler.process(e1);
+            }
             throw new PersistenceException(e);
         } catch (RuntimeException e) {
-            logOffProject();
+            try {
+                logOffProject();
+            } catch (Exception e1) {
+                ExceptionHandler.process(e1);
+            }
             throw e;
         }
     }

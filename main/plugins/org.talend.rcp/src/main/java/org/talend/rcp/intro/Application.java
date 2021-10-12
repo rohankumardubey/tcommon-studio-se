@@ -201,13 +201,15 @@ public class Application implements IApplication {
                 return IApplication.EXIT_RELAUNCH;
             }
             boolean logUserOnProject = logUserOnProject(display.getActiveShell());
-            if (LoginHelper.isRestart && LoginHelper.isAutoLogonFailed) {
-                setRelaunchData();
-                EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.CLEAN, null, true, true);
-                EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.TALEND_RELOAD_COMMAND,
-                        Boolean.TRUE.toString(), true);
-                EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(
-                        EclipseCommandLine.TALEND_PROJECT_TYPE_COMMAND, null, true);
+            if (LoginHelper.isRestart) {
+                if (LoginHelper.isAutoLogonFailed) {
+                    setRelaunchData();
+                    EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.CLEAN, null, true, true);
+                    EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.TALEND_RELOAD_COMMAND,
+                            Boolean.TRUE.toString(), true);
+                    EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.TALEND_PROJECT_TYPE_COMMAND,
+                            null, true);
+                }
                 return IApplication.EXIT_RELAUNCH;
             }
             try {
@@ -216,18 +218,20 @@ public class Application implements IApplication {
                     // Platform.endSplash();
                     context.applicationRunning();
                     // ~
+                    try {
+                        IStudioLiteP2Service p2Service = IStudioLiteP2Service.get();
+                        if (p2Service != null) {
+                            p2Service.closingStudioGUI(false);
+                        }
+                    } catch (Throwable e) {
+                        ExceptionHandler.process(e);
+                    }
                     return EXIT_OK;
                 }
             } finally {
                 if (shell != null) {
                     shell.dispose();
                 }
-            }
-
-            // if some commands are set to relaunch (not restart) the eclipse then relaunch it
-            // this happens when project type does not match the running product type
-            if (System.getProperty(org.eclipse.equinox.app.IApplicationContext.EXIT_DATA_PROPERTY) != null) {
-                return IApplication.EXIT_RELAUNCH;
             }
 
             boolean afterUpdate = false;
@@ -273,7 +277,16 @@ public class Application implements IApplication {
             }
 
             int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
-            if (returnCode == PlatformUI.RETURN_RESTART) {
+            boolean restart = returnCode == PlatformUI.RETURN_RESTART;
+            try {
+                IStudioLiteP2Service p2Service = IStudioLiteP2Service.get();
+                if (p2Service != null) {
+                    p2Service.closingStudioGUI(restart);
+                }
+            } catch (Throwable e) {
+                ExceptionHandler.process(e);
+            }
+            if (restart) {
                 // use relaunch instead of restart to remove change the restart property that may have been added in the
                 // previous
                 // relaunch
@@ -416,7 +429,7 @@ public class Application implements IApplication {
     }
 
     private void setRelaunchData() {
-        EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.CLEAN, null, false, true);
+//        EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.CLEAN, null, false, true);
         EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.TALEND_RELOAD_COMMAND,
                 Boolean.TRUE.toString(), false);
         EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.ARG_TALEND_BUNDLES_CLEANED,

@@ -24,6 +24,10 @@ public class LoginException extends BusinessException {
     private int errCode;
     
 
+    public LoginException(String key, Throwable cause) {
+        super(key, cause);
+    }
+
     public LoginException(String message) {
         super(message);
     }
