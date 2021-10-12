@@ -211,6 +211,14 @@
         return url;
      }
 
+	 function changeForLicense() {
+		 var isCloud = document.getElementById("license_cloud").getAttribute("isCloud");
+		if("true" == isCloud) {
+			document.getElementById('tr_toimprove').style.display = 'none';
+            document.getElementById('tr_toimprove2').style.display = 'none';
+		}
+	 }
+
      function switchToView(viewId) {
         if (viewId == 'useExsitingAccountDiv') {
             document.getElementById('useExsitingAccountDiv').style.display = 'block';
@@ -412,7 +420,7 @@
     }
      </script>
  </head>
-<body>
+<body onload="changeForLicense()">
     <form method="post" action="">
     <table align="center"><tbody>
     <tr>
@@ -580,7 +588,7 @@
              <tr><td></td><td colspan="2" class="checkBoxStyles">
              <input type="checkbox" class="checkbox" name="checkbox1" id="agree" onclick="refreshCreateAccountButtton();" ><font style="font-size:12px;"><internationalization id="TalendForgeDialog.agreeButtonVer_1" /><a href="https://community.talend.com/t5/user/UserTermsOfServicePage" target="_blank"><internationalization id="TalendForgeDialog.agreeButtonVer_2" /></a></font></input>
              </td></tr>
-             <tr><td></td><td colspan="2">
+             <tr id="tr_toimprove"><td></td><td colspan="2">
              <input type="checkbox" class="checkbox"  name="checkbox2" id="improve" checked="checked" /><font style="font-size:12px;"><internationalization id="TalendForgeDialog.improveButton" /></font>
             </td></tr>
             <tr><td class="errorInfoClass"></td><td style="width:100%">
@@ -674,7 +682,7 @@
                    </div>
                </td>
       </tr>
-      <tr>
+      <tr id="tr_toimprove2">
 	  <td></td><td colspan="2" class="checkBoxStyles">
              <input type="checkbox" id="improve2" class="checkbox" name="checkbox1" checked="checked" /><font style="font-size:12px;"><internationalization id="TalendForgeDialog.improveButton" /></font>
              </td>
