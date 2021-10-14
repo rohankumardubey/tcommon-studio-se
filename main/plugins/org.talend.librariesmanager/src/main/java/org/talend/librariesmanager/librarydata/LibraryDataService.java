@@ -81,6 +81,8 @@ public class LibraryDataService {
 
     private static final Map<String, Library> mvnToLibraryMap = new ConcurrentHashMap<String, Library>();
 
+    private static final Map<String, Library> dynamicDisLibraryMap = new ConcurrentHashMap<String, Library>();
+
     private static LibraryDataService instance;
 
     private LibraryDataJsonProvider dataProvider;
@@ -103,19 +105,37 @@ public class LibraryDataService {
         dataProvider = new LibraryDataJsonProvider(studioLibraryDataFile);
         File currentUserDataFile = getCurrentUserLibraryDataFile();
         Map<String, Library> studioLibraryDataMap = dataProvider.loadLicenseData();
+
         if (!StringUtils.equals(currentUserDataFile.getAbsolutePath(), studioLibraryDataFile.getAbsolutePath())) {
             dataProvider = new LibraryDataJsonProvider(currentUserDataFile);
             Map<String, Library> userLibraryDataMap = dataProvider.loadLicenseData();
             if (userLibraryDataMap.size() == 0) {
                 mvnToLibraryMap.putAll(studioLibraryDataMap);
+                dynamicDisLibraryMap.putAll(getCacheForDynamicDist(studioLibraryDataMap));
             } else {
                 mvnToLibraryMap.putAll(userLibraryDataMap);
+                dynamicDisLibraryMap.putAll(getCacheForDynamicDist(userLibraryDataMap));
             }
         } else {
             mvnToLibraryMap.putAll(studioLibraryDataMap);
+            dynamicDisLibraryMap.putAll(getCacheForDynamicDist(studioLibraryDataMap));
         }
     }
 
+    private Map<String, Library> getCacheForDynamicDist(Map<String, Library> studioLibraryDataMap) {
+        Map<String, Library> dynamicDistCacheMap = new HashMap<String, Library>();
+        if (studioLibraryDataMap != null) {
+            for (String key : studioLibraryDataMap.keySet()) {
+                Library library = studioLibraryDataMap.get(key);
+                String version = library.getVersion();
+                String firstVersion = version.indexOf(".")==-1 ? version : version.substring(0, version.indexOf(".")); 
+                String dynamicDistKey = library.getGroupId() + "/" + library.getArtifactId() + "/"
+                        + firstVersion;
+                dynamicDistCacheMap.put(dynamicDistKey, library);
+            }
+        }
+        return dynamicDistCacheMap;
+    }
     public static LibraryDataService getInstance() {
         if (instance == null) {
             synchronized (LibraryDataService.class) {
@@ -241,6 +261,11 @@ public class LibraryDataService {
         Library libraryObj = resolve(mvnUrl);
         fillLibraryData(libraryObj, artifact);
         mvnToLibraryMap.put(getShortMvnUrl(mvnUrl), libraryObj);
+        String version = libraryObj.getVersion();
+        String firstVersion = version.indexOf(".")==-1 ? version : version.substring(0, version.indexOf("."));
+        dynamicDisLibraryMap.put(
+                libraryObj.getGroupId() + "/" + libraryObj.getArtifactId() + "/" + firstVersion,
+                libraryObj);
     }
 
     public boolean fillLibraryDataUseCache(String mvnUrl, MavenArtifact artifact) {
@@ -254,6 +279,19 @@ public class LibraryDataService {
         return isExist;
     }
 
+    public boolean fillLibraryDatabyDynamicDistCache(MavenArtifact artifact) {
+        boolean isExist = false;
+        String version = artifact.getVersion();
+        String firstVersion = version.indexOf(".") == -1 ? version : version.substring(0, version.indexOf("."));
+        String key = artifact.getGroupId() + "/" + artifact.getArtifactId() + "/"
+                + firstVersion;
+        Library object = dynamicDisLibraryMap.get(key);
+        if (object != null) {
+            fillLibraryData(object, artifact);
+            isExist = !isPackagePom(object);
+        }
+        return isExist;
+    }
     private boolean isPackagePom(Library libraryObj) {
         if (libraryObj != null) {
             if ("pom".equalsIgnoreCase(libraryObj.getType())) {
