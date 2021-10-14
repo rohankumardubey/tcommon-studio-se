@@ -36,7 +36,7 @@ public class EclipseCommandLine {
 
     public static final String PROP_VM = "eclipse.vm"; //$NON-NLS-1$
 
-    static final String PROP_VMARGS = "eclipse.vmargs"; //$NON-NLS-1$
+    public static final String PROP_VMARGS = "eclipse.vmargs"; //$NON-NLS-1$
 
     static final String PROP_COMMANDS = "eclipse.commands"; //$NON-NLS-1$
 
