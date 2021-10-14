@@ -38,7 +38,7 @@ public class ResourceToolbarHandler extends AbstractHandler {
 
     public static final String CLOUD = "Cloud"; //$NON-NLS-1$
 
-    public static final String CLOUD_ORIG_URL = "https://iam.integrationcloud.talend.com/idp/trial-registration?utm_medium=studio&utm_source=toolbar&utm_campaign=dynamic_acronym";//$NON-NLS-1$
+    public static final String CLOUD_ORIG_URL = "https://www.talend.com/free-trial";//$NON-NLS-1$
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {

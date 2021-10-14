@@ -461,7 +461,7 @@
           commandId="org.talend.resoruses.toolbar.referenceCommand" 
           label="%resources.label" 
           mode="FORCE_TEXT" 
-          tooltip="%resources.label" 
+          tooltip="%resources.tip" 
           style="pulldown"> 
         <visibleWhen> 
           <with variable="ResourceToolbarProvider.showToolbar"> 
@@ -477,7 +477,7 @@
           commandId="org.talend.resoruses.toolbar.referenceCommand" 
           label="%resources.label" 
           mode="FORCE_TEXT" 
-          tooltip="%resources.label" 
+          tooltip="%resources.tip" 
           style="pulldown"> 
             <visibleWhen> 
               <with variable="ResourceToolbarProvider.showToolbar"> 
