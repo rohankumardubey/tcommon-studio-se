@@ -28,6 +28,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.talend.commons.exception.ExceptionService;
 import org.talend.commons.runtime.debug.TalendDebugHandler;
+import org.talend.commons.utils.platform.PluginChecker;
 import org.talend.commons.utils.system.EclipseCommandLine;
 
 /**
@@ -56,6 +57,8 @@ public class CommonsPlugin implements BundleActivator {
 
     // TESB-17856: For commandline builds ESB Micorservice bundle
     private static boolean isESBMicorservice = false;
+
+    private static Boolean isDevMode = null;
 
     private static ServiceTracker proxyTracker;
 
@@ -108,6 +111,17 @@ public class CommonsPlugin implements BundleActivator {
 
     public static boolean isScriptCmdlineMode() {
         return System.getProperty(EclipseCommandLine.PROP_VM) == null;
+    }
+
+    public static boolean isDevMode() {
+        try {
+            if (isDevMode == null) {
+                isDevMode = Platform.getBundle(PluginChecker.RCP_BUNDLE_ID).getBundleContext().getProperty("osgi.dev") != null;
+            }
+            return isDevMode;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public static boolean isDebugMode() {

@@ -3390,7 +3390,11 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                 updatePreferenceProjectVersion(project);
             }
             Project localProject = getRepositoryContext().getProject();
-
+            String localProdVersion = localProject.getEmfProject().getProductVersion();
+            if (StringUtils.isBlank(localProdVersion)) {
+                localProdVersion = "";
+            }
+            ProjectManager.getInstance().getProjectLabelWithOriginVersion().put(localProject.getLabel(), localProdVersion);
             checkProjectVersion(localProject);
         }
         try {
@@ -3465,8 +3469,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
             ELoginInfoCase.STUDIO_LOWER_THAN_PROJECT.setContents(contents);
             DialogUtils.setWarningInfo(ELoginInfoCase.STUDIO_LOWER_THAN_PROJECT);
         }
-        
-        ProjectManager.getInstance().getProjectLabelWithOriginVersion().put(localProject.getLabel(), localProject.getEmfProject().getProductVersion());
+
         if (VersionUtils.productVersionIsNewer(localProject.getEmfProject().getProductVersion())) {
             String[] contents;
             if (StringUtils.isEmpty(remoteLastPatchName)) {

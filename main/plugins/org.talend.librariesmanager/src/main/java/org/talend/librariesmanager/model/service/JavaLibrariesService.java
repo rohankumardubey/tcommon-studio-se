@@ -182,7 +182,7 @@ public class JavaLibrariesService extends AbstractLibrariesService {
         }
         // fix for TDI-34878
         IEclipsePreferences prefSetting = ConfigurationScope.INSTANCE.getNode(DesignerMavenPlugin.PLUGIN_ID);
-        final String lastRepType = prefSetting.get("Maven_Setting_Type", null);
+        final String lastRepType = prefSetting.get("Maven_Setting_Type", "local"); //$NON-NLS-1$
         String configSetting = System.getProperty("maven.repository", "local"); //$NON-NLS-1$
         final boolean isLocalRepository = !"global".equalsIgnoreCase(configSetting); //$NON-NLS-1$
         String currentRepType = isLocalRepository ? "local" : "global";

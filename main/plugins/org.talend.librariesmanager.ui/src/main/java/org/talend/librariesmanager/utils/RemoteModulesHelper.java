@@ -272,9 +272,13 @@ public class RemoteModulesHelper {
                 if (parseMvnUrl != null) {
                     String repositoryUrl = parseMvnUrl.getRepositoryUrl();
                     if (!LibraryDataService.getInstance().isBuildLibrariesData()) {
-                        if (StringUtils.isNotEmpty(repositoryUrl)
-                                && parseMvnUrl.getGroupId().startsWith(MavenConstants.APACHE_GROUP_ID)) {
-                            continue;
+                        if (StringUtils.isNotEmpty(repositoryUrl)) {
+                            if (parseMvnUrl.getGroupId().startsWith(MavenConstants.APACHE_GROUP_ID)) {
+                                continue;
+                            }
+                            if (service.fillLibraryDatabyDynamicDistCache(parseMvnUrl)) {
+                                continue;
+                            }
                         }
                     }
                     service.fillLibraryDataByRemote(uriToCheck, parseMvnUrl);

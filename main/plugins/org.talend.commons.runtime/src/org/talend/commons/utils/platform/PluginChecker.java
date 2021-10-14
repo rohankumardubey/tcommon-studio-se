@@ -20,6 +20,8 @@ import org.osgi.framework.Bundle;
  */
 public final class PluginChecker {
 
+    public static final String RCP_BUNDLE_ID = "org.talend.rcp";
+
     private static final String TDQ_ID = "org.talend.dataprofiler.core.tdq"; //$NON-NLS-1$
 
     private static final String TDCP_ID = "org.talend.datacleansing.core"; //$NON-NLS-1$
