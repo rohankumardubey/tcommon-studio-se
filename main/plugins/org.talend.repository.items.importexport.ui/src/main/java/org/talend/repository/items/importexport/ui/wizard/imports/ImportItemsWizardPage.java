@@ -77,6 +77,8 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.provider.EmfResourcesFactoryReader;
 import org.talend.commons.runtime.model.emf.provider.ResourceOption;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
+import org.talend.commons.ui.runtime.image.EImage;
+import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.properties.Item;
@@ -375,7 +377,7 @@ public class ImportItemsWizardPage extends WizardPage {
     protected void createImportDependenciesArea(Composite parent) {
         Composite dependencyArea = new Composite(parent, SWT.None);
         GridLayout layout = new GridLayout();
-        layout.numColumns = 3;
+        layout.numColumns = 1;
         layout.marginWidth = 0;
         layout.marginHeight = 0;
         layout.makeColumnsEqualWidth = false;
@@ -397,13 +399,21 @@ public class ImportItemsWizardPage extends WizardPage {
                 checkSelectedItemErrors();
             }
         });
-        
-        Label tempLabel = new Label(dependencyArea, SWT.NONE);
-        tempLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL, GridData.FILL_VERTICAL, true, true));
-
+           
         if (IBrandingService.get().isPoweredbyTalend()) {
-            requiredFeatureButton = new Button(dependencyArea, SWT.CHECK);
+            Composite requiredCom = new Composite(dependencyArea, SWT.None);
+            GridLayout requiredComLayout = new GridLayout();
+            requiredComLayout.numColumns = 3;
+            requiredComLayout.marginWidth = 0;
+            requiredComLayout.marginHeight = 0;
+            requiredComLayout.makeColumnsEqualWidth = false;
+            requiredCom.setLayout(requiredComLayout);
+            requiredCom.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+            requiredFeatureButton = new Button(requiredCom, SWT.CHECK);
             requiredFeatureButton.setText(Messages.getString("ImportItemsWizardPage_AnalyseRequiredFeatureButton"));
+            requiredFeatureButton.setToolTipText(Messages.getString("ImportItemsWizardPage_AnalyseRequiredFeatureButtonTooltip"));
+            requiredFeatureButton.setSelection(true);
             setButtonLayoutData(requiredFeatureButton);
             requiredFeatureButton.addSelectionListener(new SelectionAdapter() {
 
@@ -414,7 +424,13 @@ public class ImportItemsWizardPage extends WizardPage {
                     }
                 }
             });
-        }       
+            Label textLabel = new Label(requiredCom, SWT.NONE);
+            textLabel.setLayoutData(new GridData());
+            textLabel.setText(Messages.getString("ImportItemsWizardPage_AnalyseRequiredFeatureTxt"));
+            Label imageLabel = new Label(requiredCom, SWT.NONE);
+            imageLabel.setImage(ImageProvider.getImage(EImage.WARNING_ICON));
+            imageLabel.setLayoutData(new GridData());
+        }  
     }
     
     private boolean calRequiredFeatures() {
@@ -432,7 +448,6 @@ public class ImportItemsWizardPage extends WizardPage {
 
                 @Override
                 protected Boolean runWithCancel(IProgressMonitor monitor) throws Throwable {
-                    monitor.beginTask(Messages.getString("ImportItemsWizardPage_ProgressDialog_WaitingCheckRequiredFeature"), 3);
                     for (String projectPath : projectToFeatureMap.keySet()) {
                         projectToFeatureMap.put(projectPath, p2Service.calAllRequiredFeature(monitor, projectPath, true));
                     }
@@ -440,8 +455,6 @@ public class ImportItemsWizardPage extends WizardPage {
                     for (String projectPath : projectToFeatureMap.keySet()) {
                         allRequiredFeatures.addAll(projectToFeatureMap.get(projectPath));
                     }
-                    monitor.worked(1);
-
                     if (allRequiredFeatures.size() > 0) {
                         return p2Service.showMissingFeatureWizard(monitor, allRequiredFeatures);
                     } else {
@@ -453,8 +466,7 @@ public class ImportItemsWizardPage extends WizardPage {
             String executingMessage = Messages.getString("ImportItemsWizardPage_ProgressDialog_ExecutingMessage"); //$NON-NLS-1$
             String waitingFinishMessage = Messages.getString("ImportItemsWizardPage_ProgressDialog_WaitingCheckRequiredFeature"); //$NON-NLS-1$
             try {
-                dialogWithCancel.run(executingMessage, waitingFinishMessage, true,
-                        AProgressMonitorDialogWithCancel.ENDLESS_WAIT_TIME);
+                dialogWithCancel.run(executingMessage, waitingFinishMessage, true);
 
                 if (dialogWithCancel.isUserCanncelled() || !dialogWithCancel.getExecuteResult()) {
                     this.requiredFeatureButton.setSelection(false);
@@ -665,7 +677,7 @@ public class ImportItemsWizardPage extends WizardPage {
 
         // see feature 3949
         this.overwriteButton = new Button(optionsArea, SWT.CHECK);
-        this.overwriteButton.setText(Messages.getString("ImportItemsWizardPage_overwriteItemsText")); //$NON-NLS-1$
+        this.overwriteButton.setText(Messages.getString("ImportItemsWizardPage_overwriteItemsTxt")); //$NON-NLS-1$
         this.overwriteButton.addSelectionListener(new SelectionAdapter() {
 
             @Override
