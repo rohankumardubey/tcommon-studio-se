@@ -26,8 +26,6 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 
 import org.apache.avro.Schema;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
@@ -67,10 +65,8 @@ import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.impl.ConnectionItemImpl;
-import org.talend.core.model.repository.IRepositoryPrefConstants;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.routines.IRoutinesService;
-import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.i18n.Messages;
 import org.talend.core.runtime.services.IGenericWizardService;
@@ -297,6 +293,7 @@ public final class MetadataToolHelper {
         boolean isKeyword = KeywordsValidator.isKeyword(originalColumnName);
 
         StringBuilder sb = new StringBuilder();
+        int[] charBit = new int[columnName.length()];
         if (!isKeyword) {
             boolean isAllowSpecific = isAllowSpecificCharacters();
 
@@ -312,14 +309,16 @@ public final class MetadataToolHelper {
                         sb.append(car);
                     } else {
                         sb.append(underLine);
+                        charBit[i] = 1;
                     }
                 } else {
                     sb.append(car);
                 }
             }
         }
-        String returnedColumnName = trimBeginEnd_(sb.toString());
-        if (isKeyword || "".equals(returnedColumnName)) {
+        String returnedColumnName = trimBeginEnd_(sb.toString(), charBit);
+        if (isKeyword || "".equals(returnedColumnName) || org.apache.commons.lang.StringUtils.countMatches(returnedColumnName,
+                underLine) == originalColumnName.length()) {
             returnedColumnName = "Column" + index; //$NON-NLS-1$
         }
 
@@ -332,29 +331,28 @@ public final class MetadataToolHelper {
     // abc -> abc
     // _abc -> _abc
     // _____ -> ""
-    public static String trimBeginEnd_(String columnName) {
+    private static String trimBeginEnd_(String columnName, int[] charBit) {
         if (columnName == null) {
             return null;
         }
-        int len = columnName.length();
         int st = 0;
+        int len = charBit.length;
         char[] val = columnName.toCharArray(); /* avoid getfield opcode */
 
-        while ((st < len) && (val[st] == '_')) {
+        while (st < len && charBit[st] == 1) {
             st++;
         }
-        while ((st < len) && (val[len - 1] == '_')) {
+        while (st < len && charBit[len - 1] == 1) {
             len--;
         }
         if ((st > 0) || (len < columnName.length())) {
             if (st == columnName.length()) {
                 return "";
             }
-            if (st > 0) {
-                return columnName.substring(st - 1, len);
-            } else {
-                return columnName.substring(st, len);
+            if (st > 0 && val[st] != '_') {
+                st--;
             }
+            return columnName.substring(st, len);
         } else {
             return columnName;
         }

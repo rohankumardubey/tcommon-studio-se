@@ -411,7 +411,7 @@ public class ExcelFileStep3Form extends AbstractExcelFileStepForm {
                     if (firstRowToExtractMetadata == 1) {
                         if (numberOfCol <= fields.length) {// if current field size
                             if (fields[i] != null && !("").equals(fields[i])) { //$NON-NLS-1$
-                                label[i] = fields[i].trim().replaceAll(" ", "_"); //$NON-NLS-1$ //$NON-NLS-2$
+                                label[i] = fields[i].trim(); // $NON-NLS-1$ //$NON-NLS-2$
                                 label[i] = MetadataToolHelper.validateColumnName(label[i], i);
                             } else {
                                 label[i] = DEFAULT_LABEL + i;

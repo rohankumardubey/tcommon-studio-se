@@ -267,12 +267,24 @@ public class MetadataToolHelperTest {
         assertEquals(columnName, "test_a");
 
         columnName = MetadataToolHelper.validateColumnName("MyColumn_你好", 0);
-        assertEquals("MyColumn", columnName);
+        assertEquals("MyColumn_", columnName);
 
         columnName = MetadataToolHelper.validateColumnName("你好", 0);
         assertEquals("Column0", columnName);
 
-        columnName = MetadataToolHelper.validateColumnName("____Tax__ID_____", 0);
+        columnName = MetadataToolHelper.validateColumnName("TEXT_", 0);
+        assertEquals("TEXT_", columnName);
+
+        columnName = MetadataToolHelper.validateColumnName("---_TEXT_---", 0);
+        assertEquals("_TEXT_", columnName);
+
+        columnName = MetadataToolHelper.validateColumnName("T E X T I  D", 0);
+        assertEquals("T_E_X_T_I__D", columnName);
+
+        columnName = MetadataToolHelper.validateColumnName("TEXT ID ---", 0);
+        assertEquals("TEXT_ID", columnName);
+
+        columnName = MetadataToolHelper.validateColumnName("----Tax__ID-----", 0);
         assertEquals("_Tax__ID", columnName);
 
         columnName = MetadataToolHelper.validateColumnName("________", 0);

@@ -387,7 +387,7 @@ public class FileStep3Form extends AbstractPositionalFileStepForm {
             if (firstRowToExtractMetadata == 1) {
                 String value = fields[i];
                 if (value != null && !value.equals("")) { //$NON-NLS-1$
-                    label[i] = value.trim().replaceAll(" ", "_"); //$NON-NLS-1$ //$NON-NLS-2$
+                    label[i] = value.trim(); // $NON-NLS-1$ //$NON-NLS-2$
                 }
 
                 label[i] = MetadataToolHelper.validateColumnName(label[i], i);
