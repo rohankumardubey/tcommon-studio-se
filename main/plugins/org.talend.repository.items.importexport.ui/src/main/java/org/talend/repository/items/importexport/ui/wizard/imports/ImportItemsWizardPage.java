@@ -412,7 +412,6 @@ public class ImportItemsWizardPage extends WizardPage {
 
             requiredFeatureButton = new Button(requiredCom, SWT.CHECK);
             requiredFeatureButton.setText(Messages.getString("ImportItemsWizardPage_AnalyseRequiredFeatureButton"));
-            requiredFeatureButton.setToolTipText(Messages.getString("ImportItemsWizardPage_AnalyseRequiredFeatureButtonTooltip"));
             requiredFeatureButton.setSelection(true);
             setButtonLayoutData(requiredFeatureButton);
             requiredFeatureButton.addSelectionListener(new SelectionAdapter() {
@@ -475,6 +474,7 @@ public class ImportItemsWizardPage extends WizardPage {
                 if (executeException != null) {
                     throw new Exception(executeException);
                 }
+
             } catch (Exception ex) {
                 ExceptionHandler.process(ex);
             }
