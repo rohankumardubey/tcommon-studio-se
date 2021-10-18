@@ -116,7 +116,8 @@ public class UpdateService implements IUpdateService {
     @Override
     public void checkThirdPartyLibraries() {
         CheckThirdPartyLibrariesToInstallJob checkThirdPartyLibrariesToInstallJob = new CheckThirdPartyLibrariesToInstallJob();
-        checkThirdPartyLibrariesToInstallJob.schedule();
+        checkThirdPartyLibrariesToInstallJob.checkInstallThirdPartyLibraries();
+        ;
     }
 }
 
