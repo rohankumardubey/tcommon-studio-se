@@ -34,6 +34,8 @@ public enum EHadoopDistributions {
     PIVOTAL_HD("Pivotal HD"), //$NON-NLS-1$
 
     MICROSOFT_HD_INSIGHT("Microsoft HD Insight"), //$NON-NLS-1$
+    
+    AZURE_SYNAPSE("Azure Synapse Runtime for Apache Spark 3.0"), //$NON-NLS-1$
 
     GOOGLE_CLOUD_DATAPROC("Google Cloud Dataproc"), //$NON-NLS-1$
 
