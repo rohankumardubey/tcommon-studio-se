@@ -820,6 +820,8 @@ public class ModulesNeededProvider {
         IMPORTType importType = ComponentFactory.eINSTANCE.createIMPORTType();
         importType.setMODULEGROUP("esb-java-11-group");
         importType.setREQUIRED(true);
+
+        collectModuleNeeded("tRESTClient", importType, importNeedsListForRoutes);
     }
 
     /**
