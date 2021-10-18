@@ -108,6 +108,20 @@ public class Application implements IApplication {
                     Boolean.TRUE.toString(), false);
             return IApplication.EXIT_RELAUNCH;
         }
+
+        try {
+            String vmArgs = System.getProperty(EclipseCommandLine.PROP_VMARGS);
+            if (StringUtils.isNotBlank(vmArgs)) {
+                /**
+                 * Must update one property here, so that studio can init the exit data property used by relaunch if
+                 * needed; just pick the -clean, since the clean already succeed, no need it
+                 */
+                EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.CLEAN, null, true, true);
+            }
+        } catch (Throwable e) {
+            ExceptionHandler.process(e);
+        }
+
         System.setProperty(TalendPropertiesUtil.PROD_APP, this.getClass().getName());
 
         StudioKeysFileCheck.check(ConfigurationScope.INSTANCE.getLocation().toFile());

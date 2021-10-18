@@ -12,87 +12,13 @@
 // ============================================================================
 package org.talend.updates.runtime.ui;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.PlatformUI;
-import org.talend.updates.runtime.engine.factory.PluginOptionalMissingJarsExtraUpdatesFactory;
-import org.talend.updates.runtime.engine.factory.PluginRequiredMissingJarsExtraUpdatesFactory;
-import org.talend.updates.runtime.i18n.Messages;
-import org.talend.updates.runtime.model.ExtraFeature;
-import org.talend.commons.exception.ExceptionHandler;
-import org.eclipse.jface.dialogs.MessageDialog;
 
-public class CheckThirdPartyLibrariesToInstallJob extends Job {
-    protected boolean isCheckUpdateOnLine = false;
-    /**
-     * DOC sgandon CheckExtraFeaturesToUpdateJob constructor comment.
-     *
-     * @param name
-     */
-    public CheckThirdPartyLibrariesToInstallJob() {
-        super(Messages.getString("CheckAdditionalPackagesToInstallJob.check.third.party.lib.to.install")); //$NON-NLS-1$
-    }
+public class CheckThirdPartyLibrariesToInstallJob {
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
-     */
-    @Override
-    protected IStatus run(IProgressMonitor monitor) {
-        final Set<ExtraFeature> uninstalledExtraFeatures = new HashSet<ExtraFeature>();
-        PluginRequiredMissingJarsExtraUpdatesFactory pluginRequiredFactory = new PluginRequiredMissingJarsExtraUpdatesFactory();
-        pluginRequiredFactory.setCheckUpdateOnLine(false);
-        PluginOptionalMissingJarsExtraUpdatesFactory pluginOptionalFactory = new PluginOptionalMissingJarsExtraUpdatesFactory();
-        pluginOptionalFactory.setCheckUpdateOnLine(false);
-        try {
-            pluginRequiredFactory.retrieveUninstalledExtraFeatures(monitor, uninstalledExtraFeatures);
-            pluginOptionalFactory.retrieveUninstalledExtraFeatures(monitor, uninstalledExtraFeatures);
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-        }
-        // if feature to update are available then show the update wizard
-        if (monitor.isCanceled()) {
-             return Status.CANCEL_STATUS;
-        }
-        synchronized (ShowWizardHandler.showWizardLock) {
-            // make sure this dialog won't be popup in some special cases
-            // just waiting for the lock to be released, then continue to execute.
-            Display.getDefault().asyncExec(new Runnable() {
+    public void checkInstallThirdPartyLibraries() {
+        ThirdPartyLibrariesWizard thirdPartyLibrariesWizard = new ThirdPartyLibrariesWizard(null);
+        thirdPartyLibrariesWizard.show(Display.getDefault().getActiveShell());
 
-                @Override
-                public void run() {
-                    if (!uninstalledExtraFeatures.isEmpty()) {
-                        UpdateWizardModel updateWizardModel = new UpdateWizardModel(uninstalledExtraFeatures);
-                        ThirdPartyLibrariesDialog dialog = new ThirdPartyLibrariesDialog(
-                                PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-                                Messages.getString("download.external.dialog.name"),
-                                Messages.getString("download.external.dialog.title"), updateWizardModel);
-                        dialog.showDialog(true);
-                    } else {
-                        MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-                                Messages.getString("download.external.dialog.info"),
-                                Messages.getString("download.external.dialog.message"));
-                    }
-
-                }
-            });
-        }
-        return Status.OK_STATUS;
-    }
-
-    public boolean isCheckUpdateOnLine() {
-        return isCheckUpdateOnLine;
-    }
-
-    public void setCheckUpdateOnLine(boolean isCheckUpdateOnLine) {
-        this.isCheckUpdateOnLine = isCheckUpdateOnLine;
     }
 }

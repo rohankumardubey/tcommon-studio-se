@@ -23,6 +23,8 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.MojoType;
 import org.talend.commons.utils.VersionUtils;
+import org.talend.core.GlobalServiceRegister;
+import org.talend.core.IESBService;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.nexus.TalendMavenResolver;
@@ -47,7 +49,12 @@ public class ShareCIJarsOnStartup extends ShareMavenArtifactsOnStartup {
             return files;
         }
         // get plugin artifacts to share
-        Stream.of(MojoType.values()).forEach(m -> {
+        Stream.of(MojoType.values()).filter(m -> {
+            if (!isESBEnabled() && m == MojoType.OSGI_HELPER) {
+                return false;
+            }
+            return true;
+        }).forEach(m -> {
             String mvnUrl = MavenUrlHelper.generateMvnUrl(TalendMavenConstants.DEFAULT_CI_GROUP_ID, m.getArtifactId(),
                     VersionUtils.getMojoVersion(m), null, null);
             // try to resolve locally
@@ -68,5 +75,12 @@ public class ShareCIJarsOnStartup extends ShareMavenArtifactsOnStartup {
         mainSubMonitor.worked(1);
         return files;
     }
-
+    
+    private boolean isESBEnabled() {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
+            IESBService service = GlobalServiceRegister.getDefault().getService(IESBService.class);
+            return service == null ? false : true;
+        }
+        return false;
+    }
 }
