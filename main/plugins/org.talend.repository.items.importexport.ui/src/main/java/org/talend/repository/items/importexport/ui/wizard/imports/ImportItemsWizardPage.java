@@ -466,15 +466,11 @@ public class ImportItemsWizardPage extends WizardPage {
             String waitingFinishMessage = Messages.getString("ImportItemsWizardPage_ProgressDialog_WaitingCheckRequiredFeature"); //$NON-NLS-1$
             try {
                 dialogWithCancel.run(executingMessage, waitingFinishMessage, true);
-
-                if (dialogWithCancel.isUserCanncelled() || !dialogWithCancel.getExecuteResult()) {
-                    this.requiredFeatureButton.setSelection(false);
-                }
+                this.requiredFeatureButton.setSelection(false);
                 Throwable executeException = dialogWithCancel.getExecuteException();
                 if (executeException != null) {
                     throw new Exception(executeException);
                 }
-
             } catch (Exception ex) {
                 ExceptionHandler.process(ex);
             }
