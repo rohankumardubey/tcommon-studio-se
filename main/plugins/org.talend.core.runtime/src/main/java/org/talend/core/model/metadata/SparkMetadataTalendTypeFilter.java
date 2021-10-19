@@ -22,7 +22,7 @@ public class SparkMetadataTalendTypeFilter extends MetadataTalendTypeFilter {
 
     private final static List<String> UNSUPPORTED_TYPES = Arrays.asList(new String[] { "Document", "Dynamic" }); //$NON-NLS-1$ //$NON-NLS-2$
 
-    private final static String ROWGENERATOR_COMPONENT_NAME = "tRowGenerator"; //$NON-NLS-1$
+    public final static String ROWGENERATOR_COMPONENT_NAME = "tRowGenerator"; //$NON-NLS-1$
 
     protected final static String INPUTPARQUET_COMPONENT_NAME = "tFileInputParquet", INPUTSTREAMPARQUET_COMPONENT_NAME = "tFileStreamInputParquet", OUTPUTPARQUET_COMPONENT_NAME = "tFileOutputParquet"; //$NON-NLS-1$; //$NON-NLS-2$ //$NON-NLS-3$
 
@@ -53,21 +53,35 @@ public class SparkMetadataTalendTypeFilter extends MetadataTalendTypeFilter {
         COMPONENT_UNSUPPORTED_TYPES.put(OUTPUTKUDU_COMPONENT_NAME, Arrays.asList(new String[] { "Object", "List", "Vector", "byte[]", "BigDecimal" })); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
+    public static String DYNAMIC = "Dynamic";
+
     public SparkMetadataTalendTypeFilter(String componentName) {
         this.mComponentName = componentName;
     }
 
     @Override
     protected List<String> getUnsupportedTypes() {
+        List<String> unsupportedTypes = new ArrayList<String>(UNSUPPORTED_TYPES);
+
+        // Add component specific unsupported types
         List<String> currentComponentUnsupportedType = COMPONENT_UNSUPPORTED_TYPES.get(this.mComponentName);
         if (currentComponentUnsupportedType != null) {
-            List<String> unionList = new ArrayList<>();
-            unionList.addAll(currentComponentUnsupportedType);
-            unionList.addAll(UNSUPPORTED_TYPES);
-            return unionList;
-        } else {
-            return UNSUPPORTED_TYPES;
+            unsupportedTypes.addAll(currentComponentUnsupportedType);
         }
+
+        // Remove component specific supported types
+        List<String> componentSpecificTypes = getComponentSpecificTypes();
+        if (componentSpecificTypes != null) {
+            unsupportedTypes.removeIf(item -> componentSpecificTypes.contains(item));
+        }
+
+        return unsupportedTypes;
     }
 
+    /**
+     * Get a list of types that are specifically supported by the component
+     */
+    protected List<String> getComponentSpecificTypes() {
+        return null;
+    }
 }
