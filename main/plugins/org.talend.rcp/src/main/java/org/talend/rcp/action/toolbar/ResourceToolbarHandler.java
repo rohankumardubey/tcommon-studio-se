@@ -18,7 +18,11 @@ public class ResourceToolbarHandler extends AbstractHandler {
 
     public static final String LEARN = "Learn"; //$NON-NLS-1$
 
-    public static final String LEARN_ORIG_URL = "https://help.talend.com";//$NON-NLS-1$
+    public static final String LEARN_ORIG_URL = "https://www.talend.com/academy";//$NON-NLS-1$
+    
+    public static final String DOCUMENTATION = "Documentation";//$NON-NLS-1$
+    
+    public static final String DOCUMENTATION_ORIG_URL = "https://help.talend.com";//$NON-NLS-1$
 
     public static final String ASK = "Ask"; //$NON-NLS-1$
 
@@ -34,13 +38,16 @@ public class ResourceToolbarHandler extends AbstractHandler {
 
     public static final String CLOUD = "Cloud"; //$NON-NLS-1$
 
-    public static final String CLOUD_ORIG_URL = "https://iam.integrationcloud.talend.com/idp/trial-registration?utm_medium=studio&utm_source=toolbar&utm_campaign=dynamic_acronym";//$NON-NLS-1$
+    public static final String CLOUD_ORIG_URL = "https://www.talend.com/free-trial";//$NON-NLS-1$
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
         String id = event.getCommand().getId();
         if (StringUtils.equals(id, "org.talend.resoruses.toolbar.Learn")) {//$NON-NLS-1$
             openBrower(LEARN_ORIG_URL);
+        }
+        if (StringUtils.equals(id, "org.talend.resoruses.toolbar.Documentation")) {//$NON-NLS-1$
+            openBrower(DOCUMENTATION_ORIG_URL);
         }
         if (StringUtils.equals(id, "org.talend.resoruses.toolbar.Ask")) {//$NON-NLS-1$
             openBrower(ASK_ORIG_URL);
