@@ -498,7 +498,7 @@
     </command>
     <command 
         commandId="org.talend.resoruses.toolbar.Documentation" 
-        icon="icons/document.png" 
+        icon="icons/documention.png" 
         label="%Documentation" 
         style="push" 
         mode="FORCE_TEXT" 
