@@ -42,6 +42,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
@@ -719,6 +720,10 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
         if (modulesNeeded == null || modulesNeeded.size() == 0) {
             return false;
         }
+        
+        // install local platform jars.
+        this.installModules(modulesNeeded, new NullProgressMonitor());
+        
         Set<ModuleNeeded> jarNotFound = new HashSet<>();
         boolean allIsOK = true;
         for (ModuleNeeded jar : modulesNeeded) {
