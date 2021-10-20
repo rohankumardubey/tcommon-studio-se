@@ -64,7 +64,7 @@ public class DefaultTokenCollector extends AbstractTokenCollector {
     public JSONObject collect() throws Exception {
         JSONObject tokenStudioObject = new JSONObject();
         // version
-        tokenStudioObject.put(VERSION.getKey(), VersionUtils.getInternalVersion());
+        tokenStudioObject.put(VERSION.getKey(), VersionUtils.getInternalMajorVersion());
         // uniqueId
         tokenStudioObject.put(UNIQUE_ID.getKey(), hashUniqueId());
 
