@@ -113,9 +113,11 @@ public class ModulesNeededProvider {
 
     private static IRepositoryService repositoryService = null;
 
-    private static List<ModuleNeeded> importNeedsListForRoutes = new ArrayList<ModuleNeeded>();;
+    private static List<ModuleNeeded> importNeedsListForRoutes = new ArrayList<ModuleNeeded>();
 
     private static List<ModuleNeeded> importNeedsListForBeans;
+    
+    private static List<ModuleNeeded> importNeedsListForCamelCore = new ArrayList<ModuleNeeded>();;
 
     private static ILibraryManagerService libManagerService = null;
 
@@ -706,6 +708,25 @@ public class ModulesNeededProvider {
         importNeedsListForRoutes.removeIf(m-> (m==null));
         
         return importNeedsListForRoutes;
+    }
+    
+    public static List<ModuleNeeded> getModulesNeededForCamelCore() {
+        ILibrariesService service = null;
+        if (!GlobalServiceRegister.getDefault().isServiceRegistered(ILibrariesService.class)) {
+            return null;
+        }
+        service = (ILibrariesService) GlobalServiceRegister.getDefault().getService(ILibrariesService.class);
+        
+        if (importNeedsListForCamelCore.isEmpty()) {
+
+        	importNeedsListForCamelCore = new ArrayList<ModuleNeeded>();
+
+        	importNeedsListForCamelCore.addAll(service.getModuleNeeded("camel-core", true));
+        }
+        
+        importNeedsListForCamelCore.removeIf(m-> (m==null));
+        
+        return importNeedsListForCamelCore;
     }
 
     public static List<ModuleNeeded> getModulesNeededForRoutes() {
