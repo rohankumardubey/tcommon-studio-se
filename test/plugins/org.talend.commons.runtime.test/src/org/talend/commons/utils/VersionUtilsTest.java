@@ -220,6 +220,14 @@ public class VersionUtilsTest {
         assertEquals(expect2, VersionUtils.getSimplifiedPatchName("Patch_20201114_R2020-11_v1-7.4.1"));
     }
 
+    @Test
+    public void testGetDisplayPatchVersion() {
+        assertEquals("R2021-11", VersionUtils.getDisplayPatchVersion("R2021-11v1"));
+        assertEquals("R2021-11v2", VersionUtils.getDisplayPatchVersion("R2021-11v2"));
+        assertEquals("TPS-8888", VersionUtils.getDisplayPatchVersion("TPS-8888v1"));
+        assertEquals("TPS-8888v2", VersionUtils.getDisplayPatchVersion("TPS-8888v2"));
+    }
+
     @After
     public void tearDown() throws Exception {
         if (mojo_properties != null && mojo_properties.exists()) {

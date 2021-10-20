@@ -362,6 +362,17 @@ public class VersionUtils {
         return version;
     }
 
+    public static String getInternalMajorVersion() {
+        return StringUtils.substringBefore(getInternalVersion(), "."); //$NON-NLS-1$
+    }
+
+    public static String getDisplayPatchVersion(String patchName) {
+        if (Integer.parseInt(StringUtils.substringAfterLast(patchName, "v")) > 1) { //$NON-NLS-1$
+            return patchName;
+        }
+        return StringUtils.substringBefore(patchName, "v"); //$NON-NLS-1$
+    }
+
     public static void clearCache() {
         synchronized (VersionUtils.class) {
             productVersion = null;

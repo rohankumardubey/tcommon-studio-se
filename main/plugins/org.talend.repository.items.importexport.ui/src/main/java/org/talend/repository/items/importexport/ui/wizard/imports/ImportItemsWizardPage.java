@@ -465,8 +465,7 @@ public class ImportItemsWizardPage extends WizardPage {
             String executingMessage = Messages.getString("ImportItemsWizardPage_ProgressDialog_ExecutingMessage"); //$NON-NLS-1$
             String waitingFinishMessage = Messages.getString("ImportItemsWizardPage_ProgressDialog_WaitingCheckRequiredFeature"); //$NON-NLS-1$
             try {
-                dialogWithCancel.run(executingMessage, waitingFinishMessage, true);
-                this.requiredFeatureButton.setSelection(false);
+                dialogWithCancel.run(executingMessage, waitingFinishMessage, true, AProgressMonitorDialogWithCancel.ENDLESS_WAIT_TIME);
                 Throwable executeException = dialogWithCancel.getExecuteException();
                 if (executeException != null) {
                     throw new Exception(executeException);
