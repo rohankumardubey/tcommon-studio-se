@@ -25,7 +25,8 @@ Require-Bundle: org.eclipse.core.runtime,
  javax.xml.bind,
  org.talend.model
 Eclipse-LazyStart: true
-Export-Package: org.talend.librariesmanager.emf.librariesindex,
+Export-Package: org.jboss.marshalling,
+ org.talend.librariesmanager.emf.librariesindex,
  org.talend.librariesmanager.librarydata,
  org.talend.librariesmanager.maven,
  org.talend.librariesmanager.model,
@@ -37,3 +38,5 @@ Export-Package: org.talend.librariesmanager.emf.librariesindex,
 Import-Package: org.eclipse.emf.ecore.xmi.impl,
  org.talend.osgi.hook.notification
 Eclipse-BundleShape: dir
+Bundle-ClassPath: lib/jboss-marshalling-2.0.12.Final.jar,
+ .
