@@ -403,15 +403,17 @@ public class ImportItemsWizardPage extends WizardPage {
         if (IBrandingService.get().isPoweredbyTalend()) {
             Composite requiredCom = new Composite(dependencyArea, SWT.None);
             GridLayout requiredComLayout = new GridLayout();
-            requiredComLayout.numColumns = 3;
+            requiredComLayout.numColumns = 2;
             requiredComLayout.marginWidth = 0;
             requiredComLayout.marginHeight = 0;
+            requiredComLayout.horizontalSpacing = 0;
             requiredComLayout.makeColumnsEqualWidth = false;
             requiredCom.setLayout(requiredComLayout);
             requiredCom.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
             requiredFeatureButton = new Button(requiredCom, SWT.CHECK);
             requiredFeatureButton.setText(Messages.getString("ImportItemsWizardPage_AnalyseRequiredFeatureButton"));
+            requiredFeatureButton.setToolTipText(Messages.getString("ImportItemsWizardPage_AnalyseRequiredFeatureButtonTooltip"));
             requiredFeatureButton.setSelection(true);
             setButtonLayoutData(requiredFeatureButton);
             requiredFeatureButton.addSelectionListener(new SelectionAdapter() {
@@ -423,9 +425,6 @@ public class ImportItemsWizardPage extends WizardPage {
                     }
                 }
             });
-            Label textLabel = new Label(requiredCom, SWT.NONE);
-            textLabel.setLayoutData(new GridData());
-            textLabel.setText(Messages.getString("ImportItemsWizardPage_AnalyseRequiredFeatureTxt"));
             Label imageLabel = new Label(requiredCom, SWT.NONE);
             imageLabel.setImage(ImageProvider.getImage(EImage.WARNING_ICON));
             imageLabel.setLayoutData(new GridData());
