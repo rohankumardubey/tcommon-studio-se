@@ -894,7 +894,7 @@ public class AggregatorPomsHelper {
         } else {
             model.getModules().addAll(collectRefProjectModules(null));
         }
-        boolean isCIMode = false;
+        Boolean isCIMode = false;
         if (IRunProcessService.get() != null) {
             isCIMode = IRunProcessService.get().isCIMode();
         }
@@ -909,15 +909,10 @@ public class AggregatorPomsHelper {
         // codes pom
         monitor.subTask("Synchronize code poms"); //$NON-NLS-1$
 
-        if (isCIMode) {
-            System.setProperty("ignore.ci.mode", Boolean.TRUE.toString());
-            updateCodeProjects(monitor, true, true);
-            System.setProperty("ignore.ci.mode", Boolean.FALSE.toString());
-        } else {
-            updateCodeProjects(monitor, true, true);
-        }
-
+        System.setProperty("ignore.ci.mode", isCIMode.toString());
+        updateCodeProjects(monitor, true, true);
         CodesJarM2CacheManager.updateCodesJarProject(monitor, true, true, true);
+        System.setProperty("ignore.ci.mode", Boolean.FALSE.toString());
 
         monitor.worked(1);
         if (monitor.isCanceled()) {
@@ -981,6 +976,8 @@ public class AggregatorPomsHelper {
                     updateCodeProjectPom(monitor, codeType, codeProject.getProjectPom());
                 }
             }
+            CodesJarResourceCache.getAllCodesJars().stream().filter(CodesJarInfo::isInCurrentMainProject)
+                    .forEach(info -> CodesJarM2CacheManager.updateCodesJarProjectPom(monitor, info));
         }
 
         monitor.done();
