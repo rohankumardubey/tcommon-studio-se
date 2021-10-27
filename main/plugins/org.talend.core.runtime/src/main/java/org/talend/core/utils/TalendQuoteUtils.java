@@ -463,6 +463,8 @@ public final class TalendQuoteUtils {
             return QUOTATION_MARK;
         case H2:
             return QUOTATION_ESC_MARK;
+        case SNOWFLAKE:
+            return QUOTATION_MARK;
             // case JAVADB_DERBYCLIENT:
             // return QUOTATION_MARK;
             // case JAVADB_JCCJDBC:
