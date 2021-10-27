@@ -367,10 +367,14 @@ public class VersionUtils {
     }
 
     public static String getDisplayPatchVersion(String patchName) {
-        if (Integer.parseInt(StringUtils.substringAfterLast(patchName, "v")) > 1) { //$NON-NLS-1$
+        try {
+            if (Integer.parseInt(StringUtils.substringAfterLast(patchName, "v")) > 1) { //$NON-NLS-1$
+                return patchName;
+            }
+            return StringUtils.substringBefore(patchName, "v"); //$NON-NLS-1$
+        } catch (NumberFormatException e) {
             return patchName;
         }
-        return StringUtils.substringBefore(patchName, "v"); //$NON-NLS-1$
     }
 
     public static void clearCache() {

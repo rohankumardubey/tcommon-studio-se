@@ -3445,6 +3445,8 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
         } else {
             toOpenProjectVersion = remoteLastPatchName;
         }
+        toOpenProjectVersion = VersionUtils.getDisplayPatchVersion(toOpenProjectVersion);
+
         String productVersion = VersionUtils.getInternalVersion();
         String productLastestPatchVersion = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IInstalledPatchService.class)) {
