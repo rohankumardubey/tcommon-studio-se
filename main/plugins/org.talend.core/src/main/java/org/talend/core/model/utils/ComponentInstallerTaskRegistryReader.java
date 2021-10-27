@@ -79,7 +79,7 @@ public class ComponentInstallerTaskRegistryReader extends RegistryReader {
             readRegistry();
             Collections.sort(ret, new TaskComparator());
         }
-        ExceptionHandler.log("ComponentInstallerTaskRegistryReader, num of tasks: " + ret.size());
+        ExceptionHandler.logDebug("ComponentInstallerTaskRegistryReader, num of tasks: " + ret.size());
         return ret;
     }
 
