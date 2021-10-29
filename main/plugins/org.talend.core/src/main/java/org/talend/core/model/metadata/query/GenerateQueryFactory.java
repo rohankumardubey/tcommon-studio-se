@@ -63,7 +63,6 @@ public final class GenerateQueryFactory {
         case IBMDB2ZOS:
         case MYSQL:
         case AMAZON_AURORA:
-        case INGRES:
             return new NonDatabaseDefaultQueryGenerator(dbType);
         case ORACLE_OCI:
         case ORACLEFORSID:
@@ -81,7 +80,6 @@ public final class GenerateQueryFactory {
         case HSQLDB_SERVER:
         case HSQLDB_WEBSERVER:
         case INFORMIX:
-        case INTERBASE:
         case JAVADB:
         case JAVADB_DERBYCLIENT:
         case JAVADB_EMBEDED:
@@ -89,7 +87,6 @@ public final class GenerateQueryFactory {
         case MAXDB:
         case MSODBC:
         case MSSQL:
-        case PARACCEL:
         case REDSHIFT:
         case REDSHIFT_SSO:
         case SQLITE:
