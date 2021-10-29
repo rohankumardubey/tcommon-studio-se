@@ -193,7 +193,7 @@ public class RepositoryCommonViewerFilter extends ViewerFilter {
         if (ENodeType.SIMPLE_FOLDER.equals(node.getType())
                 && ERepositoryObjectType.SQLPATTERNS.equals(node.getContentType())
                 && (label.equals("Generic") || label.equals("UserDefined") || label.equals("MySQL") || label.equals("Netezza")
-                        || label.equals("Oracle") || label.equals("ParAccel") || label.equals("Teradata"))
+                        || label.equals("Oracle") || label.equals("Teradata"))
                 || label.equals("Hive")) {
             return true;
 

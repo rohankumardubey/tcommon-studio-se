@@ -187,8 +187,6 @@ public class TextUtilTest {
 
         assertTrue(TextUtil.isDoubleQuotesNeededDbType(EDatabaseTypeName.GREENPLUM.getXmlName()));
 
-        assertTrue(TextUtil.isDoubleQuotesNeededDbType(EDatabaseTypeName.PARACCEL.getXmlName()));
-
         assertTrue(TextUtil.isDoubleQuotesNeededDbType(EDatabaseTypeName.H2.getXmlName()));
 
         assertFalse(TextUtil.isDoubleQuotesNeededDbType(EDatabaseTypeName.MYSQL.getXmlName()));

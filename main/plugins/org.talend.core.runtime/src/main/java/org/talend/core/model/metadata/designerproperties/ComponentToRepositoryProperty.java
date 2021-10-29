@@ -433,16 +433,6 @@ public class ComponentToRepositoryProperty {
             connection.setDatabaseType(EDatabaseTypeName.IBMDB2.getDisplayName());
             connection.setProductId(EDatabaseTypeName.IBMDB2.getProduct());
         }
-        // Ingres
-        else if (EDatabaseTypeName.INGRES.getProduct().equalsIgnoreCase((String) parameter.getValue())) {
-            connection.setDatabaseType(EDatabaseTypeName.INGRES.getDisplayName());
-            connection.setProductId(EDatabaseTypeName.INGRES.getProduct());
-        }
-        // Interbase
-        else if (EDatabaseTypeName.INTERBASE.getProduct().equalsIgnoreCase((String) parameter.getValue())) {
-            connection.setDatabaseType(EDatabaseTypeName.INTERBASE.getDisplayName());
-            connection.setProductId(EDatabaseTypeName.INTERBASE.getProduct());
-        }
         // Sqlite
         else if (EDatabaseTypeName.SQLITE.getProduct().equalsIgnoreCase((String) parameter.getValue())) {
             connection.setDatabaseType(EDatabaseTypeName.SQLITE.getDisplayName());
@@ -487,11 +477,6 @@ public class ComponentToRepositoryProperty {
         else if (EDatabaseTypeName.MAXDB.getProduct().equalsIgnoreCase((String) parameter.getValue())) {
             connection.setDatabaseType(EDatabaseTypeName.MAXDB.getDisplayName());
             connection.setProductId(EDatabaseTypeName.MAXDB.getProduct());
-        }
-        // Paraccel
-        else if (EDatabaseTypeName.PARACCEL.getProduct().equalsIgnoreCase((String) parameter.getValue())) {
-            connection.setDatabaseType(EDatabaseTypeName.PARACCEL.getDisplayName());
-            connection.setProductId(EDatabaseTypeName.PARACCEL.getProduct());
         }
         // Redshift
         else if (EDatabaseTypeName.REDSHIFT.getProduct().equalsIgnoreCase((String) parameter.getValue())) {
@@ -599,11 +584,6 @@ public class ComponentToRepositoryProperty {
         else if (EDatabaseTypeName.SAPHana.getProduct().equalsIgnoreCase((String) parameter.getValue())) {
             connection.setDatabaseType(EDatabaseTypeName.SAPHana.getDisplayName());
             connection.setProductId(EDatabaseTypeName.SAPHana.getProduct());
-        }
-        // VECTORWISE
-        else if (EDatabaseTypeName.VECTORWISE.getProduct().equalsIgnoreCase((String) parameter.getValue())) {
-            connection.setDatabaseType(EDatabaseTypeName.VECTORWISE.getDisplayName());
-            connection.setProductId(EDatabaseTypeName.VECTORWISE.getProduct());
         }
         // SAX
         // can not find corresponding component. also not exist in EDatabaseType.java.

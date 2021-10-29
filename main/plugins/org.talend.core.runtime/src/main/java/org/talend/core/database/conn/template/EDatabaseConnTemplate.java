@@ -112,15 +112,6 @@ public enum EDatabaseConnTemplate {
     SQLITE(new DbConnStr(EDatabaseTypeName.SQLITE, //
             "jdbc:sqlite:/<filename>")), //$NON-NLS-1$
 
-    INGRES(new DbConnStr(EDatabaseTypeName.INGRES, //
-            "jdbc:ingres://<host>:<port>/<sid>;<property>", //$NON-NLS-1$
-            "II7")), //$NON-NLS-1$
-    VECTORWISE(new DbConnStr(EDatabaseTypeName.VECTORWISE, //
-            "jdbc:ingres://<host>:<port>/<sid>;<property>", //$NON-NLS-1$
-            "II7")), //$NON-NLS-1$
-    INTERBASE(new DbConnStr(EDatabaseTypeName.INTERBASE, //
-            "jdbc:interbase://<host>/<sid>?<property>")), //$NON-NLS-1$
-
     FIREBIRD(new DbConnStr(EDatabaseTypeName.FIREBIRD, //
             "jdbc:firebirdsql:<host>/<port>:<filename>?<property>", //$NON-NLS-1$
             "3050")), //$NON-NLS-1$
@@ -174,11 +165,6 @@ public enum EDatabaseConnTemplate {
             "jdbc:sap://<host>:<port>?<property>", //$NON-NLS-1$
             "30015", //$NON-NLS-1$
             "")), //$NON-NLS-1$
-
-    PARACCEL(new DbConnStr(EDatabaseTypeName.PARACCEL, //
-            "jdbc:paraccel://<host>:<port>/<sid>?<property>", //$NON-NLS-1$
-            "5439")), //$NON-NLS-1$
-
     REDSHIFT(new DbConnStr(EDatabaseTypeName.REDSHIFT, //
             "jdbc:redshift://<host>:<port>/<sid>?<property>", //$NON-NLS-1$
             "5439",//$NON-NLS-1$
@@ -385,7 +371,6 @@ public enum EDatabaseConnTemplate {
             case PSQL:
             case PLUSPSQL:
             case GREENPLUM:
-            case PARACCEL:
             case REDSHIFT:
             case REDSHIFT_SSO:
             case IBMDB2:
@@ -430,10 +415,6 @@ public enum EDatabaseConnTemplate {
             case PSQL:
             case PLUSPSQL:
             case GREENPLUM:
-            case PARACCEL:
-            case INGRES:
-            case VECTORWISE:
-            case INTERBASE:
             case FIREBIRD:
             case JAVADB_EMBEDED:
             case JAVADB_JCCJDBC:
@@ -460,8 +441,6 @@ public enum EDatabaseConnTemplate {
             case SYBASEASE_16_SA:
             case IBMDB2:
             case IBMDB2_ZOS:
-            case INGRES:
-            case INTERBASE:
             case MSSQL:
             case INFORMIX:
             case TERADATA:

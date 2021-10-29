@@ -33,9 +33,9 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
  */
 public class CorrectDBVersionListForAS400 extends AbstractItemMigrationTask {
 
-    private static final String[] OLD_VERSION_LIST = new String[] { "V6R1 to V7R2", "V5R4 to V6R1", "V5R2 to V5R4" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    private static final String[] OLD_VERSION_LIST = new String[] { "V6R1 to V7R2"}; 
 
-    private static final String[] NEW_VERSION_LIST = new String[] { "AS400_V6R1_V7R2", "AS400_V5R3_V6R1", "AS400_V5R2_V5R4" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    private static final String[] NEW_VERSION_LIST = new String[] { "AS400_V6R1_V7R2"};
 
     private static Map<String, String> versionMap;
 
