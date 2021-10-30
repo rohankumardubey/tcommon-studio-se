@@ -36,6 +36,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.i18n.internal.Messages;
+import org.talend.utils.format.PresentableBox;
 
 /**
  * Represents a version. Contents a major and a minor version.<br/>
@@ -408,6 +409,16 @@ public class VersionUtils {
             }
         }
         return null;
+    }
+    
+    public static String getProductVersionLog() {
+            Object version = getDisplayVersion();
+            String mess = "Starting Talend's platform log system."; //$NON-NLS-1$
+            if (version != null) {
+                mess += ("VERSION= " + version); //$NON-NLS-1$
+            }
+            PresentableBox box = new PresentableBox("TALEND", mess, 0); //$NON-NLS-1$
+            return box.getFullBox();
     }
 
 }
