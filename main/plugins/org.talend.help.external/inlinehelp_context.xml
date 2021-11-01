@@ -155,10 +155,6 @@
 <description>Talend provides a Big Data demo project that includes a number of easy-to-use sample Jobs. You can import this demo project into your Talend studio to help familiarize yourself with Talend studio and understand the various features and functions of Talend components.</description>
 <topic href="https://help.talendforge.org/?keywords=bd_demoproject" label="Introduction to the Big Data demo project"/>
 </context>
-<context id="talend_storm_job">
-<description>A Storm Job is designed the same way as any other Talend Job but using the dedicated Storm interface and Storm components. Likewise, you need to follow a simple template to use the components.</description>
-<topic href="https://help.talendforge.org/?keywords=talend_storm_job" label="Getting started with a Storm Job"/>
-</context>
 <context id="installing_mdm_server">
 <description>You can install the MDM server using a graphical installer.</description>
 <topic href="https://help.talendforge.org/?keywords=installing_mdm_server" label="Installing the MDM serverTalend Data Stewardship Console manually"/>
@@ -322,10 +318,6 @@
 <context id="amazon_servers">
 <description>Talend Administration Center allows you to add servers hosted on an Amazon EC2 instance, to schedule Job executions on this instance and to manage the instance start-up and shutdown.</description>
 <topic href="https://help.talendforge.org/?keywords=amazon_servers" label="Executing data integration Jobs on a server based on Amazon EC2"/>
-</context>
-<context id="storm_execution_task">
-<description>In the Big Data Streaming page of Talend Administration Center, an execution task gathers the script generation, deployment and execution phases of Big Data Streaming Jobs, that is to say, the Spark Streaming Jobs and the Storm Jobs. You can launch this task, from this single web-based application.</description>
-<topic href="https://help.talendforge.org/?keywords=storm_execution_task" label="Executing Big Data Streaming Jobs from Big Data Streaming Conductor"/>
 </context>
 <context id="di_execution_task">
 <description>In the Job Conductor page of Talend Administration Center, an execution task gathers the script generation, deployment and execution phases of data integration Jobs. You can launch this task, from this single web-based application, using a simple or a CRON trigger.</description>
