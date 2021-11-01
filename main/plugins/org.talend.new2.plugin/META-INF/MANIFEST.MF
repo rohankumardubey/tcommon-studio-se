@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Plugin
+Bundle-SymbolicName: org.talend.new2.plugin
+Bundle-Version: 8.0.1.qualifier
+Bundle-Activator: org.talend.new2.plugin.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.talend.commons.runtime;bundle-version="8.0.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: org.talend.new1.plugin
+Bundle-ActivationPolicy: lazy
+Bundle-Vendor: Talend
+Export-Package: org.talend.new2.plugin

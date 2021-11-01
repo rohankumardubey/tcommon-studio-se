@@ -156,6 +156,8 @@ import org.talend.cwm.helper.SubItemHelper;
 import org.talend.cwm.helper.TableHelper;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.login.ILoginTask;
+import org.talend.new1.plugin.New1PluginLogger;
+import org.talend.new2.plugin.New2PluginLogger;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.ReferenceProjectProblemManager;
 import org.talend.repository.ReferenceProjectProvider;
@@ -2138,6 +2140,8 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
      */
     public void logOnProject(Project project, IProgressMonitor monitor) throws LoginException, PersistenceException {
         unregisterM2EServiceBeforeLogon();
+        New2PluginLogger.log();
+        New1PluginLogger.log();
         try {
             TimeMeasurePerformance.begin("logOnProject", "logon project name '" + project.getLabel()+"'"); //$NON-NLS-1$ //$NON-NLS-2$
             try {
