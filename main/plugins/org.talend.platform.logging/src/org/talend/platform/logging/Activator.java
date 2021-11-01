@@ -6,19 +6,15 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.talend.utils.format.PresentableBox;
 
 /**
  * The activator class controls the plug-in life cycle
  */
 public class Activator extends AbstractUIPlugin {
-
-    private static Logger log = Logger.getLogger(Activator.class);
 
     // The plug-in ID
     public static final String PLUGIN_ID = "org.talend.platform.logging"; //$NON-NLS-1$
@@ -44,15 +40,6 @@ public class Activator extends AbstractUIPlugin {
         super.start(context);
         plugin = this;
         version = null;
-        if (log.isInfoEnabled()) {
-            Object version = getVersion();
-            String mess = "Starting Talend's platform log system."; //$NON-NLS-1$
-            if (version != null) {
-                mess += ("VERSION= " + version); //$NON-NLS-1$
-            }
-            PresentableBox box = new PresentableBox("TALEND", mess, 0); //$NON-NLS-1$
-            log.info(box.getFullBox());
-        }
     }
 
     /*
