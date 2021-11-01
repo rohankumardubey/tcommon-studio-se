@@ -22,6 +22,9 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
@@ -295,6 +298,8 @@ public class Application implements IApplication {
                 System.setProperty("clearPersistedState", Boolean.TRUE.toString());
             }
 
+            cleanupNonExistingProjects();
+
             int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
             boolean restart = returnCode == PlatformUI.RETURN_RESTART;
             try {
@@ -333,6 +338,21 @@ public class Application implements IApplication {
             }
         }
 
+    }
+
+    private void cleanupNonExistingProjects() {
+        IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+        for (IProject project : projects) {
+            if (project.getLocation() == null || !project.getLocation().toFile().exists()) {
+                if (!project.isOpen()) {
+                    try {
+                        project.delete(false, true, null);
+                    } catch (CoreException e) {
+                        //
+                    }
+                }
+            }
+        }
     }
 
     private boolean installed = false;
