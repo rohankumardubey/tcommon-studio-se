@@ -24,10 +24,27 @@
 					<artifactId>maven-shared-utils</artifactId>
 				</exclusion>
 				<exclusion>
+		          <groupId>org.apache.maven</groupId>
+   				  <artifactId>maven-compat</artifactId>
+		        </exclusion>
+		        <exclusion>
 					<groupId>org.codehaus.plexus</groupId>
 					<artifactId>plexus-archiver</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-compress</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jsoup</groupId>
+					<artifactId>jsoup</artifactId>
+				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-compat</artifactId>
+			<version>3.8.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -75,6 +92,16 @@
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-archiver</artifactId>
 			<version>3.6.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.maven</groupId>
+		    <artifactId>maven-core</artifactId>
+		    <version>3.8.1</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.jsoup</groupId>
+		    <artifactId>jsoup</artifactId>
+		    <version>1.14.2</version>
 		</dependency>
 	</dependencies>
 	<build>

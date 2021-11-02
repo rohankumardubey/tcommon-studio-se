@@ -45,6 +45,11 @@ public class ExtendedNodeConnectionContextUtils {
         ReplicaSets,
         ReplicaHost,
         ReplicaPort,
+        
+        AuthenticationDatabase,
+        UserPrincipal,
+        Realm,
+        KDCServer,
 
         // Hadoop standard param
         NameNodeUri,
@@ -84,6 +89,20 @@ public class ExtendedNodeConnectionContextUtils {
         KeyAzuresUser,
         KeyAzurePassword,
         KeyAzureDeployBlob,
+        
+        // Azure Synapse param
+        SynapseHostName,
+        SynapseAuthToken,
+        SynapseSparkPools,
+        SynapseFsHostName,
+        SynapseFsContainer,
+        SynapseFsUserName,
+        SynapseFsPassword,
+        SynapseDeployBlob,
+        SynapseDriverMemory,
+        SynapseDriverCores,
+        SynapseExecutorMemory,
+        UseTuningProperties,
 
         // Hcatalog param
         HCatalogHostName,
@@ -135,6 +154,7 @@ public class ExtendedNodeConnectionContextUtils {
 
         // DataBricks
         DataBricksEndpoint,
+        DatabricksRunMode,
         DataBricksCloudProvider,
         DataBricksClusterId,
         DataBricksToken,

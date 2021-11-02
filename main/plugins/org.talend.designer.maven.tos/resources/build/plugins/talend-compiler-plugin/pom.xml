@@ -10,21 +10,40 @@
 	<artifactId>talend-compiler-plugin-tos</artifactId>
 	<packaging>pom</packaging>
 	<dependencies>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+            <version>3.8.1</version>
+        </dependency>
 		<dependency>
 			<groupId>org.eclipse.tycho</groupId>
 			<artifactId>tycho-compiler-jdt</artifactId>
 			<version>1.4.0</version>
 			<exclusions>
+		        <exclusion>
+		          <groupId>org.apache.maven</groupId>
+   				  <artifactId>maven-compat</artifactId>
+		        </exclusion>
 				<exclusion>
 					<groupId>org.codehaus.plexus</groupId>
 					<artifactId>plexus-archiver</artifactId>
 				</exclusion>
+                <exclusion>
+                    <groupId>org.apache.maven</groupId>
+                    <artifactId>maven-core</artifactId>
+                </exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-archiver</artifactId>
 			<version>3.6.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-compress</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 	<build>

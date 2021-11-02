@@ -12,7 +12,9 @@
 // ============================================================================
 package org.talend.core.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -247,4 +249,25 @@ public class TalendQuoteUtilsTest {
         assertTrue("\"abcd\"".equals(resultStr));
     }
 
+    @Test
+    public void testIsStartEndsWithQuotation() {
+        String text = "\"prefix_\"+context.db+\".\"+context.schema+\"_suffix\"";
+        assertTrue(TalendQuoteUtils.isStartEndsWithQuotation(text, true, true));
+        assertFalse(TalendQuoteUtils.isStartEndsWithQuotation(text, false, false));
+
+        text = "\"prefix_\"+context.db+\".\"+context.schema";
+        assertFalse(TalendQuoteUtils.isStartEndsWithQuotation(text, true, true));
+        assertTrue(TalendQuoteUtils.isStartEndsWithQuotation(text, true, false));
+        assertFalse(TalendQuoteUtils.isStartEndsWithQuotation(text, false, true));
+
+        text = "context.db+\".\"+context.schema+\"_suffix\"";
+        assertFalse(TalendQuoteUtils.isStartEndsWithQuotation(text, true, true));
+        assertFalse(TalendQuoteUtils.isStartEndsWithQuotation(text, true, false));
+        assertTrue(TalendQuoteUtils.isStartEndsWithQuotation(text, false, true));
+
+        text = "context.db+\".\"+context.schema";
+        assertFalse(TalendQuoteUtils.isStartEndsWithQuotation(text, true, true));
+        assertFalse(TalendQuoteUtils.isStartEndsWithQuotation(text, true, false));
+        assertFalse(TalendQuoteUtils.isStartEndsWithQuotation(text, false, true));
+    }
 }
