@@ -26,7 +26,6 @@ import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.service.IMRProcessService;
-import org.talend.core.service.IStormProcessService;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.ISparkJobletProviderService;
 import org.talend.core.ui.ISparkStreamingJobletProviderService;
@@ -137,16 +136,7 @@ public abstract class CustomExternalActions extends SelectionAction {
     }
 
     protected boolean isStormEditorActive() {
-        if (!GlobalServiceRegister.getDefault().isServiceRegistered(IStormProcessService.class)) {
-            return false;
-        }
-        IStormProcessService mrService = (IStormProcessService) GlobalServiceRegister.getDefault().getService(
-                IStormProcessService.class);
-        if (mrService == null) {
-            return false;
-        }
-        IEditorPart activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-        return mrService.isStormEditor(activeEditor);
+       return false;
     }
 
     protected boolean isSParkStreamingJobletEditorActive() {
