@@ -151,6 +151,7 @@ import org.talend.core.runtime.util.ItemDateParser;
 import org.talend.core.runtime.util.JavaHomeUtil;
 import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.core.service.ICoreUIService;
+import org.talend.core.service.INewDqService;
 import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.cwm.helper.SubItemHelper;
 import org.talend.cwm.helper.TableHelper;
@@ -2142,6 +2143,10 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
         unregisterM2EServiceBeforeLogon();
         New2PluginLogger.log();
         New1PluginLogger.log();
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(INewDqService.class)) {
+            INewDqService service = GlobalServiceRegister.getDefault().getService(INewDqService.class);
+            service.log();
+        }
         try {
             TimeMeasurePerformance.begin("logOnProject", "logon project name '" + project.getLabel()+"'"); //$NON-NLS-1$ //$NON-NLS-2$
             try {
