@@ -346,7 +346,7 @@ public class Application implements IApplication {
             if (project.getLocation() == null || !project.getLocation().toFile().exists()) {
                 if (!project.isOpen()) {
                     try {
-                        ((org.eclipse.core.internal.resources.Project) project).deleteResource(false, null);
+                        project.delete(false, true, null);
                     } catch (CoreException e) {
                         //
                     }
