@@ -215,8 +215,12 @@ public class LockerByKey<KP> implements ILockerByKey<KP> {
         checkKey(key);
         blockOperationIfRequired();
         incrementRunningOperations();
-        LockerValue<KP> lockerValue = prepareInternalLock(key);
-        decrementRunningOperations();
+        LockerValue<KP> lockerValue;
+        try {
+            lockerValue = prepareInternalLock(key);
+        } finally {
+            this.decrementRunningOperations();
+        }
         lockerValue.getLock().lockInterruptibly();
         traceStackForDebugging(lockerValue);
     }
@@ -239,8 +243,12 @@ public class LockerByKey<KP> implements ILockerByKey<KP> {
         checkKey(key);
         blockOperationIfRequired();
         incrementRunningOperations();
-        LockerValue<KP> lockerValue = prepareInternalLock(key);
-        decrementRunningOperations();
+        LockerValue<KP> lockerValue;
+        try {
+            lockerValue = this.prepareInternalLock(key);
+        } finally {
+            this.decrementRunningOperations();
+        }
         boolean locked = lockerValue.getLock().tryLock();
         if (locked) {
             traceStackForDebugging(lockerValue);
@@ -283,8 +291,12 @@ public class LockerByKey<KP> implements ILockerByKey<KP> {
         checkKey(key);
         blockOperationIfRequired();
         incrementRunningOperations();
-        LockerValue<KP> lockerValue = prepareInternalLock(key);
-        decrementRunningOperations();
+        LockerValue<KP> lockerValue;
+        try {
+            lockerValue = this.prepareInternalLock(key);
+        } finally {
+            this.decrementRunningOperations();
+        }
         interruptIfStopping();
         boolean locked = lockerValue.getLock().tryLock(timeout, unit);
         if (locked) {
@@ -322,13 +334,17 @@ public class LockerByKey<KP> implements ILockerByKey<KP> {
         checkKey(key);
         blockOperationIfRequired();
         incrementRunningOperations();
-        LockerValue<KP> lockerValue = getLockerValue(key);
-        boolean returnValue = false;
-        if (lockerValue != null) {
-            lockerValue.getLock().unlock();
-            returnValue = true;
+        LockerValue<KP> lockerValue = this.getLockerValue(key);
+        boolean returnValue;
+        try {
+            returnValue = false;
+            if (lockerValue != null) {
+                lockerValue.getLock().unlock();
+                returnValue = true;
+            }
+        } finally {
+            this.decrementRunningOperations();
         }
-        decrementRunningOperations();
         cleanAccordingOperations();
         return returnValue;
     }
