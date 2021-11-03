@@ -118,6 +118,8 @@ public interface IStudioLiteP2Service extends IService {
 
     void closingStudioGUI(boolean restart);
 
+    List<String> getCurrentProjectEnabledFeatures() throws Exception;
+
     public static IStudioLiteP2Service get() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IStudioLiteP2Service.class)) {
             return GlobalServiceRegister.getDefault().getService(IStudioLiteP2Service.class);
