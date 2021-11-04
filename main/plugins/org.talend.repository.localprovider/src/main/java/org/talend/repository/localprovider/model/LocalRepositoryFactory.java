@@ -3412,7 +3412,8 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                             EclipseCommandLine.TALEND_SKIP_PROJECT_VERSION_CHECK_FLAG, Boolean.TRUE.toString(), false);
                     throw new LoginException(LoginException.RESTART);
                 } else if (IStudioLiteP2Service.RESULT_CANCEL == adaptResult) {
-                    throw new LoginException(Messages.getString("LocalRepositoryFactory.login.userCancel"));
+                    throw new LoginException(IStudioLiteP2Service.RESULT_CANCEL,
+                            Messages.getString("LocalRepositoryFactory.login.userCancel"));
                 }
             }
         } catch (AbsStudioLiteP2Exception e) {
