@@ -3431,7 +3431,14 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
 
     protected void checkProjectVersion(Project localProject) throws PersistenceException {
         if (PluginChecker.isStudioLite()) {
-            return;
+            try {
+                IStudioLiteP2Service.get().checkProjectCompatibility(new NullProgressMonitor(), localProject);
+                return;
+            } catch (PersistenceException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new PersistenceException(e);
+            }
         }
         ProjectPreferenceManager prefManager = new ProjectPreferenceManager(localProject, PluginChecker.CORE_TIS_PLUGIN_ID,
                 false);
