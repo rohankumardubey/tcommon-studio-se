@@ -151,6 +151,7 @@ import org.talend.core.runtime.util.ItemDateParser;
 import org.talend.core.runtime.util.JavaHomeUtil;
 import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.core.service.ICoreUIService;
+import org.talend.core.service.INewDqFeatureService;
 import org.talend.core.service.INewDqService;
 import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.cwm.helper.SubItemHelper;
@@ -2145,6 +2146,10 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
         New1PluginLogger.log();
         if (GlobalServiceRegister.getDefault().isServiceRegistered(INewDqService.class)) {
             INewDqService service = GlobalServiceRegister.getDefault().getService(INewDqService.class);
+            service.log();
+        }
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(INewDqFeatureService.class)) {
+            INewDqFeatureService service = GlobalServiceRegister.getDefault().getService(INewDqFeatureService.class);
             service.log();
         }
         try {
