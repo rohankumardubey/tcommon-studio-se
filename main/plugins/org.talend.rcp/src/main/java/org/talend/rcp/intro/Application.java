@@ -485,6 +485,11 @@ public class Application implements IApplication {
      * DOC ggu Comment method "checkForBrowser".
      */
     private void checkBrowserSupport() {
+        if (StringUtils.equals(Platform.OS_LINUX, Platform.getOS())
+                && StringUtils.equals(Platform.ARCH_AARCH64, Platform.getOSArch())) {
+            System.setProperty("USE_BROWSER", Boolean.FALSE.toString());
+            return;
+        }
         Shell shell = new Shell();
         try {
             Browser browser = new Browser(shell, SWT.BORDER);
