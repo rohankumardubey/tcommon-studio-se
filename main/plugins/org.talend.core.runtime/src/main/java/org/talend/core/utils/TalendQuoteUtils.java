@@ -438,8 +438,6 @@ public final class TalendQuoteUtils {
             return QUOTATION_MARK;
         case IBMDB2:
             return QUOTATION_MARK;
-        case INGRES:
-            return QUOTATION_MARK;
         case MSODBC:
             return QUOTATION_MARK;
         case MSSQL:
@@ -453,14 +451,11 @@ public final class TalendQuoteUtils {
             return QUOTATION_MARK;
         case PSQL:
         case GREENPLUM:
-        case PARACCEL:
         case PLUSPSQL:
             return QUOTATION_MARK;
         case SYBASEASE:
             return QUOTATION_MARK;
         case SYBASEIQ:
-            return QUOTATION_MARK;
-        case INTERBASE:
             return QUOTATION_MARK;
         case SQLITE:
             return QUOTATION_MARK;

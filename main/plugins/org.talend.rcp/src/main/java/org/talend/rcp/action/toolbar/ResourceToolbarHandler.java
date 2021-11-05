@@ -8,7 +8,10 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.program.Program;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.service.IExchangeService;
@@ -62,6 +65,23 @@ public class ResourceToolbarHandler extends AbstractHandler {
         }
         if (StringUtils.equals(id, "org.talend.resoruses.toolbar.Cloud")) {//$NON-NLS-1$
             openBrower(CLOUD_ORIG_URL);
+        }
+        if (StringUtils.equals(id, "org.talend.resoruses.toolbar.referenceCommand")) {//$NON-NLS-1$
+        	if (event == null) return null;
+        	if (!( event.getTrigger() instanceof Event)) return null;
+        	Event eventWidget = (Event)event.getTrigger();
+        	if (!( eventWidget.widget instanceof ToolItem)) return null;
+        	ToolItem toolItem = (ToolItem)eventWidget.widget;
+        	// Creates fake selection event.
+        	Event newEvent = new Event();
+        	newEvent.button = 1;
+        	newEvent.widget = toolItem;
+        	newEvent.detail = SWT.ARROW;
+        	newEvent.x = toolItem.getBounds().x;
+        	newEvent.y = toolItem.getBounds().y + toolItem.getBounds().height;
+        	// Dispatches the event.
+        	toolItem.notifyListeners( SWT.Selection, newEvent );
+        	return null;	
         }
         return null;
     }

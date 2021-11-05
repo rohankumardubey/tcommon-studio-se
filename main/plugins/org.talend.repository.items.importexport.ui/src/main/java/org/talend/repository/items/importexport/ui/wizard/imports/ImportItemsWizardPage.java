@@ -428,6 +428,7 @@ public class ImportItemsWizardPage extends WizardPage {
             Label imageLabel = new Label(requiredCom, SWT.NONE);
             imageLabel.setImage(ImageProvider.getImage(EImage.WARNING_ICON));
             imageLabel.setLayoutData(new GridData());
+            imageLabel.setToolTipText(Messages.getString("ImportItemsWizardPage_AnalyseRequiredFeatureButtonTooltip"));
         }  
     }
     

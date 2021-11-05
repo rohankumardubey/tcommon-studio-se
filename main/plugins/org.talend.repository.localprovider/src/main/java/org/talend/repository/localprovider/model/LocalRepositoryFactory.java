@@ -3412,7 +3412,8 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                             EclipseCommandLine.TALEND_SKIP_PROJECT_VERSION_CHECK_FLAG, Boolean.TRUE.toString(), false);
                     throw new LoginException(LoginException.RESTART);
                 } else if (IStudioLiteP2Service.RESULT_CANCEL == adaptResult) {
-                    throw new LoginException(Messages.getString("LocalRepositoryFactory.login.userCancel"));
+                    throw new LoginException(IStudioLiteP2Service.RESULT_CANCEL,
+                            Messages.getString("LocalRepositoryFactory.login.userCancel"));
                 }
             }
         } catch (AbsStudioLiteP2Exception e) {
@@ -3430,7 +3431,14 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
 
     protected void checkProjectVersion(Project localProject) throws PersistenceException {
         if (PluginChecker.isStudioLite()) {
-            return;
+            try {
+                IStudioLiteP2Service.get().checkProjectCompatibility(new NullProgressMonitor(), localProject);
+                return;
+            } catch (PersistenceException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new PersistenceException(e);
+            }
         }
         ProjectPreferenceManager prefManager = new ProjectPreferenceManager(localProject, PluginChecker.CORE_TIS_PLUGIN_ID,
                 false);

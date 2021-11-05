@@ -83,7 +83,6 @@ import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.metadata.managment.connection.manager.HiveConnectionManager;
 import org.talend.metadata.managment.hive.EmbeddedHiveDataBaseMetadata;
-import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.repository.ProjectManager;
 import org.talend.utils.exceptions.MissingDriverException;
 import org.talend.utils.sql.ConnectionUtils;
@@ -973,12 +972,7 @@ public class ExtractMetaDataUtils {
                     }
                     // feature TDI-22108
                     if (EDatabaseTypeName.VERTICA.getXmlName().equals(dbType)
-                            && (EDatabaseVersion4Drivers.VERTICA_6.getVersionValue().equals(dbVersion)
-                                    || EDatabaseVersion4Drivers.VERTICA_5_1.getVersionValue().equals(dbVersion)
-                                    || EDatabaseVersion4Drivers.VERTICA_6_1_X.getVersionValue().equals(dbVersion) 
-                                    || EDatabaseVersion4Drivers.VERTICA_7.getVersionValue().equals(dbVersion) 
-                                    || EDatabaseVersion4Drivers.VERTICA_7_1_X.getVersionValue().equals(dbVersion)
-                                    || EDatabaseVersion4Drivers.VERTICA_9.getVersionValue().equals(dbVersion))) {
+                            && EDatabaseVersion4Drivers.VERTICA_9.getVersionValue().equals(dbVersion)) {
                         driverClassName = EDatabase4DriverClassName.VERTICA2.getDriverClass();
                     } else if (EDatabaseTypeName.MYSQL.getXmlName().equals(dbType)) {
                         if (EDatabaseVersion4Drivers.MYSQL_8.getVersionValue().equals(dbVersion)) {
