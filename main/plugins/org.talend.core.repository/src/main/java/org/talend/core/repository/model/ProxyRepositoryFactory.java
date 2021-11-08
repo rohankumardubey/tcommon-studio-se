@@ -183,7 +183,7 @@ import orgomg.cwm.objectmodel.core.ModelElement;
  */
 public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
 
-    private static final int MAX_TASKS = 8;
+    private static final int MAX_TASKS =8;
 
     private static Logger log = Logger.getLogger(ProxyRepositoryFactory.class);
 
