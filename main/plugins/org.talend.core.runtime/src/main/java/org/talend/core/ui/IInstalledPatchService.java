@@ -30,6 +30,8 @@ public interface IInstalledPatchService extends IService {
 
     void updatePatchInstalled(String installedName, String installedVersion, String comment) throws IOException;
 
+    String getLatestInstalledPatchVersion();
+
     public static IInstalledPatchService get() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IInstalledPatchService.class)) {
             return GlobalServiceRegister.getDefault().getService(IInstalledPatchService.class);

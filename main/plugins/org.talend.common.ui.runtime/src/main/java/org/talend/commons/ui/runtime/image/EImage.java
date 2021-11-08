@@ -127,7 +127,6 @@ public enum EImage implements IImage {
     FILL_COLOR_ICON("/icons/fill_color.gif"), //$NON-NLS-1$
 
     OPEN_IN_BROWSER("/icons/open.gif"), //$NON-NLS-1$
-    DOWNLOAD_MODULE("/icons/download.gif"), //$NON-NLS-1$
 
     COMPONENT_MISSING("/icons/component_missing.png"), //$NON-NLS-1$
 

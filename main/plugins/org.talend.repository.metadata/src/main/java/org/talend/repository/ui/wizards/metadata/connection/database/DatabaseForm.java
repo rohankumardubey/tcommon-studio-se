@@ -4803,8 +4803,7 @@ public class DatabaseForm extends AbstractForm {
 
                         index = 2;
                         if (s[index] != "") { //$NON-NLS-1$
-                            if (selection.equals(EDatabaseConnTemplate.INTERBASE.getDBDisplayName())
-                                    || selection.equals(EDatabaseConnTemplate.TERADATA.getDBDisplayName())
+                            if (selection.equals(EDatabaseConnTemplate.TERADATA.getDBDisplayName())
                                     || selection.equals(EDatabaseConnTemplate.AS400.getDBDisplayName())
                                     || selection.equals(EDatabaseConnTemplate.HSQLDB_IN_PROGRESS.getDBDisplayName())) {
                                 sidOrDatabaseText.setText(s[index]);
@@ -4966,11 +4965,7 @@ public class DatabaseForm extends AbstractForm {
                     boolean b = true;
                     String databaseType = getConnection().getDatabaseType();
                     if (databaseType != null) {
-                        if (databaseType.equals("Ingres")) { //$NON-NLS-1$
-                            b = Pattern.matches(Messages.getString("DatabaseForm.ingresDBRegex"), portText.getText()); //$NON-NLS-1$
-                        } else {
-                            b = Pattern.matches(Messages.getString("DatabaseForm.otherDBRegex"), portText.getText()); //$NON-NLS-1$
-                        }
+                        b = Pattern.matches(Messages.getString("DatabaseForm.otherDBRegex"), portText.getText()); //$NON-NLS-1$
                     }
                     if (b) {
                         b = portText.getText().length() <= 5;
