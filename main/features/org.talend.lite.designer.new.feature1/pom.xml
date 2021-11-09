@@ -5,7 +5,7 @@
     <groupId>org.talend.studio</groupId>
     <artifactId>tcommon-studio-se</artifactId>
     <version>8.0.1-SNAPSHOT</version>
-    <relativePath>../../../../</relativePath>
+    <relativePath>../../../</relativePath>
   </parent>
   <artifactId>org.talend.lite.designer.new.feature1</artifactId>
   <packaging>eclipse-feature</packaging>
