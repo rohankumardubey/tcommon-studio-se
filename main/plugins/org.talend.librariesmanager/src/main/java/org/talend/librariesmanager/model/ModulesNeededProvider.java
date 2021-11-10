@@ -611,6 +611,7 @@ public class ModulesNeededProvider {
             if (!isRequired) {
                 toAdd.getExtraAttributes().put("IS_OSGI_EXCLUDED", Boolean.TRUE);
                 if ("RoutineItem".equals(item.eClass().getName())) {
+                    toAdd.getExtraAttributes().put("ROUTINE_EXCLUDE", Boolean.TRUE);
                     toAdd.setExcluded(true);
                 }
             }
