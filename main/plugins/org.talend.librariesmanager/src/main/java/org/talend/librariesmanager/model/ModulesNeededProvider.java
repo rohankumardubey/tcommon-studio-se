@@ -69,7 +69,6 @@ import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.ModuleNeeded.ELibraryInstallStatus;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.process.IProcess;
-import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
@@ -719,6 +718,7 @@ public class ModulesNeededProvider {
             if (!isRequired) {
                 toAdd.getExtraAttributes().put("IS_OSGI_EXCLUDED", Boolean.TRUE);
                 if ("RoutineItem".equals(item.eClass().getName())) {
+                    toAdd.getExtraAttributes().put("ROUTINE_EXCLUDE", Boolean.TRUE);
                     toAdd.setExcluded(true);
                 }
             }

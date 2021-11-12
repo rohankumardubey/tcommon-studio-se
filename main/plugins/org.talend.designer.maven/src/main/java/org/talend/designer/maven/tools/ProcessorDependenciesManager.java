@@ -97,6 +97,10 @@ public class ProcessorDependenciesManager {
             if (uniqueDependencies.contains(mavenUri)) {
                 continue; // must be same GAV, avoid the different other attrs for modules
             }
+            Object object = module.getExtraAttributes().get("ROUTINE_EXCLUDE");
+            if (object != null && Boolean.valueOf(object.toString())) {
+                continue;
+            }
             uniqueDependencies.add(mavenUri);
             Dependency dependency = PomUtil.createModuleDependency(mavenUri);
             if (dependency != null) {
