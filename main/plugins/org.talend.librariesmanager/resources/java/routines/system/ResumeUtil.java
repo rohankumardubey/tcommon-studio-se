@@ -502,10 +502,12 @@ public class ResumeUtil {
         // sun.security.action.GetPropertyAction("line.separator"));
 
         private String lineSeparator = System.getProperty("line.separator");
+        
+        private int capibility = 2<<14; //32k
 
         public SimpleCsvWriter(FileChannel channel) {
             this.channel = channel;
-            buf = ByteBuffer.allocate(2<<14);//32k buffer size
+            buf = ByteBuffer.allocate(capibility);
         }
 
         /**
@@ -530,8 +532,15 @@ public class ResumeUtil {
             } else {// support double mode
                 content = replace(content, "" + TextQualifier, "" + TextQualifier + TextQualifier);
             }
+            
+            byte[] contentByte = content.getBytes();
+            if(contentByte.length > capibility - 1024) {
+            	flush();
+            	capibility = contentByte.length * 2;
+            	buf = ByteBuffer.allocate(capibility);
+            }
 
-            buf.put(content.getBytes());
+            buf.put(contentByte);
 
             buf.put(TextQualifier.getBytes());
 
