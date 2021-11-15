@@ -81,10 +81,10 @@ public enum EDatabaseVersion4Drivers {
             "Microsoft SQL Server 2012", "Microsoft SQL Server 2012", "jtds-1.3.1-patch-20190523.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     MSSQL_PROP(new DbVersion4Drivers(EDatabaseTypeName.MSSQL,
             "Microsoft", "MSSQL_PROP", //$NON-NLS-1$ //$NON-NLS-2$
-            new String[] { "mssql-jdbc.jar", "slf4j-api-1.7.29.jar", "slf4j-log4j12-1.7.29.jar", "adal4j-1.6.5.jar", //$NON-NLS-1$
-                    "commons-lang3-3.10.jar", "commons-codec-1.14.jar", "gson-2.8.6.jar", "oauth2-oidc-sdk-6.5.jar",
+            new String[] { "mssql-jdbc.jar", "slf4j-api-1.7.29.jar", "slf4j-log4j12-1.7.29.jar", "adal4j-1.6.7.jar", //$NON-NLS-1$
+                    "commons-lang3-3.10.jar", "commons-codec-1.14.jar", "gson-2.8.6.jar", "oauth2-oidc-sdk-9.7.jar",
                     "json-smart-2.4.7.jar", "nimbus-jose-jwt-8.11.jar", "javax.mail-1.6.2.jar", "log4j-1.2.17.jar",
-                    "accessors-smart-2.4.7.jar", "asm-9.1.jar" })),
+                    "accessors-smart-2.4.7.jar", "asm-9.1.jar","content-type-2.1.jar" })),
 
     VERTICA_9(new DbVersion4Drivers(EDatabaseTypeName.VERTICA, "VERTICA 9.X", "VERTICA_9_0", "vertica-jdbc-9.3.1-0.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
