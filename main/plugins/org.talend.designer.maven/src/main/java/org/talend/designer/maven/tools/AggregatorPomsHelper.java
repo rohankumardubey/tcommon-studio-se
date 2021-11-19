@@ -47,6 +47,7 @@ import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.swt.widgets.Display;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IESBService;
 import org.talend.core.ILibraryManagerService;
@@ -154,7 +155,15 @@ public class AggregatorPomsHelper {
 
     public IFolder getProjectPomsFolder() {
         IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        return workspace.getRoot().getFolder(new Path(projectTechName + "/" + DIR_POMS)); //$NON-NLS-1$
+        IFolder pomsFolder = workspace.getRoot().getFolder(new Path(projectTechName + "/" + DIR_POMS)); //$NON-NLS-1$
+        if (!pomsFolder.exists()) {
+            try {
+                ResourceUtils.createFolder(pomsFolder);
+            } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
+            }
+        }
+        return pomsFolder;
     }
 
     public void updateCodeProjects(IProgressMonitor monitor, boolean forceBuild) {
