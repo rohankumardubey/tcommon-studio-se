@@ -74,6 +74,7 @@ public enum ECoreImage implements IImage {
     CONTEXT_WIZ("/icons1/context_wiz.png"), //$NON-NLS-1$
     CODE_ICON("/icons1/code.png"), //$NON-NLS-1$
     ROUTES_ICON("/icons1/routes_icon.png"), //$NON-NLS-1$
+    ROUTELET_ICON("/icons1/routelet.png"), //$NON-NLS-1$
     ROUTINE_ICON("/icons1/routine.png"), //$NON-NLS-1$
     ROUTINE_EDITOR_ICON("/icons1/routine_editor.png"), //$NON-NLS-1$
     ROUTINESJAR_ICON("/icons1/routinesjar.png"), //$NON-NLS-1$
