@@ -394,7 +394,7 @@ public class EclipseCommandLine {
                                 + (isValueNull ? "" : value + EclipseCommandLine.NEW_LINE)
                                 + currentProperty.substring(indexOfVmArgs);
                     } else {// vmargs command not found so don't know where to set it to throw Exception
-                        currentProperty = currentProperty.substring(0, indexOfVmArgs) + command + EclipseCommandLine.NEW_LINE
+                        currentProperty = currentProperty + command + EclipseCommandLine.NEW_LINE
                                 + (isValueNull ? "" : value + EclipseCommandLine.NEW_LINE);
 //                        throw new IllegalArgumentException("the property :" + org.eclipse.equinox.app.IApplicationContext.EXIT_DATA_PROPERTY + "must constain " + EclipseCommandLine.CMD_VMARGS);
                     }
