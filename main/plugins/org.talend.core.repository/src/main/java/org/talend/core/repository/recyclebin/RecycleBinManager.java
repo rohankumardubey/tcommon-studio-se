@@ -108,46 +108,48 @@ public class RecycleBinManager {
     }
 
     public List<IRepositoryViewObject> getDeletedObjects(Project project) {
-        loadRecycleBin(project.getEmfProject(), true);
         List<IRepositoryViewObject> deletedObjects = new ArrayList<IRepositoryViewObject>();
-        final EList<TalendItem> deletedItems = projectRecyclebins.get(project.getTechnicalLabel()).getDeletedItems();
-        List<TalendItem> notDeletedItems = new ArrayList<TalendItem>();
-        List<TalendItem> dup_deletedItems = new ArrayList<>(deletedItems);
-        for (TalendItem deletedItem : dup_deletedItems) {
-            try {
-                final ERepositoryObjectType type = ERepositoryObjectType.getType(deletedItem.getType());
-                // ignore the generated doc in recycle bin
-                if (type != null && (type.equals(ERepositoryObjectType.JOB_DOC) || type.equals(ERepositoryObjectType.JOBLET_DOC)
-                        || type.equals(ERepositoryObjectType.valueOf("ROUTE_DOC")))) { //$NON-NLS-1$
-                    continue;
-                }
-                IRepositoryViewObject object = ProxyRepositoryFactory.getInstance().getLastVersion(project, deletedItem.getId(),
-                        deletedItem.getPath(), type);
-                if (object == null) {
-                    object = ProxyRepositoryFactory.getInstance().getLastVersion(project, deletedItem.getId());
-                }
-                if (object != null) {
-                    Item item = object.getProperty().getItem();
-                    boolean hasSubItem = false;
-                    if (item instanceof ConnectionItem) {
-                        hasSubItem = ProjectRepositoryNode.getInstance().hasDeletedSubItem((ConnectionItem) item);
+        if (project != null) {
+            loadRecycleBin(project.getEmfProject(), true);
+            final EList<TalendItem> deletedItems = projectRecyclebins.get(project.getTechnicalLabel()).getDeletedItems();
+            List<TalendItem> notDeletedItems = new ArrayList<TalendItem>();
+            List<TalendItem> dup_deletedItems = new ArrayList<>(deletedItems);
+            for (TalendItem deletedItem : dup_deletedItems) {
+                try {
+                    final ERepositoryObjectType type = ERepositoryObjectType.getType(deletedItem.getType());
+                    // ignore the generated doc in recycle bin
+                    if (type != null && (type.equals(ERepositoryObjectType.JOB_DOC) || type.equals(ERepositoryObjectType.JOBLET_DOC)
+                            || type.equals(ERepositoryObjectType.valueOf("ROUTE_DOC")))) { //$NON-NLS-1$
+                        continue;
                     }
-                    if (object.isDeleted() || hasSubItem) {
-                        deletedObjects.add(object);
+                    IRepositoryViewObject object = ProxyRepositoryFactory.getInstance().getLastVersion(project, deletedItem.getId(),
+                            deletedItem.getPath(), type);
+                    if (object == null) {
+                        object = ProxyRepositoryFactory.getInstance().getLastVersion(project, deletedItem.getId());
+                    }
+                    if (object != null) {
+                        Item item = object.getProperty().getItem();
+                        boolean hasSubItem = false;
+                        if (item instanceof ConnectionItem) {
+                            hasSubItem = ProjectRepositoryNode.getInstance().hasDeletedSubItem((ConnectionItem) item);
+                        }
+                        if (object.isDeleted() || hasSubItem) {
+                            deletedObjects.add(object);
+                        } else {
+                            // need remove it.
+                            notDeletedItems.add(deletedItem);
+                        }
                     } else {
                         // need remove it.
                         notDeletedItems.add(deletedItem);
                     }
-                } else {
-                    // need remove it.
-                    notDeletedItems.add(deletedItem);
+                } catch (PersistenceException e) {
+                    ExceptionHandler.process(e);
                 }
-            } catch (PersistenceException e) {
-                ExceptionHandler.process(e);
             }
-        }
-        // clean
-        deletedItems.removeAll(notDeletedItems);
+            // clean
+            deletedItems.removeAll(notDeletedItems);
+        }       
         return deletedObjects;
     }
 
