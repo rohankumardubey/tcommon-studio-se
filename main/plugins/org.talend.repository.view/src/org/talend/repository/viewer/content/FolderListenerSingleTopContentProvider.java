@@ -129,7 +129,7 @@ public abstract class FolderListenerSingleTopContentProvider extends SingleTopLe
     protected IPath getWorkspaceTopNodePath(RepositoryNode topLevelNode) {
         IPath workspaceRelativePath = null;
         IProjectRepositoryNode root = topLevelNode.getRoot();
-        if (root != null) {
+        if (root != null && root.getProject() != null) {
             String projectName = root.getProject().getTechnicalLabel();
             String topLevelNodeProjectRelativePath = getTopLevelNodeProjectRelativePath(topLevelNode);
             if (projectName != null && (topLevelNodeProjectRelativePath != null && !"".equals(topLevelNodeProjectRelativePath))) { //$NON-NLS-1$
