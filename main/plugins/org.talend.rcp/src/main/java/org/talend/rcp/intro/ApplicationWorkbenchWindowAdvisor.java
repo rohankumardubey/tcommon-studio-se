@@ -111,8 +111,6 @@ import org.talend.designer.business.diagram.custom.IDiagramModelService;
 import org.talend.designer.core.ui.editor.palette.TalendPaletteHelper;
 import org.talend.rcp.Activator;
 import org.talend.rcp.i18n.Messages;
-import org.talend.rcp.intro.starting.StartingEditorInput;
-import org.talend.rcp.intro.starting.StartingHelper;
 import org.talend.rcp.util.ApplicationDeletionUtil;
 import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.token.RepositoryActionLogger;
@@ -316,7 +314,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         }
         ApplicationDeletionUtil.removeAndResetPreferencePages(this.getWindowConfigurer().getWindow(), needRemovedPrefs, false);
 
-        showStarting();
         // feature 18752
         regisitPerspectiveListener();
         // feature 19053
@@ -447,28 +444,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
                     }
                 }
             });
-        }
-    }
-
-    private void showStarting() {
-        try {
-            IBrandingService service = (IBrandingService) GlobalServiceRegister.getDefault().getService(IBrandingService.class);
-            String startingBrowserId = service.getStartingBrowserId();
-            if (startingBrowserId == null || startingBrowserId.isEmpty()) {
-                return;
-            }
-
-            // the first time to call getHtmlContent, if throws any exception ,don't show StartingBrower
-            StartingHelper.getHelper().getHtmlContent();
-            IWorkbenchPage activePage = getWindowConfigurer().getWindow().getWorkbench().getActiveWorkbenchWindow()
-                    .getActivePage();
-            if (activePage != null) {
-                if (activePage.getPerspective().getId().equals(ProductUtils.PERSPECTIVE_DI_ID)) {
-                    startingBrowser = activePage.openEditor(new StartingEditorInput(service), startingBrowserId);
-                }
-            }
-        } catch (Exception e) {
-            // do nothing
         }
     }
 
