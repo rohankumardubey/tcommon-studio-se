@@ -936,7 +936,6 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
         
         IMaven maven = MavenPlugin.getMaven();
         ArtifactRepository repository = maven.getLocalRepository();
-        boolean isDIJob = ERepositoryObjectType.getItemType(getJobProcessor().getProperty().getItem()) == ERepositoryObjectType.PROCESS;
         for (Dependency dependency : duplicateDependencies) {
             if (((SortableDependency) dependency).isAssemblyOptional()) {
                 continue;
@@ -947,7 +946,7 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
             sourceLocation = path.toString();
             
             boolean latestVersionOrLowerVersionInChildJob = isLatestVersionOrLowerVersionInChildJob(parentJobDependencies, childJobDependencies, duplicateLibs, dependency);
-            if (isDIJob && !latestVersionOrLowerVersionInChildJob && !new File(sourceLocation).exists()) {
+            if (!latestVersionOrLowerVersionInChildJob && !new File(sourceLocation).exists()) {
                 CommonExceptionHandler.warn("Job dependency [" + sourceLocation + "] does not exist!");
                 continue;
             }
