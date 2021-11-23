@@ -83,7 +83,6 @@ import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.metadata.managment.connection.manager.HiveConnectionManager;
 import org.talend.metadata.managment.hive.EmbeddedHiveDataBaseMetadata;
-import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.repository.ProjectManager;
 import org.talend.utils.exceptions.MissingDriverException;
 import org.talend.utils.sql.ConnectionUtils;
@@ -107,7 +106,7 @@ public class ExtractMetaDataUtils {
 
     private static final String SYBASE_DATABASE_PRODUCT_NAME = "Adaptive Server Enterprise"; //$NON-NLS-1$
 
-    private static ExtractMetaDataUtils singleton = null;
+    private static final ExtractMetaDataUtils singleton = new ExtractMetaDataUtils();
 
     // FIXME scorreia don't use public static fields
     private Connection conn;
@@ -115,6 +114,8 @@ public class ExtractMetaDataUtils {
     private String schema;
 
     private boolean isReconnect = true;
+
+    private boolean isHsqlConnection = false;
 
     private final Map<String, DriverShim> DRIVER_CACHE = new HashMap<String, DriverShim>();
 
@@ -127,13 +128,7 @@ public class ExtractMetaDataUtils {
 
     public static final String SNOWFLAKE_DRIVER_JAR = "snowflake-jdbc-3.11.0.jar"; //$NON-NLS-1$
 
-    private ExtractMetaDataUtils() {
-    }
-
     public static ExtractMetaDataUtils getInstance() {
-        if (singleton == null) {
-            singleton = new ExtractMetaDataUtils();
-        }
         return singleton;
     }
 
@@ -718,7 +713,7 @@ public class ExtractMetaDataUtils {
         try {
             if (conn != null && !conn.isClosed()) {
                 if (isReconnect || force) {
-                    if (conn.getMetaData() != null) {
+                    if (isHsqlConnection && conn.getMetaData() != null) {
                         String url = null;
                         try {
                             url = conn.getMetaData().getURL();
@@ -852,6 +847,7 @@ public class ExtractMetaDataUtils {
                     for (int i = 0; i < list.size(); i++) {
                         if (list.get(i) instanceof Connection) {
                             conn = (Connection) list.get(i);
+                            isHsqlConnection = ConnectionUtils.isHsql(url) ? true : false;
                         }
                         if (list.get(i) instanceof DriverShim) {
                             wapperDriver = (DriverShim) list.get(i);
