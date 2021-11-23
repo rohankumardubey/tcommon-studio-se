@@ -34,6 +34,7 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.LoginTaskRegistryReader;
 import org.talend.core.ui.branding.IBrandingConfiguration;
 import org.talend.core.ui.branding.IBrandingService;
+import org.talend.core.ui.services.IGitUIProviderService;
 import org.talend.designer.codegen.CodeGeneratorActivator;
 import org.talend.designer.runprocess.RunProcessPlugin;
 import org.talend.login.ILoginTask;
@@ -140,6 +141,14 @@ public class ApplicationWorkbenchAdvisor extends IDEWorkbenchAdvisor {
         }
 
         // PerspectiveReviewUtil.checkPerspectiveDisplayItems();
+    }
+
+    @Override
+    public boolean preShutdown() {
+        if (IGitUIProviderService.get() != null && IGitUIProviderService.get().checkPendingChanges()) {
+            return false;
+        }
+        return super.preShutdown();
     }
 
 }
