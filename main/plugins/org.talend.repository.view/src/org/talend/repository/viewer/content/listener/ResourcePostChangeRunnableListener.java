@@ -14,8 +14,10 @@ package org.talend.repository.viewer.content.listener;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -46,7 +48,7 @@ public class ResourcePostChangeRunnableListener implements IResourceChangeListen
 
     private final CommonViewer viewer;
 
-    private List<IResourceDeltaVisitor> resourcevisitors = new ArrayList<IResourceDeltaVisitor>();
+    private List<IResourceDeltaVisitor> resourcevisitors = Collections.synchronizedList(new LinkedList<IResourceDeltaVisitor>());
 
     public ResourcePostChangeRunnableListener(CommonViewer v) {
         super();
@@ -90,15 +92,18 @@ public class ResourcePostChangeRunnableListener implements IResourceChangeListen
         // visit
         final Collection<Runnable> runnables = new HashSet<>();
         final Collection<ResourceNode> pathToRefresh = new HashSet<>();
-        for (IResourceDeltaVisitor visitor : resourcevisitors) {
-            if (visitor instanceof RunnableResourceVisitor) {
-                ((RunnableResourceVisitor) visitor).setRunnables(runnables);
-            }
-            if (visitor instanceof ResourceCollectorVisitor) {
-                ((ResourceCollectorVisitor) visitor).setRunnables(pathToRefresh);
-            }
-
+        final Collection<IResourceDeltaVisitor> visitors = new LinkedList<>();
+        synchronized (resourcevisitors) {
+            visitors.addAll(resourcevisitors);
+        }
+        for (IResourceDeltaVisitor visitor : visitors) {
             try {
+                if (visitor instanceof RunnableResourceVisitor) {
+                    ((RunnableResourceVisitor) visitor).setRunnables(runnables);
+                }
+                if (visitor instanceof ResourceCollectorVisitor) {
+                    ((ResourceCollectorVisitor) visitor).setRunnables(pathToRefresh);
+                }
                 event.getDelta().accept(visitor);
             } catch (CoreException e) {
                 //
