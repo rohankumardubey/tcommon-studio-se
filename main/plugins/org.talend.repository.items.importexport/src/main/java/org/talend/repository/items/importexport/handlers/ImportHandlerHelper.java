@@ -12,13 +12,21 @@
 // ============================================================================
 package org.talend.repository.items.importexport.handlers;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.talend.commons.exception.ResourceNotFoundException;
+import org.talend.core.model.metadata.builder.connection.impl.DatabaseConnectionImpl;
+import org.talend.core.model.properties.DatabaseConnectionItem;
 import org.talend.core.model.properties.PropertiesPackage;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.repository.constants.FileConstants;
 import org.talend.repository.items.importexport.handlers.imports.ImportCacheHelper;
 import org.talend.repository.items.importexport.handlers.model.ImportItem;
 import org.talend.repository.items.importexport.i18n.Messages;
@@ -55,6 +63,37 @@ public class ImportHandlerHelper {
 
         if (resource != null) {
             importItem.setProperty(generateProperty(resource));
+
+            ERepositoryObjectType eType = importItem.getRepositoryType();
+
+            if (ERepositoryObjectType.METADATA_CONNECTIONS == eType
+                    && importItem.getItem() instanceof DatabaseConnectionItem) {
+                DatabaseConnectionItem dbconn = (DatabaseConnectionItem) importItem.getItem();
+                String databaseType = dbconn.getTypeName();
+
+                if (StringUtils.isBlank(databaseType)) {
+
+                    IPath removeFileExtension = resourcePath.removeFileExtension();
+                    String portableString = removeFileExtension.toPortableString();
+                    removeFileExtension = new Path(portableString);
+                    IPath addFileExtension = removeFileExtension.addFileExtension(FileConstants.ITEM_EXTENSION);
+                    ImportItem importMetadataItem = new ImportItem(addFileExtension);
+                    Resource metadataItemResource = HandlerUtil.loadResource(resManager, importMetadataItem);
+                    if (metadataItemResource != null) {
+                        EList<EObject> contents = metadataItemResource.getContents();
+                        if (contents != null) {
+                            contents.forEach(content -> {
+                                if (content instanceof DatabaseConnectionImpl) {
+                                    DatabaseConnectionImpl dbConnection = (DatabaseConnectionImpl) content;
+                                    if (!StringUtils.isBlank(dbConnection.getDatabaseType())) {
+                                        dbconn.setTypeName(dbConnection.getDatabaseType());
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+            }
         } else {
             ResourceNotFoundException ex = new ResourceNotFoundException(Messages.getString(
                     "ImportBasicHandler_LoadEMFResourceError", //$NON-NLS-1$
