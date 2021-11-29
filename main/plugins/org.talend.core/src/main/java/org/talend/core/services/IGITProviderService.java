@@ -41,7 +41,7 @@ public interface IGITProviderService extends IService {
      * @param onlyLocalIfPossible try to only get branches from local repository to improve performance
      * @return
      */
-    public String[] getBranchList(Project project, boolean onlyLocalIfPossible);
+    public String[] getBranchList(Project project, boolean onlyLocalIfPossible) throws Exception;
 
     public boolean isGITProject(Project p) throws PersistenceException;
 

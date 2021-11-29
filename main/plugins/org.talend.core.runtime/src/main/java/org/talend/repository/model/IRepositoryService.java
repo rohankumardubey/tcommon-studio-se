@@ -40,7 +40,6 @@ import org.talend.repository.IRepositoryChangedListener;
 import org.talend.repository.IRepositoryElementDelta;
 import org.talend.repository.ui.actions.AContextualAction;
 import org.talend.repository.ui.views.IRepositoryView;
-import org.talend.utils.json.JSONException;
 
 /**
  * DOC qian class global comment. Interface for RepositoryService. <br/>
@@ -134,9 +133,9 @@ public interface IRepositoryService extends IService {
      * @param project
      * @param onlyLocalIfPossible try to only get branches from local repository to improve performance
      * @return
-     * @throws JSONException
+     * @throws Exception
      */
-    public List<String> getProjectBranch(Project project, boolean onlyLocalIfPossible) throws JSONException;
+    public List<String> getProjectBranch(Project project, boolean onlyLocalIfPossible) throws Exception;
 
     public boolean askRetryForNetworkIssue(Throwable ex);
 
