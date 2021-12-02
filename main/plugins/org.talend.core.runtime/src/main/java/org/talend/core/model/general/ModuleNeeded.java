@@ -13,10 +13,13 @@
 package org.talend.core.model.general;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Path;
@@ -45,6 +48,8 @@ public class ModuleNeeded {
 
     public static final String ATTR_USED_BY_DYNAMIC_DISTRIBUTION = "dynamicDistribution";
 
+    public static final String ATTR_DYNAMIC_DISTRIBUTION_VERSION = "distributionVersion";
+    
     private String id;
 
     private String context;
@@ -105,6 +110,7 @@ public class ModuleNeeded {
 
     ILibraryManagerService libManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault()
             .getService(ILibraryManagerService.class);
+    
 
     /**
      * DOC smallet ModuleNeeded class global comment. Detailled comment <br/>
@@ -753,5 +759,12 @@ public class ModuleNeeded {
     public void setUseReleaseVersion(boolean useReleaseVersion) {
         this.useReleaseVersion = useReleaseVersion;
     }
-
+    
+    public String getDynamicDistributionVersion() {
+        return attributes.get(ATTR_DYNAMIC_DISTRIBUTION_VERSION);
+    }
+    
+    public void setDynamicDistributionVersion(String distribution) {
+        attributes.put(ATTR_DYNAMIC_DISTRIBUTION_VERSION, distribution);
+    }
 }
