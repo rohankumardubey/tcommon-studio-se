@@ -11,6 +11,8 @@
 	<packaging>pom</packaging>
 	<properties>
 		<components.version>0.27.3</components.version>
+		<marketo_release_proxy>https://artifacts-oss.talend.com/nexus/content/repositories/marklogic</marketo_release_proxy>
+		<jcenter_bintray>https://jcenter.bintray.com</jcenter_bintray>
 	</properties>
 	<repositories>
 		<repository>
@@ -32,6 +34,15 @@
 				<enabled>true</enabled>
 			</snapshots>
 			<url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+		</repository>
+		<repository>
+			<id>MarkLogic-releases</id>
+			<name>MarkLogic Releases</name>
+			<url>${marketo_release_proxy}</url>
+		</repository>
+		<repository>
+			<id>jcenter</id>
+			<url>${jcenter_bintray}</url>
 		</repository>
 	</repositories>
 
