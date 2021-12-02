@@ -83,6 +83,9 @@ public final class TokenCollectorFactory {
 
     private static final Map<String, TokenInforProvider> providers;
 
+    // https://www.talend.com/TalendRegisterWS/tokenstudio_v2.php
+    private static final String TOKEN_URL = "https://product-routes--talend-www.netlify.app/tokenstudio_v2.php";
+
     static {
         providers = new HashMap<String, TokenInforProvider>();
 
@@ -403,14 +406,13 @@ public final class TokenCollectorFactory {
         CloseableHttpClient client = null;
         CloseableHttpResponse response = null;
         try {
-            final String url = "https://www.talend.com/TalendRegisterWS/tokenstudio_v2.php";
 
             HttpClientBuilder clientBuilder = HttpClients.custom();
             clientBuilder.disableCookieManagement();
-            addProxy(url, clientBuilder);
+            addProxy(TOKEN_URL, clientBuilder);
             client = clientBuilder.build();
 
-            HttpPost httpPost = new HttpPost(url);
+            HttpPost httpPost = new HttpPost(TOKEN_URL);
             httpPost.setConfig(RequestConfig.DEFAULT);
 
             MultipartEntityBuilder dataBuilder = MultipartEntityBuilder.create();

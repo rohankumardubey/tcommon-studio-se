@@ -26,6 +26,10 @@ public class RegisterUserBindingStub extends org.apache.axis2.client.Stub implem
 
     private boolean manageSession;
 
+    private static final String BASE_URL = "https://product-routes--talend-www.netlify.app/TalendRegisterWS/registerws.php";
+
+    private static final String WSDL_URI = "http://product-routes--talend-www.netlify.app/TalendRegisterWS/wsdl";
+
     public RegisterUserBindingStub(String endpointURL) throws org.apache.axis2.AxisFault {
         cachedEndpoint = endpointURL;
     }
@@ -62,9 +66,9 @@ public class RegisterUserBindingStub extends org.apache.axis2.client.Stub implem
         }
         RPCServiceClient client = createCall();
         Options options = client.getOptions();
-        options.setAction("https://www.talend.com/TalendRegisterWS/registerws.php/RegisterUser");
+        options.setAction(BASE_URL + "/RegisterUser");
 
-        QName method = new QName("http://www.talend.com/TalendRegisterWS/wsdl", "RegisterUser");
+        QName method = new QName(WSDL_URI, "RegisterUser");
         Object[] parameters = { email, country, designerversion };
         Class[] returnTypes = new Class[] { boolean.class };
 
@@ -89,8 +93,8 @@ public class RegisterUserBindingStub extends org.apache.axis2.client.Stub implem
         }
         RPCServiceClient client = createCall();
         Options options = client.getOptions();
-        options.setAction("https://www.talend.com/TalendRegisterWS/registerws.php/RegisterUserWithProductName");
-        QName method = new QName("http://www.talend.com/TalendRegisterWS/wsdl", "RegisterUserWithProductName");
+        options.setAction(BASE_URL + "/RegisterUserWithProductName");
+        QName method = new QName(WSDL_URI, "RegisterUserWithProductName");
         Object[] parameters = { email, country, designerversion, productname };
         Class[] returnTypes = new Class[] { boolean.class };
 
@@ -115,8 +119,8 @@ public class RegisterUserBindingStub extends org.apache.axis2.client.Stub implem
         }
         RPCServiceClient client = createCall();
         Options options = client.getOptions();
-        options.setAction("https://www.talend.com/TalendRegisterWS/registerws.php/RegisterUserWithAllUserInformations");
-        QName method = new QName("http://www.talend.com/TalendRegisterWS/wsdl", "RegisterUserWithAllUserInformations");
+        options.setAction(BASE_URL + "/RegisterUserWithAllUserInformations");
+        QName method = new QName(WSDL_URI, "RegisterUserWithAllUserInformations");
         Object[] parameters = { email, country, designerversion, productname, projectLanguage, osName, osVersion, javaVersion,
                 totalMemory, memRAM, nbProc };
         Class[] returnTypes = new Class[] { boolean.class };
@@ -143,8 +147,8 @@ public class RegisterUserBindingStub extends org.apache.axis2.client.Stub implem
         RPCServiceClient client = createCall();
         Options options = client.getOptions();
         options.setAction(
-                "https://www.talend.com/TalendRegisterWS/registerws.php/RegisterUserWithAllUserInformationsAndReturnId");
-        QName method = new QName("http://www.talend.com/TalendRegisterWS/wsdl", "RegisterUserWithAllUserInformationsAndReturnId");
+                BASE_URL + "/RegisterUserWithAllUserInformationsAndReturnId");
+        QName method = new QName(WSDL_URI, "RegisterUserWithAllUserInformationsAndReturnId");
         Object[] parameters = { email, country, designerversion, productname, projectLanguage, osName, osVersion, javaVersion,
                 totalMemory, memRAM, nbProc };
         Class[] returnTypes = new Class[] { BigInteger.class };
@@ -180,8 +184,8 @@ public class RegisterUserBindingStub extends org.apache.axis2.client.Stub implem
         RPCServiceClient client = createCall();
         Options options = client.getOptions();
         options.setAction(
-                "https://www.talend.com/TalendRegisterWS/registerws.php/RegisterUserWithAllUserInformationsUniqueIdAndReturnId");
-        QName method = new QName("http://www.talend.com/TalendRegisterWS/wsdl",
+                BASE_URL + "/RegisterUserWithAllUserInformationsUniqueIdAndReturnId");
+        QName method = new QName(WSDL_URI,
                 "RegisterUserWithAllUserInformationsUniqueIdAndReturnId");
         Object[] parameters = { email, country, designerversion, productname, projectLanguage, osName, osVersion, javaVersion,
                 totalMemory, memRAM, nbProc, uniqueId };
@@ -205,8 +209,8 @@ public class RegisterUserBindingStub extends org.apache.axis2.client.Stub implem
         }
         RPCServiceClient client = createCall();
         Options options = client.getOptions();
-        options.setAction("https://www.talend.com/TalendRegisterWS/registerws.php/ListUsers");
-        QName method = new QName("http://www.talend.com/TalendRegisterWS/wsdl", "ListUsers");
+        options.setAction(BASE_URL + "/ListUsers");
+        QName method = new QName(WSDL_URI, "ListUsers");
         Object[] parameters = {};
         Class[] returnTypes = new Class[] { UserRegistration.class };
 
@@ -229,8 +233,8 @@ public class RegisterUserBindingStub extends org.apache.axis2.client.Stub implem
         RPCServiceClient client = createCall();
         Options options = client.getOptions();
         options.setAction(
-                "https://www.talend.com/TalendRegisterWS/registerws.php/CheckUser");
-        QName method = new QName("http://www.talend.com/TalendRegisterWS/wsdl", "CheckUser");
+                BASE_URL + "/CheckUser");
+        QName method = new QName(WSDL_URI, "CheckUser");
         Object[] parameters = { email };
         Class[] returnTypes = new Class[] { String.class };
 
@@ -255,8 +259,8 @@ public class RegisterUserBindingStub extends org.apache.axis2.client.Stub implem
         }
         RPCServiceClient client = createCall();
         Options options = client.getOptions();
-        options.setAction("https://www.talend.com/TalendRegisterWS/registerws.php/CreateUser");
-        QName method = new QName("http://www.talend.com/TalendRegisterWS/wsdl", "CreateUser");
+        options.setAction(BASE_URL + "/CreateUser");
+        QName method = new QName(WSDL_URI, "CreateUser");
         Object[] parameters = { email, pseudo, password, firstname, lastname, country, designerversion, productname, osName,
                 osVersion, javaVersion, totalMemory, memRAM, nbProc };
         Class[] returnTypes = new Class[] { BigInteger.class };
@@ -283,8 +287,8 @@ public class RegisterUserBindingStub extends org.apache.axis2.client.Stub implem
         }
         RPCServiceClient client = createCall();
         Options options = client.getOptions();
-        options.setAction("https://www.talend.com/TalendRegisterWS/registerws.php/UpdateUser");
-        QName method = new QName("http://www.talend.com/TalendRegisterWS/wsdl", "UpdateUser");
+        options.setAction(BASE_URL + "/UpdateUser");
+        QName method = new QName(WSDL_URI, "UpdateUser");
         Object[] parameters = { email, pseudo, passwordOld, passwordNew, firstname, lastname, country, designerversion,
                 productname, osName, osVersion, javaVersion, totalMemory, memRAM, nbProc };
         Class[] returnTypes = new Class[] { BigInteger.class };
@@ -310,8 +314,8 @@ public class RegisterUserBindingStub extends org.apache.axis2.client.Stub implem
         }
         RPCServiceClient client = createCall();
         Options options = client.getOptions();
-        options.setAction("https://www.talend.com/TalendRegisterWS/registerws.php/CreateUser50");
-        QName method = new QName("http://www.talend.com/TalendRegisterWS/wsdl", "CreateUser50");
+        options.setAction(BASE_URL + "/CreateUser50");
+        QName method = new QName(WSDL_URI, "CreateUser50");
         Object[] parameters = { pseudo, password, firstname, lastname, country, designerversion, productname, osName, osVersion,
                 javaVersion, totalMemory, memRAM, nbProc };
         Class[] returnTypes = new Class[] { BigInteger.class };
@@ -338,8 +342,8 @@ public class RegisterUserBindingStub extends org.apache.axis2.client.Stub implem
         }
         RPCServiceClient client = createCall();
         Options options = client.getOptions();
-        options.setAction("https://www.talend.com/TalendRegisterWS/registerws.php/CreateUser53");
-        QName method = new QName("http://www.talend.com/TalendRegisterWS/wsdl", "CreateUser53");
+        options.setAction(BASE_URL + "/CreateUser53");
+        QName method = new QName(WSDL_URI, "CreateUser53");
         Object[] parameters = { email, pseudo, password, firstname, lastname, country, designerversion, productname, osName,
                 osVersion, javaVersion, totalMemory, memRAM, nbProc, uniqueId };
         Class[] returnTypes = new Class[] { BigInteger.class };
@@ -365,8 +369,8 @@ public class RegisterUserBindingStub extends org.apache.axis2.client.Stub implem
         }
         RPCServiceClient client = createCall();
         Options options = client.getOptions();
-        options.setAction("https://www.talend.com/TalendRegisterWS/registerws.php/UpdateUser53");
-        QName method = new QName("http://www.talend.com/TalendRegisterWS/wsdl", "UpdateUser53");
+        options.setAction(BASE_URL + "/UpdateUser53");
+        QName method = new QName(WSDL_URI, "UpdateUser53");
         Object[] parameters = { pseudo, password, firstname, lastname, country, designerversion, productname, osName, osVersion,
                 javaVersion, totalMemory, memRAM, nbProc, uniqueId };
         Class[] returnTypes = new Class[] { BigInteger.class };

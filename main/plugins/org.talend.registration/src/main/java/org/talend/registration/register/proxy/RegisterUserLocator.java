@@ -9,11 +9,13 @@ package org.talend.registration.register.proxy;
 public class RegisterUserLocator implements
         org.talend.registration.register.proxy.RegisterUser {
 
+    private static final String WSDL_URI = "http://product-routes--talend-www.netlify.app/TalendRegisterWS/wsdl";
+
     public RegisterUserLocator() {
     }
 
     // Use to get a proxy class for RegisterUserPort
-    private java.lang.String RegisterUserPort_address = "https://www.talend.com/TalendRegisterWS/registerws.php";
+    private java.lang.String RegisterUserPort_address = "https://product-routes--talend-www.netlify.app/TalendRegisterWS/registerws.php";
 
     public java.lang.String getRegisterUserPortAddress() {
         return RegisterUserPort_address;
@@ -93,7 +95,7 @@ public class RegisterUserLocator implements
     }
 
     public javax.xml.namespace.QName getServiceName() {
-        return new javax.xml.namespace.QName("http://www.talend.com/TalendRegisterWS/wsdl", "RegisterUser");
+        return new javax.xml.namespace.QName(WSDL_URI, "RegisterUser");
     }
 
     private java.util.HashSet ports = null;
@@ -101,7 +103,7 @@ public class RegisterUserLocator implements
     public java.util.Iterator getPorts() {
         if (ports == null) {
             ports = new java.util.HashSet();
-            ports.add(new javax.xml.namespace.QName("http://www.talend.com/TalendRegisterWS/wsdl", "RegisterUserPort"));
+            ports.add(new javax.xml.namespace.QName(WSDL_URI, "RegisterUserPort"));
         }
         return ports.iterator();
     }
