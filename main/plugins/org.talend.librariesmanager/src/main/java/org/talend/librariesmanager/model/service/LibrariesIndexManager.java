@@ -16,9 +16,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -53,6 +56,17 @@ public class LibrariesIndexManager {
     private ReentrantReadWriteLock mavenLibLock = new ReentrantReadWriteLock();
 
     private static final Logger LOGGER = Logger.getLogger(LibrariesIndexManager.class);
+    
+    private static final Set<String> EXCLUDED_INDEX_EXT = new HashSet<String>();
+
+    static {
+
+        EXCLUDED_INDEX_EXT.add(".javajet");
+        EXCLUDED_INDEX_EXT.add(".xml");
+        EXCLUDED_INDEX_EXT.add(".png");
+        EXCLUDED_INDEX_EXT.add(".gif");
+        EXCLUDED_INDEX_EXT.add(".properties");
+    }
 
     private LibrariesIndexManager() {
         loadIndexResources();
@@ -216,11 +230,25 @@ public class LibrariesIndexManager {
             this.studioLibLock.readLock().unlock();
         }
     }
+    
+    private static boolean ingoredIndex(String key) {
+        for (String ext : EXCLUDED_INDEX_EXT) {
+            if (StringUtils.endsWith(key, ext)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Add to studio lib without saving
      */
     public void AddStudioLibs(String key, String v) {
+        
+        if(ingoredIndex(key)) {
+            return;
+        }
+        
         this.studioLibLock.writeLock().lock();
         try {
             this.studioLibIndex.getJarsToRelativePath().put(key, v);
@@ -233,6 +261,9 @@ public class LibrariesIndexManager {
      * whether contains key
      */
     public boolean containsStudioLibs(String key) {
+        if (ingoredIndex(key)) {
+            return true;
+        }
         this.studioLibLock.readLock().lock();
         try {
             return this.studioLibIndex.getJarsToRelativePath().containsKey(key);
