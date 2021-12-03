@@ -543,7 +543,7 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
                                 "${talend.job.bat.addition}" },
                         new String[] { jvmArgsStr.toString().trim(), getWindowsClasspath(), jobClass,
                                 windowsScriptAdditionValue.toString() });
-        batContent = normalizeSpaces(batContent);
+        batContent = normalizeSpaces(batContent, "\r\n");
         String shContent = MavenTemplateManager.getProjectSettingValue(IProjectSettingPreferenceConstants.TEMPLATE_SH,
                 templateParameters);
         shContent = StringUtils
@@ -1048,6 +1048,10 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
 
     // https://jira.talendforge.org/browse/TUP-27053
     public static String normalizeSpaces(String src) {
+        return normalizeSpaces(src,"\n");
+    }
+    
+    public static String normalizeSpaces(String src, String lineSeparator) {
         StringBuffer sb = new StringBuffer();
         try (Scanner scanner = new Scanner(src)) {
             while (scanner.hasNextLine()) {
@@ -1056,7 +1060,7 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
                 if (!line.isEmpty()) {
                     sb.append(line);
                 }
-                sb.append('\n');
+                sb.append(lineSeparator);
             }
         } catch (Exception e) {
 
