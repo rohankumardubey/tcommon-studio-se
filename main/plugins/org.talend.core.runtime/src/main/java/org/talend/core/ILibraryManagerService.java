@@ -77,6 +77,8 @@ public interface ILibraryManagerService extends IService {
     public void saveMavenIndex(Map<String, String> libsToMavenUri, IProgressMonitor... monitorWrap);
 
     public void createModulesIndexFromComponentAndExtension(IProgressMonitor... monitorWrap);
+    
+    public Map<String,String> buildModulesIndexFromComponentAndExtension(IProgressMonitor... monitorWrap);
 
     /**
      * DOC ycbai Comment method "retrieve".
