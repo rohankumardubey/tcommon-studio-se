@@ -1208,6 +1208,10 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
 
     @Override
     public void createModulesIndexFromComponentAndExtension(IProgressMonitor... monitorWrap) {
+        buildModulesIndexFromComponentAndExtension(monitorWrap);
+    }
+    
+    public Map<String, String> buildModulesIndexFromComponentAndExtension(IProgressMonitor... monitorWrap) {
         // key: moduleName, value: platformURL
         Map<String, String> platformURLMap = new HashMap<>();
         // key: moduleName, value: mvn uri
@@ -1249,11 +1253,11 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
 
         saveMavenIndex(mavenURIMap, monitorWrap);
         savePlatfromURLIndex(platformURLMap, monitorWrap);
-        
+
         if (service != null) {
             deployLibsFromCustomComponents(service, platformURLMap);
         }
-
+        return mavenURIMap;
     }
 
     /**

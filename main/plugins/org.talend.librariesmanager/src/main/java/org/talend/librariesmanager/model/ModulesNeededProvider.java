@@ -367,12 +367,18 @@ public class ModulesNeededProvider {
     }
 
     public static void collectModuleNeeded(String context, IMPORTType importType, List<ModuleNeeded> importNeedsList) {
-        List<ModuleNeeded> importModuleFromExtension = ExtensionModuleManager.getInstance().getModuleNeededForComponent(context,
-                importType);
+        collectModuleNeeded(context, importType, importNeedsList, null);
+    }
+    
+    public static void collectModuleNeeded(String context, IMPORTType importType, List<ModuleNeeded> importNeedsList, String distribution) {
+        List<ModuleNeeded> importModuleFromExtension = ExtensionModuleManager.getInstance().getModuleNeededForComponent(context, importType);
         boolean foundModule = importModuleFromExtension.size() > 0;
         if (!foundModule) { // If cannot find the jar from extension point then do it like before.
-            createModuleNeededForComponent(context, importType, importNeedsList);
+            createModuleNeededForComponent(context, importType, importNeedsList, distribution);
         } else {
+            if (!StringUtils.isEmpty(distribution)) {
+                importModuleFromExtension.forEach(m -> m.setDynamicDistributionVersion(distribution));
+            }
             importNeedsList.addAll(importModuleFromExtension);
         }
     }
@@ -387,6 +393,10 @@ public class ModulesNeededProvider {
     }
 
     public static void createModuleNeededForComponent(String context, IMPORTType importType, List<ModuleNeeded> importNeedsList) {
+        createModuleNeededForComponent(context, importType, importNeedsList, null);
+    }
+    
+    public static void createModuleNeededForComponent(String context, IMPORTType importType, List<ModuleNeeded> importNeedsList, String distribution) {
         if (importType.getMODULE() == null) {
             if (importType.getMODULEGROUP() != null) {
                 CommonExceptionHandler.warn("Missing module group definition: " + importType.getMODULEGROUP());
@@ -405,6 +415,9 @@ public class ModulesNeededProvider {
         moduleNeeded.setMrRequired(importType.isMRREQUIRED());
         moduleNeeded.setShow(importType.isSHOW());
         moduleNeeded.setModuleLocaion(importType.getUrlPath());
+        if (!StringUtils.isEmpty(distribution)) {
+            moduleNeeded.setDynamicDistributionVersion(distribution);
+        }
         importNeedsList.add(moduleNeeded);
     }
 
