@@ -11,17 +11,17 @@
 	<packaging>eclipse-plugin</packaging>
 	<properties>
 		<tcomp.version>${component-runtime.version}</tcomp.version>
-		<cxf.version>3.4.4</cxf.version>
+		<cxf.version>3.4.5</cxf.version>
 		<geronimo.version>1.0.2</geronimo.version>
 		<jackson.version>2.12.1</jackson.version>
 		<jcache.version>1.0.5</jcache.version>
 		<jcache_spec.version>1.0-alpha-1</jcache_spec.version>
-		<johnzon.version>1.2.10</johnzon.version>
+		<johnzon.version>1.2.15</johnzon.version>
 		<meecrowave.version>1.2.12</meecrowave.version>
 		<microprofile.version>1.2.1</microprofile.version>
 		<owb.version>2.0.23</owb.version>
 		<slf4j.version>1.7.32</slf4j.version>
-		<tomcat.version>9.0.50</tomcat.version>
+		<tomcat.version>9.0.54</tomcat.version>
 		<xbean.version>4.20</xbean.version>
 	</properties>
 	<repositories>
