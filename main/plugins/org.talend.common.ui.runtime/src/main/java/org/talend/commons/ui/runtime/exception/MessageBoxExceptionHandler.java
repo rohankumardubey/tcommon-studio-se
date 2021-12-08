@@ -86,7 +86,7 @@ public final class MessageBoxExceptionHandler {
         // TODO smallet use ErrorDialogWidthDetailArea ?
         String title = Messages.getString("commons.error"); //$NON-NLS-1$
         String msg = Messages.getString("exception.errorOccured", ex.getMessage()); //$NON-NLS-1$
-        //add for tup-19726/19790, as for exception detailMessage will show more details on log area.
+        //add for tup-19726/19790, as for exception detailMessage will show more details on log area .
         if(ex.getCause()!=null) {
         	msg = Messages.getString("exception.errorOccured", ex.getCause().getMessage()); //$NON-NLS-1$
         }
