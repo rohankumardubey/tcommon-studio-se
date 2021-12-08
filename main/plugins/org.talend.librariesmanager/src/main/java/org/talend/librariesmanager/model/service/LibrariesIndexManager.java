@@ -23,6 +23,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
@@ -31,13 +32,16 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMLParserPoolImpl;
+import org.osgi.framework.Bundle;
 import org.talend.commons.exception.CommonExceptionHandler;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.EmfHelper;
 import org.talend.librariesmanager.emf.librariesindex.LibrariesIndex;
 import org.talend.librariesmanager.emf.librariesindex.LibrariesindexFactory;
 import org.talend.librariesmanager.emf.librariesindex.LibrariesindexPackage;
 import org.talend.librariesmanager.emf.librariesindex.util.LibrariesindexResourceFactoryImpl;
+import org.talend.librariesmanager.prefs.LibrariesManagerUtils;
 
 public class LibrariesIndexManager {
 
@@ -200,7 +204,20 @@ public class LibrariesIndexManager {
     }
 
     private String getIndexFileInstallFolder() {
-        return new Path(Platform.getConfigurationLocation().getURL().getPath()).toFile().getAbsolutePath();
+        String indexFileFolder = null;
+        try {
+            Bundle librariesManagerBundle = Platform.getBundle(LibrariesManagerUtils.BUNDLE_DI);
+            if (librariesManagerBundle != null) {
+                indexFileFolder = new File(FileLocator
+                        .toFileURL(FileLocator
+                                .find(Platform.getBundle(LibrariesManagerUtils.BUNDLE_DI), new Path("/resources"),
+                                        null))
+                        .getFile()).toPath().toAbsolutePath().toString();
+            }
+        } catch (IOException e) {
+            ExceptionHandler.process(e);
+        }
+        return indexFileFolder;
     }
 
     public String getStudioIndexPath() {
