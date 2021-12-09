@@ -63,37 +63,6 @@ public class ImportHandlerHelper {
 
         if (resource != null) {
             importItem.setProperty(generateProperty(resource));
-
-            ERepositoryObjectType eType = importItem.getRepositoryType();
-
-            if (ERepositoryObjectType.METADATA_CONNECTIONS == eType
-                    && importItem.getItem() instanceof DatabaseConnectionItem) {
-                DatabaseConnectionItem dbconn = (DatabaseConnectionItem) importItem.getItem();
-                String databaseType = dbconn.getTypeName();
-
-                if (StringUtils.isBlank(databaseType)) {
-
-                    IPath removeFileExtension = resourcePath.removeFileExtension();
-                    String portableString = removeFileExtension.toPortableString();
-                    removeFileExtension = new Path(portableString);
-                    IPath addFileExtension = removeFileExtension.addFileExtension(FileConstants.ITEM_EXTENSION);
-                    ImportItem importMetadataItem = new ImportItem(addFileExtension);
-                    Resource metadataItemResource = HandlerUtil.loadResource(resManager, importMetadataItem);
-                    if (metadataItemResource != null) {
-                        EList<EObject> contents = metadataItemResource.getContents();
-                        if (contents != null) {
-                            contents.forEach(content -> {
-                                if (content instanceof DatabaseConnectionImpl) {
-                                    DatabaseConnectionImpl dbConnection = (DatabaseConnectionImpl) content;
-                                    if (!StringUtils.isBlank(dbConnection.getDatabaseType())) {
-                                        dbconn.setTypeName(dbConnection.getDatabaseType());
-                                    }
-                                }
-                            });
-                        }
-                    }
-                }
-            }
         } else {
             ResourceNotFoundException ex = new ResourceNotFoundException(Messages.getString(
                     "ImportBasicHandler_LoadEMFResourceError", //$NON-NLS-1$
