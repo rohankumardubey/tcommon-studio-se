@@ -24,6 +24,8 @@ public interface IGitUIProviderService extends IService {
 
     boolean checkPendingChanges();
 
+    public void openPushFailedDialog(Object pushResult);
+
     public static IGitUIProviderService get() {
         GlobalServiceRegister register = GlobalServiceRegister.getDefault();
         if (!register.isServiceRegistered(IGitUIProviderService.class)) {

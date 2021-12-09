@@ -75,12 +75,18 @@ public enum EDatabaseTypeName {
 
     JAVADB(
             "JavaDB", "JavaDB", Boolean.FALSE, "JAVADB", EDatabaseSchemaOrCatalogMapping.Sid, EDatabaseSchemaOrCatalogMapping.None), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    INGRES(
+            "Ingres", "Ingres", Boolean.FALSE, "INGRES", EDatabaseSchemaOrCatalogMapping.None, EDatabaseSchemaOrCatalogMapping.Schema), // "INGRES"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    INTERBASE(
+            "Interbase", "Interbase", Boolean.FALSE, "INTERBASE", EDatabaseSchemaOrCatalogMapping.Sid, EDatabaseSchemaOrCatalogMapping.None), // "INTERBASE"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     SQLITE(
             "SQLite", "SQLite", Boolean.FALSE, "SQLITE", EDatabaseSchemaOrCatalogMapping.Sid, EDatabaseSchemaOrCatalogMapping.None), // "SQLITE"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     FIREBIRD(
             "FireBird", "FireBird", Boolean.FALSE, "FIREBIRD", EDatabaseSchemaOrCatalogMapping.Sid, EDatabaseSchemaOrCatalogMapping.None), // "FIREBIRD"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     INFORMIX(
             "Informix", "Informix", Boolean.TRUE, "INFORMIX", EDatabaseSchemaOrCatalogMapping.Sid, EDatabaseSchemaOrCatalogMapping.None), // "INFORMIX"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    VECTORWISE(
+            "VectorWise", "VectorWise", Boolean.FALSE, "VECTORWISE", EDatabaseSchemaOrCatalogMapping.Sid, EDatabaseSchemaOrCatalogMapping.None), //$NON-NLS-1$ //$NON-NLS-2$  //$NON-NLS-3$
 
     ACCESS(
             "Access", "Access", Boolean.FALSE, "ACCESS", EDatabaseSchemaOrCatalogMapping.None, EDatabaseSchemaOrCatalogMapping.Default_Name), // "ACCESS"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -104,6 +110,8 @@ public enum EDatabaseTypeName {
 
     GREENPLUM(
             "Greenplum", "Greenplum", Boolean.TRUE, "GREENPLUM", "GREENPLUM", EDatabaseSchemaOrCatalogMapping.Sid, EDatabaseSchemaOrCatalogMapping.Schema), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    PARACCEL(
+            "ParAccel", "ParAccel", Boolean.TRUE, "PARACCEL", "PARACCEL", EDatabaseSchemaOrCatalogMapping.Sid, EDatabaseSchemaOrCatalogMapping.Schema), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
     NETEZZA(
             "Netezza", "Netezza", Boolean.FALSE, "NETEZZA", EDatabaseSchemaOrCatalogMapping.Sid, EDatabaseSchemaOrCatalogMapping.None), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     SAS("SAS", "SAS", Boolean.TRUE, "SAS", EDatabaseSchemaOrCatalogMapping.None, EDatabaseSchemaOrCatalogMapping.Schema), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -332,6 +340,9 @@ public enum EDatabaseTypeName {
             isSupport = isSupportODBC;
         } else if (EDatabaseTypeName.SAS == this) {
             isSupport = false;
+        } else if (EDatabaseTypeName.INGRES == this || EDatabaseTypeName.INTERBASE == this || EDatabaseTypeName.VECTORWISE == this
+                || EDatabaseTypeName.PARACCEL == this) {
+            return false;
         }
 
         return isSupport;
