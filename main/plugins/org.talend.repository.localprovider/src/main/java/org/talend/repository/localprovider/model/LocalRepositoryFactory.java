@@ -3403,7 +3403,9 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                 String profKey = p2Service.getProfileIdForProject(project.getTechnicalLabel(), false);
                 p2Service.setProfileKey(profKey);
                 IProgressMonitor subMonitor = SubMonitor.convert(monitor);
-                int adaptResult = p2Service.adaptFeaturesForProject(subMonitor, project);
+                Project localProject = getRepositoryContext().getProject();
+                boolean doUpgrade = p2Service.checkProjectCompatibility(subMonitor, localProject);
+                int adaptResult = p2Service.adaptFeaturesForProject(subMonitor, project, doUpgrade);
                 if (IStudioLiteP2Service.RESULT_DONE == adaptResult) {
                     // when switch product,need to set --disableLoginDialog to avoid pop up logindialog
                     EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(
@@ -3429,16 +3431,9 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
         }
     }
 
-    protected void checkProjectVersion(Project localProject) throws PersistenceException {
+    private void checkProjectVersion(Project localProject) throws PersistenceException {
         if (PluginChecker.isStudioLite()) {
-            try {
-                IStudioLiteP2Service.get().checkProjectCompatibility(new NullProgressMonitor(), localProject);
-                return;
-            } catch (PersistenceException e) {
-                throw e;
-            } catch (Exception e) {
-                throw new PersistenceException(e);
-            }
+            return;
         }
         ProjectPreferenceManager prefManager = new ProjectPreferenceManager(localProject, PluginChecker.CORE_TIS_PLUGIN_ID,
                 false);
