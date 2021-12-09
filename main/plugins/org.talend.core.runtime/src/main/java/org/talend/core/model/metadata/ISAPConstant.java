@@ -94,6 +94,8 @@ public interface ISAPConstant {
 
     public static final String OUTPUT_XML_META_NAME = PARAM_OUTPUT + SCHEMA_SUFIX;
 
+    public static final String ADSO_CONNECTION_TYPE = "adsoConnectionType";//$NON-NLS-1$
+
     // Hana database properties
     public static final String PROP_USE_HANA = "db.useHana";//$NON-NLS-1$
 
@@ -108,4 +110,9 @@ public interface ISAPConstant {
     public static final String PROP_DB_PASSWORD = "db.password";//$NON-NLS-1$
 
     public static final String PROP_DB_ADDITIONAL_PROPERTIES = "db.additionalProperties";//$NON-NLS-1$
+
+    public static final String SAP_JCO = "SAP_JCO"; //$NON-NLS-1$
+
+    public static final String HANA_JDBC = "HANA_JDBC";//$NON-NLS-1$
+
 }
