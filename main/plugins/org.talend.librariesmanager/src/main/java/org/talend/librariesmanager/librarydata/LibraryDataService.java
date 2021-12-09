@@ -13,6 +13,7 @@
 package org.talend.librariesmanager.librarydata;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,11 +23,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.designer.maven.aether.util.MavenLibraryResolverProvider;
+import org.talend.librariesmanager.prefs.LibrariesManagerUtils;
 
 public class LibraryDataService {
 
@@ -206,7 +211,7 @@ public class LibraryDataService {
                             libraryObj.getLicenses().add(unknownLicense);
                         }
                         libraryObj.setPomMissing(false);
-                        if (null == properties.get("type") || "".equals((String) properties.get("type"))) {
+                        if (null == properties.get("type") || "".equals(properties.get("type"))) {
                             libraryObj.setType(MavenConstants.PACKAGING_POM);
                         }
                     }
@@ -389,13 +394,30 @@ public class LibraryDataService {
      * @return
      */
     private File getCurrentUserLibraryDataFile() {
-        return new File(Platform.getConfigurationLocation().getURL().getPath(), LIBRARIES_DATA_FILE_NAME);
+        File folder = null;
+        try {
+            folder = new File(FileLocator
+                    .toFileURL(FileLocator
+                            .find(Platform.getBundle(LibrariesManagerUtils.BUNDLE_DI), new Path("/resources"), null))
+                    .getFile());
+        } catch (IOException e) {
+            ExceptionHandler.process(e);
+        }
+        return new File(folder, LIBRARIES_DATA_FILE_NAME);
     }
 
     private static File getStudioLibraryDataFile() {
         String folder = System.getProperty(KEY_LIBRARIES_DATA_FOLDER);
         if (folder == null) {
-            folder = new File(Platform.getInstallLocation().getURL().getPath(), "configuration").getAbsolutePath(); //$NON-NLS-1$
+            try {
+                folder = new File(FileLocator
+                        .toFileURL(FileLocator
+                                .find(Platform.getBundle(LibrariesManagerUtils.BUNDLE_DI), new Path("/resources"),
+                                        null))
+                        .getFile()).getAbsolutePath();
+            } catch (IOException e) {
+                ExceptionHandler.process(e);
+            }
         }
         return new File(folder, LIBRARIES_DATA_FILE_NAME);
     }

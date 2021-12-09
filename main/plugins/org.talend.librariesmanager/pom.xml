@@ -9,6 +9,25 @@
 	</parent>
 	<artifactId>org.talend.librariesmanager</artifactId>
 	<packaging>eclipse-plugin</packaging>
+	
+	<repositories>
+		<repository>
+			<id>snapshots</id>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<url>${talend.nexus.host}/nexus/content/repositories/snapshots/</url>
+		</repository>
+	</repositories>
+
+	<properties>
+		<talend.nexus.host>https://artifacts-oss.talend.com</talend.nexus.host>
+        <talend.nexus.host.oss>https://artifacts-oss.talend.com</talend.nexus.host.oss>
+    </properties>
+        
 	<build>
 		<plugins>
 			<plugin>
@@ -82,6 +101,26 @@
 									<groupId>org.jboss.marshalling</groupId>
 									<artifactId>jboss-marshalling</artifactId>
 									<version>2.0.12.Final</version>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-studio-index</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>studioIndex</artifactId>
+									<version>8.8.8-SNAPSHOT</version>
+									<type>zip</type>
+									<classifier />
+									<overWrite>true</overWrite>
+									<outputDirectory>${project.basedir}/resources</outputDirectory>
 								</artifactItem>
 							</artifactItems>
 						</configuration>
