@@ -592,7 +592,7 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
         if (serviceRegister.isServiceRegistered(IGITProviderService.class)) {
             gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault().getService(IGITProviderService.class);
         }
-        if (!ProcessorUtilities.isCIMode() && !project.isLocal() && gitProviderService != null
+        if ((ProcessorUtilities.isCIMode() || !project.isLocal()) && gitProviderService != null
                 && gitProviderService.isGITProject(project)) {
             try {
                 if (serviceRegister.isServiceRegistered(IGitInfoService.class)) {
