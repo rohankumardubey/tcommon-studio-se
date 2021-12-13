@@ -102,7 +102,7 @@ public interface IStudioLiteP2Service extends IService {
     int showUpdateProjectRequiredFeaturesWizard(IProgressMonitor monitor, ValidatePotentialFeaturesHook hook, Project proj)
             throws Exception;
 
-    int adaptFeaturesForProject(IProgressMonitor monitor, Project proj, boolean doUpdate) throws Exception;
+    int adaptFeaturesForProject(IProgressMonitor monitor, Project proj) throws Exception;
 
     void setLocalPatches(Collection<String> localPatchUris) throws Exception;
 
