@@ -15,8 +15,12 @@ package org.talend.librariesmanager.model.service;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
@@ -44,6 +48,17 @@ public class LibrariesIndexManager {
     private static final String LIBRARIES_INDEX = "LibrariesIndex.xml";
 
     private static final String MAVEN_INDEX = "MavenUriIndex.xml";
+
+    private static final Set<String> EXCLUDED_INDEX_EXT = new HashSet<String>();
+
+    static {
+
+        EXCLUDED_INDEX_EXT.add(".javajet");
+        EXCLUDED_INDEX_EXT.add(".xml");
+        EXCLUDED_INDEX_EXT.add(".png");
+        EXCLUDED_INDEX_EXT.add(".gif");
+        EXCLUDED_INDEX_EXT.add(".properties");
+    }
 
     private LibrariesIndexManager() {
         loadIndexResources();
@@ -91,6 +106,9 @@ public class LibrariesIndexManager {
     }
 
     public void saveStudioIndexResource() {
+        Set<String> ignoredKeys = studioLibIndex.getJarsToRelativePath().stream().map(entry -> entry.getKey())
+                .filter(k -> ingoredIndex(k)).collect(Collectors.toSet());
+        ignoredKeys.forEach(k -> studioLibIndex.getJarsToRelativePath().removeKey(k));
         saveResource(studioLibIndex, LIBRARIES_INDEX);
 
     }
@@ -160,6 +178,15 @@ public class LibrariesIndexManager {
         }
 
         return null;
+    }
+
+    private static boolean ingoredIndex(String key) {
+        for (String ext : EXCLUDED_INDEX_EXT) {
+            if (StringUtils.endsWith(key, ext)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
