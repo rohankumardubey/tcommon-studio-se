@@ -6,8 +6,8 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry exported="true" kind="lib" path="lib/log4j-api-2.12.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/log4j-core-2.12.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j-api-2.15.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j-core-2.15.0.jar"/>
 	<classpathentry kind="src" path="src/main/java/"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
