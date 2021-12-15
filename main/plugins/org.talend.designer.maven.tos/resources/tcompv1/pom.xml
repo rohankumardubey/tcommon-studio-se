@@ -9,12 +9,13 @@
     </parent>
     <artifactId>studio-tcompv1-dependencies</artifactId>
     <packaging>pom</packaging>
-    
+
     <properties>
         <tcomp.version>1.38.3</tcomp.version>
         <slf4j.version>1.7.32</slf4j.version>
+        <log4j2.version>2.15.0</log4j2.version>
     </properties>
-    
+
     <repositories>
         <repository>
             <id>talend_open</id>
@@ -57,9 +58,49 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
     </repositories>
-    
+
     <dependencyManagement>
         <dependencies>
+            <dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>${log4j2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-api</artifactId>
+				<version>${log4j2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-slf4j-impl</artifactId>
+				<version>${log4j2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-jul</artifactId>
+				<version>${log4j2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-jcl</artifactId>
+				<version>${log4j2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-1.2-api</artifactId>
+				<version>${log4j2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-to-slf4j</artifactId>
+				<version>${log4j2.version}</version>
+			</dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-web</artifactId>
+                <version>${log4j2.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.talend.sdk.component</groupId>
                 <artifactId>component-runtime</artifactId>
@@ -69,7 +110,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.talend.sdk.component</groupId>
@@ -112,7 +153,7 @@
             <version>1.14</version>
         </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
             <plugin>
