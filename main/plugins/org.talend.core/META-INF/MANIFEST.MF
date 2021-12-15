@@ -59,6 +59,6 @@ Import-Package: org.eclipse.m2e.core,
  org.eclipse.m2e.core.embedder,
  org.slf4j,
  org.slf4j.spi
-Bundle-ClassPath: lib/log4j-api-2.15.0.jar,
- lib/log4j-core-2.15.0.jar,
+Bundle-ClassPath: lib/log4j-api-2.16.0.jar,
+ lib/log4j-core-2.16.0.jar,
  .
