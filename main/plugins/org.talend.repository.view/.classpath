@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/eclipse/ui/internal/**"/>
+		</accessrules>
+	</classpathentry>
 	<classpathentry excluding="org/talend/repository/viewer/filter/XPerpectiveFilter.java|org/talend/repository/viewer/tos/content/provider/" kind="src" path="src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
