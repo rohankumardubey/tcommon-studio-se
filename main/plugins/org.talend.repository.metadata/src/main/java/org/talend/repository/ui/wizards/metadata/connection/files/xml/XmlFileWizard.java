@@ -97,6 +97,7 @@ import org.talend.repository.metadata.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.model.RepositoryNodeUtilities;
+
 import orgomg.cwm.resource.record.RecordFactory;
 import orgomg.cwm.resource.record.RecordFile;
 
@@ -655,7 +656,7 @@ public class XmlFileWizard extends CheckLastVersionRepositoryWizard implements I
 
                 if (firstRowToExtractMetadata == 0) {
                     if (schemaTarget.get(i).getTagName() != null && !schemaTarget.get(i).getTagName().equals("")) { //$NON-NLS-1$
-                        label[i] = "" + schemaTarget.get(i).getTagName().trim().replaceAll(" ", "_"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        label[i] = "" + schemaTarget.get(i).getTagName().trim(); //$NON-NLS-1$
                         label[i] = MetadataToolHelper.validateColumnName(label[i], i);
                     }
                 }

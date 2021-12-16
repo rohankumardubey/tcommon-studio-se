@@ -21,6 +21,8 @@ import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.service.IMRProcessService;
 import org.talend.core.service.IStormProcessService;
+import org.talend.core.ui.ISparkJobletProviderService;
+import org.talend.core.ui.ISparkStreamingJobletProviderService;
 import org.talend.designer.core.ICamelDesignerCoreService;
 
 /**
@@ -83,6 +85,10 @@ public enum ComponentCategory {
     }
 
     public static ComponentCategory getComponentCategoryFromItem(Item item) {
+        return getComponentCategoryFromItem(item, false);
+    }
+
+    public static ComponentCategory getComponentCategoryFromItem(Item item, boolean isJoblet) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
             ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault().getService(
                     ICamelDesignerCoreService.class);
@@ -111,6 +117,23 @@ public enum ComponentCategory {
             }
         }
         if (item instanceof ProcessItem || item instanceof JobletProcessItem) {
+            if (isJoblet) {
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkJobletProviderService.class)) {
+                    ISparkJobletProviderService sparkJobletService = GlobalServiceRegister.getDefault()
+                            .getService(ISparkJobletProviderService.class);
+                    if (sparkJobletService.isSparkJobletItem(item)) {
+                        return ComponentCategory.CATEGORY_4_SPARK;
+                    }
+                }
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkStreamingJobletProviderService.class)) {
+                    ISparkStreamingJobletProviderService sparkStrJobletService = GlobalServiceRegister.getDefault()
+                            .getService(ISparkStreamingJobletProviderService.class);
+                    if (sparkStrJobletService.isSparkStreamingJobletItem(item)) {
+                        return ComponentCategory.CATEGORY_4_SPARKSTREAMING;
+                    }
+                }
+            }
+
             return ComponentCategory.CATEGORY_4_DI;
         }
         return null;

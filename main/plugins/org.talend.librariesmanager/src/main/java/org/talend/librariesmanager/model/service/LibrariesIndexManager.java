@@ -16,10 +16,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
@@ -28,13 +32,16 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMLParserPoolImpl;
+import org.osgi.framework.Bundle;
 import org.talend.commons.exception.CommonExceptionHandler;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.EmfHelper;
 import org.talend.librariesmanager.emf.librariesindex.LibrariesIndex;
 import org.talend.librariesmanager.emf.librariesindex.LibrariesindexFactory;
 import org.talend.librariesmanager.emf.librariesindex.LibrariesindexPackage;
 import org.talend.librariesmanager.emf.librariesindex.util.LibrariesindexResourceFactoryImpl;
+import org.talend.librariesmanager.prefs.LibrariesManagerUtils;
 
 public class LibrariesIndexManager {
 
@@ -53,6 +60,17 @@ public class LibrariesIndexManager {
     private ReentrantReadWriteLock mavenLibLock = new ReentrantReadWriteLock();
 
     private static final Logger LOGGER = Logger.getLogger(LibrariesIndexManager.class);
+    
+    private static final Set<String> EXCLUDED_INDEX_EXT = new HashSet<String>();
+
+    static {
+
+        EXCLUDED_INDEX_EXT.add(".javajet");
+        EXCLUDED_INDEX_EXT.add(".xml");
+        EXCLUDED_INDEX_EXT.add(".png");
+        EXCLUDED_INDEX_EXT.add(".gif");
+        EXCLUDED_INDEX_EXT.add(".properties");
+    }
 
     private LibrariesIndexManager() {
         loadIndexResources();
@@ -186,7 +204,20 @@ public class LibrariesIndexManager {
     }
 
     private String getIndexFileInstallFolder() {
-        return new Path(Platform.getConfigurationLocation().getURL().getPath()).toFile().getAbsolutePath();
+        String indexFileFolder = null;
+        try {
+            Bundle librariesManagerBundle = Platform.getBundle(LibrariesManagerUtils.BUNDLE_DI);
+            if (librariesManagerBundle != null) {
+                indexFileFolder = new File(FileLocator
+                        .toFileURL(FileLocator
+                                .find(Platform.getBundle(LibrariesManagerUtils.BUNDLE_DI), new Path("/resources"),
+                                        null))
+                        .getFile()).toPath().toAbsolutePath().toString();
+            }
+        } catch (IOException e) {
+            ExceptionHandler.process(e);
+        }
+        return indexFileFolder;
     }
 
     public String getStudioIndexPath() {
@@ -216,11 +247,25 @@ public class LibrariesIndexManager {
             this.studioLibLock.readLock().unlock();
         }
     }
+    
+    private static boolean ingoredIndex(String key) {
+        for (String ext : EXCLUDED_INDEX_EXT) {
+            if (StringUtils.endsWith(key, ext)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Add to studio lib without saving
      */
     public void AddStudioLibs(String key, String v) {
+        
+        if(ingoredIndex(key)) {
+            return;
+        }
+        
         this.studioLibLock.writeLock().lock();
         try {
             this.studioLibIndex.getJarsToRelativePath().put(key, v);
@@ -233,6 +278,9 @@ public class LibrariesIndexManager {
      * whether contains key
      */
     public boolean containsStudioLibs(String key) {
+        if (ingoredIndex(key)) {
+            return true;
+        }
         this.studioLibLock.readLock().lock();
         try {
             return this.studioLibIndex.getJarsToRelativePath().containsKey(key);

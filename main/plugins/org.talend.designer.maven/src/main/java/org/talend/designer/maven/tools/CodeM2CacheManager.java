@@ -22,10 +22,12 @@ import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.utils.VersionUtils;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.repository.ProjectManager;
+import org.talend.utils.io.FilesUtils;
 
 public class CodeM2CacheManager {
 
@@ -65,7 +67,15 @@ public class CodeM2CacheManager {
 
     public static void updateCacheStatus(String projectTechName, ERepositoryObjectType codeType, boolean isUpdated) {
         if (projectTechName == null) {
-            projectTechName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
+            Project currentProject = ProjectManager.getInstance().getCurrentProject();
+            if (currentProject == null) {
+                if (cacheFolder.exists()) {
+                    FilesUtils.deleteFolder(cacheFolder, true);
+                }
+                cacheFolder.mkdirs();
+                return;
+            }
+            projectTechName = currentProject.getTechnicalLabel();
         }
         File cacheFile = getCacheFile(projectTechName, codeType);
         try (OutputStream out = new FileOutputStream(cacheFile)) {
@@ -79,7 +89,7 @@ public class CodeM2CacheManager {
 
     public static File getCacheFile(String projectTechName, ERepositoryObjectType codeType) {
         String cacheFileName = PomIdsHelper.getProjectGroupId(projectTechName) + "." + codeType.name().toLowerCase() + "-" //$NON-NLS-1$ //$NON-NLS-2$
-                + PomIdsHelper.getCodesVersion(projectTechName) + ".cache"; // $NON-NLS-1$
+                + PomIdsHelper.getCodesVersion(projectTechName) + "-" + VersionUtils.getInternalVersion() + ".cache"; // $NON-NLS-1$
         return new File(cacheFolder, cacheFileName);
     }
 

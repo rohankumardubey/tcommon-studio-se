@@ -6,6 +6,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
@@ -20,5 +21,17 @@ public interface IGitUIProviderService extends IService {
             IRepositoryViewObject obj);
 
     public String[] changeCredentials(Shell parent, Serializable uriIsh, String initUser, boolean canStoreCredentials);
+
+    boolean checkPendingChanges();
+
+    public void openPushFailedDialog(Object pushResult);
+
+    public static IGitUIProviderService get() {
+        GlobalServiceRegister register = GlobalServiceRegister.getDefault();
+        if (!register.isServiceRegistered(IGitUIProviderService.class)) {
+            return null;
+        }
+        return register.getService(IGitUIProviderService.class);
+    }
 
 }

@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipException;
 
@@ -76,6 +77,8 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.provider.EmfResourcesFactoryReader;
 import org.talend.commons.runtime.model.emf.provider.ResourceOption;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
+import org.talend.commons.ui.runtime.image.EImage;
+import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.properties.Item;
@@ -86,7 +89,10 @@ import org.talend.core.model.repository.RepositoryViewObject;
 import org.talend.core.model.utils.TalendPropertiesUtil;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.service.IExchangeService;
+import org.talend.core.service.IStudioLiteP2Service;
+import org.talend.core.service.IStudioLiteP2Service.IInstallableUnitInfo;
 import org.talend.core.ui.advanced.composite.FilteredCheckboxTree;
+import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.component.ComponentPaletteUtilities;
 import org.talend.designer.core.IMultiPageTalendEditor;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
@@ -123,6 +129,7 @@ import org.talend.repository.ui.dialog.AProgressMonitorDialogWithCancel;
 public class ImportItemsWizardPage extends WizardPage {
 
     private static final String TYPE_BEANS = "BEANS";
+    private static final String TALEND_FILE_NAME = "talend.project";
 
     private Button itemFromDirectoryRadio, itemFromArchiveRadio;
 
@@ -131,6 +138,8 @@ public class ImportItemsWizardPage extends WizardPage {
     protected Button browseDirectoriesButton, browseArchivesButton, fromExchangeButton;
 
     protected Button dependencyButton;
+    
+    protected Button requiredFeatureButton;
 
     protected FilteredCheckboxTree filteredCheckboxTree;
 
@@ -366,14 +375,18 @@ public class ImportItemsWizardPage extends WizardPage {
     }
 
     protected void createImportDependenciesArea(Composite parent) {
-        Composite dependencyArea = new Composite(parent, SWT.NONE);
+        Composite dependencyArea = new Composite(parent, SWT.None);
         GridLayout layout = new GridLayout();
         layout.numColumns = 1;
         layout.marginWidth = 0;
+        layout.marginHeight = 0;
         layout.makeColumnsEqualWidth = false;
         dependencyArea.setLayout(layout);
+        dependencyArea.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        
         dependencyButton = new Button(dependencyArea, SWT.CHECK);
         dependencyButton.setText(Messages.getString("ImportItemsWizardPage_importDependenciesText"));
+        setButtonLayoutData(dependencyButton);
         dependencyButton.setSelection(getImportDependenciesPref());
         dependencyButton.addSelectionListener(new SelectionAdapter() {
 
@@ -385,8 +398,83 @@ public class ImportItemsWizardPage extends WizardPage {
                 filteredCheckboxTree.calculateCheckedLeafNodes();
                 checkSelectedItemErrors();
             }
-
         });
+           
+        if (IBrandingService.get().isPoweredbyTalend()) {
+            Composite requiredCom = new Composite(dependencyArea, SWT.None);
+            GridLayout requiredComLayout = new GridLayout();
+            requiredComLayout.numColumns = 2;
+            requiredComLayout.marginWidth = 0;
+            requiredComLayout.marginHeight = 0;
+            requiredComLayout.horizontalSpacing = 0;
+            requiredComLayout.makeColumnsEqualWidth = false;
+            requiredCom.setLayout(requiredComLayout);
+            requiredCom.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+            requiredFeatureButton = new Button(requiredCom, SWT.CHECK);
+            requiredFeatureButton.setText(Messages.getString("ImportItemsWizardPage_AnalyseRequiredFeatureButton"));
+            requiredFeatureButton.setToolTipText(Messages.getString("ImportItemsWizardPage_AnalyseRequiredFeatureButtonTooltip"));
+            requiredFeatureButton.setSelection(true);
+            setButtonLayoutData(requiredFeatureButton);
+            requiredFeatureButton.addSelectionListener(new SelectionAdapter() {
+
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    if (requiredFeatureButton.getSelection()) {
+                        calRequiredFeatures();
+                    }
+                }
+            });
+            Label imageLabel = new Label(requiredCom, SWT.NONE);
+            imageLabel.setImage(ImageProvider.getImage(EImage.WARNING_ICON));
+            imageLabel.setLayoutData(new GridData());
+            imageLabel.setToolTipText(Messages.getString("ImportItemsWizardPage_AnalyseRequiredFeatureButtonTooltip"));
+        }  
+    }
+    
+    private boolean calRequiredFeatures() {
+        IStudioLiteP2Service p2Service = IStudioLiteP2Service.get();
+        if (this.resManager != null && p2Service != null) {
+            Map<String, Set<IInstallableUnitInfo>> projectToFeatureMap = new HashMap<String, Set<IInstallableUnitInfo>>();
+            for (IPath path : resManager.getPaths()) {
+                if (path.lastSegment().equals(TALEND_FILE_NAME)) {
+                    projectToFeatureMap.put(path.removeLastSegments(1).toPortableString(), null);
+                }
+            }
+
+            AProgressMonitorDialogWithCancel<Boolean> dialogWithCancel = new AProgressMonitorDialogWithCancel<Boolean>(
+                    getShell()) {
+
+                @Override
+                protected Boolean runWithCancel(IProgressMonitor monitor) throws Throwable {
+                    for (String projectPath : projectToFeatureMap.keySet()) {
+                        projectToFeatureMap.put(projectPath, p2Service.calAllRequiredFeature(monitor, projectPath, true));
+                    }
+                    Set<IInstallableUnitInfo> allRequiredFeatures = new HashSet<IInstallableUnitInfo>();
+                    for (String projectPath : projectToFeatureMap.keySet()) {
+                        allRequiredFeatures.addAll(projectToFeatureMap.get(projectPath));
+                    }
+                    if (allRequiredFeatures.size() > 0) {
+                        return p2Service.showMissingFeatureWizard(monitor, allRequiredFeatures);
+                    } else {
+                        return true;
+                    }
+                }
+            };
+
+            String executingMessage = Messages.getString("ImportItemsWizardPage_ProgressDialog_ExecutingMessage"); //$NON-NLS-1$
+            String waitingFinishMessage = Messages.getString("ImportItemsWizardPage_ProgressDialog_WaitingCheckRequiredFeature"); //$NON-NLS-1$
+            try {
+                dialogWithCancel.run(executingMessage, waitingFinishMessage, true, AProgressMonitorDialogWithCancel.ENDLESS_WAIT_TIME);
+                Throwable executeException = dialogWithCancel.getExecuteException();
+                if (executeException != null) {
+                    throw new Exception(executeException);
+                }
+            } catch (Exception ex) {
+                ExceptionHandler.process(ex);
+            }
+        }
+        return false;
     }
 
     protected boolean getImportDependenciesPref() {
@@ -584,7 +672,7 @@ public class ImportItemsWizardPage extends WizardPage {
 
         // see feature 3949
         this.overwriteButton = new Button(optionsArea, SWT.CHECK);
-        this.overwriteButton.setText(Messages.getString("ImportItemsWizardPage_overwriteItemsText")); //$NON-NLS-1$
+        this.overwriteButton.setText(Messages.getString("ImportItemsWizardPage_overwriteItemsTxt")); //$NON-NLS-1$
         this.overwriteButton.addSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -789,6 +877,9 @@ public class ImportItemsWizardPage extends WizardPage {
                 setPageComplete(false);
             } else {
                 populateItems(this.overwriteButton == null ? false : this.overwriteButton.getSelection());
+            }
+            if (requiredFeatureButton != null && requiredFeatureButton.getSelection()) {
+                calRequiredFeatures();
             }
         }
 

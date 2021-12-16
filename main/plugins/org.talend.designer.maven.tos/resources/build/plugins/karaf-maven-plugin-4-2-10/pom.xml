@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.talend.studio</groupId>
 		<artifactId>studio-maven-repository-tos</artifactId>
-		<version>8.0.1-SNAPSHOT</version>
+		<version>8.8.8-SNAPSHOT</version>
 		<relativePath>../../../</relativePath>
 	</parent>
 	<artifactId>karaf-maven-plugin-4-2-10-tos</artifactId>
@@ -42,6 +42,10 @@
 				<exclusion>
 					<groupId>org.apache.commons</groupId>
 					<artifactId>commons-compress</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jsoup</groupId>
+					<artifactId>jsoup</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -161,6 +165,11 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
 			<version>1.21</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.14.2</version>
 		</dependency>
 	</dependencies>
 	<build>

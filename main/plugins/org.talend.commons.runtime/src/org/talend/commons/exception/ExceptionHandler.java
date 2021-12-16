@@ -38,6 +38,12 @@ public class ExceptionHandler {
         CommonExceptionHandler.log(message);
     }
 
+    public static void logDebug(String message) {
+        if (CommonsPlugin.isDebugMode() || CommonsPlugin.isDevMode()) {
+            CommonExceptionHandler.log(message);
+        }
+    }
+    
     public static void process(Throwable ex, Priority priority) {
         CommonExceptionHandler.process(ex, priority);
 

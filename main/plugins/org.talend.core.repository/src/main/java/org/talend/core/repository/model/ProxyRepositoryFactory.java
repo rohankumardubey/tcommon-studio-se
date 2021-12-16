@@ -59,6 +59,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.navigator.CommonNavigator;
+import org.eclipse.ui.navigator.CommonViewer;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -133,6 +135,7 @@ import org.talend.core.model.repository.RepositoryContentManager;
 import org.talend.core.model.repository.RepositoryObject;
 import org.talend.core.model.repository.RepositoryViewObject;
 import org.talend.core.model.routines.CodesJarInfo;
+import org.talend.core.model.utils.RepositoryManagerHelper;
 import org.talend.core.repository.CoreRepositoryPlugin;
 import org.talend.core.repository.constants.Constant;
 import org.talend.core.repository.constants.FileConstants;
@@ -163,6 +166,7 @@ import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.documentation.ERepositoryActionName;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.RepositoryConstants;
+import org.talend.repository.ui.views.IRepositoryView;
 import org.talend.utils.io.FilesUtils;
 
 import orgomg.cwm.objectmodel.core.ModelElement;
@@ -2390,16 +2394,32 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
             String str[] = new String[] { getRepositoryContext().getUser() + "", projectManager.getCurrentProject() + "" }; //$NON-NLS-1$ //$NON-NLS-2$
             log.info(Messages.getString("ProxyRepositoryFactory.log.loggedOn", str)); //$NON-NLS-1$
         } catch (LoginException e) {
-            logOffProject();
+            try {
+                logOffProject();
+            } catch (Exception e1) {
+                ExceptionHandler.process(e1);
+            }
             throw e;
         } catch (PersistenceException e) {
-            logOffProject();
+            try {
+                logOffProject();
+            } catch (Exception e1) {
+                ExceptionHandler.process(e1);
+            }
             throw e;
         } catch (BusinessException e) {
-            logOffProject();
+            try {
+                logOffProject();
+            } catch (Exception e1) {
+                ExceptionHandler.process(e1);
+            }
             throw new PersistenceException(e);
         } catch (RuntimeException e) {
-            logOffProject();
+            try {
+                logOffProject();
+            } catch (Exception e1) {
+                ExceptionHandler.process(e1);
+            }
             throw e;
         }
     }
@@ -2550,6 +2570,21 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                 root.setEnableDisposed(true);
                 root.dispose();
             }
+            
+            /*Dispose the tree nodes after log off project*/
+            Display.getDefault().syncExec(new Runnable() {
+
+                @Override
+                public void run() {
+                    IRepositoryView repositoryView = RepositoryManagerHelper.findRepositoryView();
+                    if (repositoryView instanceof CommonNavigator) {
+                        ProjectRepositoryNode.getInstance().cleanup();
+                        CommonViewer commonViewer = ((CommonNavigator) repositoryView).getCommonViewer();
+                        Object input = commonViewer.getInput();
+                        commonViewer.setInput(input);
+                    }
+                }
+            });
         }
         IRunProcessService runProcessService = getRunProcessService();
         if (runProcessService != null) {

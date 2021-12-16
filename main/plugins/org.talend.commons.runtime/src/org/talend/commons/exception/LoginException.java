@@ -20,9 +20,24 @@ package org.talend.commons.exception;
 public class LoginException extends BusinessException {
 
     public static final String RESTART = "restart";
+    
+    private int errCode;
+    
+
+    public LoginException(String key, Throwable cause) {
+        super(key, cause);
+    }
 
     public LoginException(String message) {
         super(message);
     }
-
+    
+    public LoginException(int errCode, String message) {
+        super(message);
+        this.errCode = errCode;
+    }
+    
+    public int getErrCode() {
+        return this.errCode;
+    }
 }

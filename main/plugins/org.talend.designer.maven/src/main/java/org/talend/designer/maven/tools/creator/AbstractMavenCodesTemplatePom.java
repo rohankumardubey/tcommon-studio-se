@@ -19,7 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Exclusion;
 import org.apache.maven.model.Model;
 import org.eclipse.core.resources.IFile;
 import org.talend.core.GlobalServiceRegister;
@@ -130,6 +132,13 @@ public abstract class AbstractMavenCodesTemplatePom extends AbstractMavenGeneral
                         dependency.setScope("provided");
                 }
                 if (dependency != null) {
+                    if (StringUtils.equals(dependency.getGroupId(), "org.talend.daikon")//$NON-NLS-1$
+                            && StringUtils.equals(dependency.getArtifactId(), "crypto-utils")) {//$NON-NLS-1$
+                        Exclusion exclusion = new Exclusion();
+                        exclusion.setGroupId("commons-codec"); //$NON-NLS-1$
+                        exclusion.setArtifactId("commons-codec"); //$NON-NLS-1$
+                        dependency.addExclusion(exclusion);
+                    }
                     existedDependencies.add(dependency);
                 }
             }

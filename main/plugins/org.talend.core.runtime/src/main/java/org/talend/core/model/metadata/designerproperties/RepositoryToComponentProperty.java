@@ -86,6 +86,7 @@ import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.model.utils.IDragAndDropServiceHandler;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.services.IGenericWizardService;
+import org.talend.core.runtime.util.SAPUtils;
 import org.talend.core.service.IMetadataManagmentService;
 import org.talend.core.service.IMetadataManagmentUiService;
 import org.talend.core.utils.KeywordsValidator;
@@ -406,6 +407,8 @@ public class RepositoryToComponentProperty {
                 }
             }
             return values;
+        } else if ("CONNECTION_TYPE".equals(value)) { //$NON-NLS-1$
+            return SAPUtils.isHana(connection) ? ISAPConstant.HANA_JDBC : ISAPConstant.SAP_JCO;
         } else if ("SAPHANA_HOST".equals(value)) { //$NON-NLS-1$
             String dbHost = TaggedValueHelper.getValueString(ISAPConstant.PROP_DB_HOST, connection);
             if (isContextMode(connection, dbHost)) {
@@ -2286,7 +2289,7 @@ public class RepositoryToComponentProperty {
                 for (int j = 0; j < schemaTargets.size(); j++) {
                     SchemaTarget schemaTarget = schemaTargets.get(j);
                     if (schemaTarget.getTagName() != null && !schemaTarget.getTagName().equals("")) { //$NON-NLS-1$
-                        tagName = "" + schemaTarget.getTagName().trim().replaceAll(" ", "_"); //$NON-NLS-1$ //$NON-NLS-2$
+                        tagName = "" + schemaTarget.getTagName().trim(); //$NON-NLS-1$
                         tagName = MetadataToolHelper.validateColumnName(tagName, j);
                         Map<String, Object> map = new HashMap<String, Object>();
                         map.put("SCHEMA_COLUMN", tagName); //$NON-NLS-1$
@@ -2361,7 +2364,8 @@ public class RepositoryToComponentProperty {
                     for (IMetadataColumn metadataColumn : listColumns) {
                         if (metadataColumn.getLabel().equals(schemaTarget.getTagName())) {
                             foundColumn = true;
-                            tagName = "" + schemaTarget.getTagName().trim().replaceAll(" ", "_"); //$NON-NLS-1$ //$NON-NLS-2$
+                            tagName = "" + schemaTarget.getTagName().trim(); //$NON-NLS-1$
+                            // //$NON-NLS-2$
                             tagName = MetadataToolHelper.validateColumnName(tagName, j);
                             Map<String, Object> map = new HashMap<String, Object>();
                             map.put("SCHEMA_COLUMN", tagName); //$NON-NLS-1$

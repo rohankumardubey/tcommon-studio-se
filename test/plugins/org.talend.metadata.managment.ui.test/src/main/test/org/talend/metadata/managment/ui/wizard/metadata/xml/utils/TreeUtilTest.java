@@ -12,11 +12,14 @@
 // ============================================================================
 package org.talend.metadata.managment.ui.wizard.metadata.xml.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.FileLocator;
@@ -93,18 +96,14 @@ public class TreeUtilTest {
         ATreeNode treeNode = SchemaPopulationUtil.getSchemaTree(xsdFile, true, 0);
         FOXTreeNode root = TreeUtil.cloneATreeNode(treeNode, XmlUtil.isXSDFile(xsdFile));
         assertNotNull(root);
-        List<FOXTreeNode> list = root.getChildren();
-        assertTrue(list != null && list.size() == 10);
-        assertEquals("AmountType", list.get(0).getLabel());
-        assertEquals("IndicatorType", list.get(1).getLabel());
-        assertEquals("NumericType", list.get(2).getLabel());
-        assertEquals("CodeType", list.get(3).getLabel());
-        assertEquals("MeasureType", list.get(4).getLabel());
-        assertEquals("DateTimeType", list.get(5).getLabel());
-        assertEquals("QuantityType", list.get(6).getLabel());
-        assertEquals("TextType", list.get(7).getLabel());
-        assertEquals("BinaryObjectType", list.get(8).getLabel());
-        assertEquals("IdentifierType", list.get(9).getLabel());
+        List<Object> listA = Arrays.asList(treeNode.getChildren());
+        List<FOXTreeNode> listT = root.getChildren();
+        assertTrue(listA != null && listA.size() == 10);
+        assertTrue(listT != null && listT.size() == 10);
+        for (int i = 0; i < listA.size(); i++) {
+            assertTrue(listA.get(i) instanceof ATreeNode);
+            assertEquals(((ATreeNode) listA.get(i)).getLabel(), listT.get(i).getLabel());
+        }
     }
 
     @Test

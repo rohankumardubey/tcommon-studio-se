@@ -56,7 +56,8 @@ public class CreateMavenRoutinePom extends AbstractMavenCodesTemplatePom {
         }
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRepositoryService.class)) {
             IRepositoryService repositoryService = GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
-            if (PluginChecker.isBigdataRoutineLoaded() && repositoryService.isProjectLevelLog4j2()) {
+            if ((PluginChecker.isBigdataRoutineLoaded() || PluginChecker.isStudioLite())
+                    && repositoryService.isProjectLevelLog4j2()) {
                 runningModules.addAll(repositoryService.getLog4j2Modules());
             }
         }

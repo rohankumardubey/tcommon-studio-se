@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<feature id="org.talend.commons.feature" label="Commons Feature" version="8.0.1.qualifier" provider-name=".Talend SA."> 
+<feature id="org.talend.commons.feature" label="Commons Feature" version="8.8.8.qualifier" provider-name=".Talend SA."> 
   <description url="http://www.talend.com/online/featuresdescription.html#commons-feature">Complete description about this feature at http://www.talend.com/online/featuresdescription.html#commons-feature</description>  
   <copyright url="http://www.talend.com/online/copyright.txt">Copyright Talend 2006, 2007</copyright>  
   <license>The licence are describe in branding feature</license>  
@@ -8,7 +8,6 @@
     <discovery label="Talend web site" url="http://www.talend.com"/> 
   </url>  
   <requires>
-    <import plugin="org.bouncycastle.bcprov" version="1.68.0" match="greaterOrEqual"/>
     <import plugin="com.fasterxml.jackson.core.jackson-databind" version="2.9.8" match="greaterOrEqual"/>
     <import plugin="jackson-core-asl" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="jackson-mapper-asl" version="0.0.0" match="greaterOrEqual"/>

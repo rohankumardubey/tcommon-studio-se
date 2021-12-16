@@ -109,6 +109,8 @@ public enum EImage implements IImage {
     TABLE_VIEW("/icons/array_hot.png"), //$NON-NLS-1$
     NO_TABLE_VIEW("/icons/array.png"), //$NON-NLS-1$
     COMPOSITE_BACKGROUND("/icons/compositeBackground.jpg"), //$NON-NLS-1$
+    
+    DOWNLOAD_LIB("/icons/download.png"), //$NON-NLS-1$
 
     LOCK_ICON("/icons/lock.gif"), //$NON-NLS-1$
     UNLOCK_ICON("/icons/unlock.gif"), //$NON-NLS-1$
@@ -125,7 +127,6 @@ public enum EImage implements IImage {
     FILL_COLOR_ICON("/icons/fill_color.gif"), //$NON-NLS-1$
 
     OPEN_IN_BROWSER("/icons/open.gif"), //$NON-NLS-1$
-    DOWNLOAD_MODULE("/icons/download.gif"), //$NON-NLS-1$
 
     COMPONENT_MISSING("/icons/component_missing.png"), //$NON-NLS-1$
 

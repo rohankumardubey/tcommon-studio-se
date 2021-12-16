@@ -22,8 +22,6 @@ import org.apache.log4j.Logger;
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.talend.commons.utils.io.FilesUtils;
-import org.talend.commons.utils.resource.FileExtensions;
 import org.talend.core.nexus.ArtifactRepositoryBean;
 import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.core.service.IUpdateService;
@@ -34,7 +32,6 @@ import org.talend.updates.runtime.model.FeatureCategory;
 import org.talend.updates.runtime.nexus.component.ComponentIndexManager;
 import org.talend.updates.runtime.nexus.component.NexusServerManager;
 import org.talend.updates.runtime.ui.CheckThirdPartyLibrariesToInstallJob;
-import org.talend.updates.runtime.utils.PathUtils;
 import org.talend.updates.runtime.utils.UpdateTools;
 
 public class UpdateService implements IUpdateService {
@@ -93,22 +90,6 @@ public class UpdateService implements IUpdateService {
     public boolean syncSharedStudioLibraryInPatch(IProgressMonitor monitor) throws Exception {
         boolean isNeedRestart = false;
         if (SharedStudioUtils.isSharedStudioMode()) {
-            File studioPatch = SharedStudioPatchInfoProvider.getInstance().getNeedInstallStudioPatchFiles();
-            if (studioPatch != null && studioPatch.getName().endsWith(FileExtensions.ZIP_FILE_SUFFIX)) {
-                File tmpInstallFolder = File.createTempFile("StudioPatchInstaller", "");
-                if (tmpInstallFolder.exists()) {
-                    tmpInstallFolder.delete();
-                }
-                tmpInstallFolder.mkdirs();
-                FilesUtils.unzip(studioPatch.getAbsolutePath(), tmpInstallFolder.getAbsolutePath());
-                UpdateTools.syncLibraries(tmpInstallFolder);
-                UpdateTools.syncM2Repository(tmpInstallFolder);
-                File carFolder = new File(tmpInstallFolder, ITaCoKitUpdateService.FOLDER_CAR);
-                UpdateTools.deployCars(monitor, carFolder, false);
-                SharedStudioPatchInfoProvider.getInstance().installedStudioPatch(studioPatch.getName());
-                tmpInstallFolder.delete();
-                isNeedRestart = true;
-            }
             List<File> carFiles = SharedStudioPatchInfoProvider.getInstance().getNeedInstallCarFiles();
             if (carFiles.size() > 0) {
                 File tmpInstallFolder = File.createTempFile("CarPatchInstaller", "");
@@ -117,7 +98,7 @@ public class UpdateService implements IUpdateService {
                 }
                 tmpInstallFolder.mkdirs();
                 for (File carFile : carFiles) {
-                    FileUtils.copyFile(carFile, new File (tmpInstallFolder, carFile.getName()));
+                    FileUtils.copyFile(carFile, new File(tmpInstallFolder, carFile.getName()));
                     SharedStudioPatchInfoProvider.getInstance().installedCarPatch(carFile.getName());
                 }
                 UpdateTools.deployCars(monitor, tmpInstallFolder, false);
@@ -128,19 +109,6 @@ public class UpdateService implements IUpdateService {
     }
 
     @Override
-    public String getSharedStudioMissingPatchVersion() {
-        File patchFolder = PathUtils.getPatchesFolder();
-        String patchFileName = SharedStudioPatchInfoProvider.getInstance().getStudioInstalledLatestPatchFileName();
-        if (patchFileName != null && !SharedStudioPatchInfoProvider.getInstance().isInstalled(patchFileName, SharedStudioPatchInfoProvider.PATCH_TYPE_STUDIO)) {
-            File studioPatchFile = new File (patchFolder, patchFileName);
-            if (studioPatchFile != null && !studioPatchFile.exists()) {
-                return patchFileName;
-            }
-        }
-        return null;
-    }
-    
-    @Override
     public boolean updateArtifactsFileSha256Hex(IProgressMonitor monitor, String studioArtifactsFileShaCodeHex) {
         return SharedStudioPatchInfoProvider.getInstance().updateArtifactsFileSha256Hex(studioArtifactsFileShaCodeHex);
     }
@@ -148,7 +116,8 @@ public class UpdateService implements IUpdateService {
     @Override
     public void checkThirdPartyLibraries() {
         CheckThirdPartyLibrariesToInstallJob checkThirdPartyLibrariesToInstallJob = new CheckThirdPartyLibrariesToInstallJob();
-        checkThirdPartyLibrariesToInstallJob.schedule();
+        checkThirdPartyLibrariesToInstallJob.checkInstallThirdPartyLibraries();
+        ;
     }
 }
 

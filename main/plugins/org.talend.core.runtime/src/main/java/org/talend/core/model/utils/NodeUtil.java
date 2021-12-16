@@ -34,6 +34,7 @@ import org.talend.core.model.metadata.DummyMetadataTalendTypeFilter;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataTalendTypeFilter;
 import org.talend.core.model.metadata.MrMetadataTalendTypeFilter;
+import org.talend.core.model.metadata.SparkBatchMetadataTalendTypeFilter;
 import org.talend.core.model.metadata.SparkMetadataTalendTypeFilter;
 import org.talend.core.model.metadata.StormMetadataTalendTypeFilter;
 import org.talend.core.model.process.AbstractNode;
@@ -427,8 +428,9 @@ public class NodeUtil {
      * @return
      */
     public static List<? extends IConnection> getFirstIncomingLineConnectionsOfType(INode node, String type) {
-        if (type == null)
+        if (type == null) {
             return new ArrayList<IConnection>();
+        }
 
         Set<String> uniqueNamesDone = new HashSet<String>();
         List<? extends IConnection> allIncomingConnections = getFirstIncomingLineConnectionsOfType(node, uniqueNamesDone, type);
@@ -450,7 +452,7 @@ public class NodeUtil {
                 if (!uniqueNamesDone.contains(nextNode.getUniqueName())) {
                     uniqueNamesDone.add(nextNode.getUniqueName());
 
-                    if (type.equals((String)nextNode.getElementParameter("COMPONENT_NAME").getValue())) {
+                    if (type.equals(nextNode.getElementParameter("COMPONENT_NAME").getValue())) {
                         conns.add(connection);
                     } else {
                         conns.addAll(getFirstIncomingLineConnectionsOfType(nextNode, uniqueNamesDone, type)); // follow this way
@@ -807,7 +809,7 @@ public class NodeUtil {
 
                 for (INode tnode : listDepartitioner) {
                     if (tnode.getUniqueName().equals(departitionerName)) { // find the tDepartitioner corresponding to
-                                                                           // tRecollector
+                        // tRecollector
                         INode startNode = getSubProcessStartNode(tnode); // find the tCollector
                         List<? extends IConnection> inConns = startNode.getIncomingConnections(EConnectionType.STARTS);
                         if (inConns != null && inConns.size() > 0) {
@@ -916,8 +918,8 @@ public class NodeUtil {
         }
         throw new IllegalArgumentException();
     }
-    
-    
+
+
     public static String getRuntimeParameterValue(INode node, IElementParameter ep) {
         if (EParameterFieldType.TABLE.equals(ep.getFieldType())) {
             Map<String, IElementParameter> types = new HashMap<String, IElementParameter>();
@@ -980,23 +982,23 @@ public class NodeUtil {
             return getRuntimeParameterValue(value, ep, false);
         }
     }
-    
+
     private static String getRuntimeParameterValue(String value, IElementParameter ep, boolean itemFromTable) {
         if (value == null) {
             value = "";
         }
-        
+
         value = value.trim();
-        
+
         boolean isMemo = false;
-        
+
         List<EParameterFieldType> needRemoveCRLFList = Arrays.asList(EParameterFieldType.MEMO, EParameterFieldType.MEMO_JAVA,
                 EParameterFieldType.MEMO_SQL, EParameterFieldType.MEMO_IMPORT, EParameterFieldType.MEMO_MESSAGE);
         if (needRemoveCRLFList.contains(ep.getFieldType())) {
             isMemo = true;
             value = value.replaceAll("[\r\n]", " ");
         }
-        
+
         List<EParameterFieldType> needQuoteList = Arrays.asList(EParameterFieldType.CLOSED_LIST,
                 EParameterFieldType.COMPONENT_LIST, EParameterFieldType.COLUMN_LIST, EParameterFieldType.PREV_COLUMN_LIST,
                 EParameterFieldType.CONNECTION_LIST, EParameterFieldType.LOOKUP_COLUMN_LIST,
@@ -1022,13 +1024,13 @@ public class NodeUtil {
                 value = value.substring(0, value.length() - 1);
             }
         }
-        
+
         if("".equals(value) || "\"\"".equals(value)) {
             return "\"\"";
         } else if("null".equals(value)) {
             return "(Object)null";
         }
-        
+
         // copied it from Log4jFileUtil.javajet but need more comment for this script
         if ("\"\\n\"".equals(value) || "\"\\r\"".equals(value) || "\"\\r\\n\"".equals(value)) {
             // for the value is "\n" "\r" "\r\n"
@@ -1048,7 +1050,7 @@ public class NodeUtil {
         else if ("BUILDIN".equals(ep.getName())) {
             return value.toLowerCase();
         }
-        
+
         //suppose all memo fields are processed well already, no need to go though this with dangerous
         if (!isMemo && !org.talend.core.model.utils.ContextParameterUtils.isDynamic(value)) {
             //https://jira.talendforge.org/browse/TDI-45563
@@ -1059,7 +1061,7 @@ public class NodeUtil {
                     return "\"\"";//return empty string as can't get the real runtime value
                 }
             }
-            
+
             if(value.length() > 1 && value.startsWith("\"") && value.endsWith("\"")) {
                 if(itemFromTable && "ARGS".equals(ep.getName())) {
                     value = value.substring(1, value.length());
@@ -1073,19 +1075,19 @@ public class NodeUtil {
                 return "\"" + checkStringQuotationMarks(value) + "\"";
             }
         }
-        
+
         //TODO remove it
         if (value.endsWith("*")) {
             return value.substring(0, value.length() - 1) + "\"*\"";
         }
-        
+
         return value;
     }
-    
+
     private static boolean isValidLiteralValue(String value) {
         return ContextParameterUtils.isValidLiteralValue(value);
     }
-    
+
     private static String checkStringQuotationMarks(String str) {
         String result = str;
         if (result.contains("\"")) {
@@ -1212,52 +1214,52 @@ public class NodeUtil {
             fakeRightQuotes = getFakeRightQuotes( original,fakeRightQuotes);
         }
         int leftPrev = 0;
-    		while (leftQuotes >= 0 && rightQuotes > leftQuotes) {
-      			if (leftQuotes > leftPrev) {//Outside of double quote
-      				  result.append(original.substring(leftPrev, leftQuotes));
-      			}
+        while (leftQuotes >= 0 && rightQuotes > leftQuotes) {
+            if (leftQuotes > leftPrev) {//Outside of double quote
+                result.append(original.substring(leftPrev, leftQuotes));
+            }
 
-      			if (leftQuotes < rightQuotes) {//Inside of double quote
-        				//split string for better appearance and avoid compile error when string exceed 64k
-        			  if(needSplit) {
-            				int current = leftQuotes;
-            				int Offset = 120;
-            				int count = 0;
-            				while (rightQuotes + 1 - current > 120) {
-            				    //[\u0000] or [\000]
-            				    Matcher matcher = invalid_unicode_character_regex.matcher(original.substring(current, current + Offset));
-              				  if(matcher.matches()) {
-              				      Offset = Offset - matcher.group(1).length();
-              				  }
-              				  /*
+            if (leftQuotes < rightQuotes) {//Inside of double quote
+                //split string for better appearance and avoid compile error when string exceed 64k
+                if(needSplit) {
+                    int current = leftQuotes;
+                    int Offset = 120;
+                    int count = 0;
+                    while (rightQuotes + 1 - current > 120) {
+                        //[\u0000] or [\000]
+                        Matcher matcher = invalid_unicode_character_regex.matcher(original.substring(current, current + Offset));
+                        if(matcher.matches()) {
+                            Offset = Offset - matcher.group(1).length();
+                        }
+                        /*
               				  else {
                   				  matcher = invalid_octal_character_regex.matcher(original.substring(current, current + Offset));
                             if(matcher.matches()) {
                                 Offset = Offset - matcher.group(1).length();
                             }
               				  }
-              				  */
+                         */
 
-              					while (original.charAt(current + Offset - 1) == '\\') {//avoid split special character e.g. \"
-              						  Offset--;
-              					}
+                        while (original.charAt(current + Offset - 1) == '\\') {//avoid split special character e.g. \"
+                            Offset--;
+                        }
 
-              					if(count>500){//This is the code that really solve TDI-39968 others are only for good appearance.
-                						result.append(original.substring(current, current + Offset).replace("\r", "").replace("\n", "\\n")).append("\" + new String()\n+\"");
-                						count = 0;
-              					}else{
-              						  result.append(original.substring(current, current + Offset).replace("\r", "").replace("\n", "\\n")).append("\"\n+\"");
-              					}
+                        if(count>500){//This is the code that really solve TDI-39968 others are only for good appearance.
+                            result.append(original.substring(current, current + Offset).replace("\r", "").replace("\n", "\\n")).append("\" + new String()\n+\"");
+                            count = 0;
+                        }else{
+                            result.append(original.substring(current, current + Offset).replace("\r", "").replace("\n", "\\n")).append("\"\n+\"");
+                        }
 
-              					current += Offset;
-              					Offset = 120;
-              					count++;
-            				}
-            				result.append(original.substring(current, rightQuotes + 1).replace("\r", "").replace("\n", "\\n"));
-        			  } else {
-            				result.append(original.substring(leftQuotes, rightQuotes + 1).replace("\r", "").replace("\n", "\\n"));
-        			  }
-      			}
+                        current += Offset;
+                        Offset = 120;
+                        count++;
+                    }
+                    result.append(original.substring(current, rightQuotes + 1).replace("\r", "").replace("\n", "\\n"));
+                } else {
+                    result.append(original.substring(leftQuotes, rightQuotes + 1).replace("\r", "").replace("\n", "\\n"));
+                }
+            }
 
             leftQuotes = original.indexOf("\"", rightQuotes + 1);
             leftPrev = rightQuotes + 1;
@@ -1394,7 +1396,10 @@ public class NodeUtil {
             if (ComponentCategory.CATEGORY_4_MAPREDUCE == cat) {
                 return new MrMetadataTalendTypeFilter();
             }
-            if (ComponentCategory.CATEGORY_4_SPARK == cat || ComponentCategory.CATEGORY_4_SPARKSTREAMING == cat) {
+            if (ComponentCategory.CATEGORY_4_SPARK == cat) {
+                return new SparkBatchMetadataTalendTypeFilter(node);
+            }
+            if (ComponentCategory.CATEGORY_4_SPARKSTREAMING == cat) {
                 return new SparkMetadataTalendTypeFilter(node.getComponent().getName());
             }
             if (ComponentCategory.CATEGORY_4_STORM == cat) {
@@ -1491,5 +1496,30 @@ public class NodeUtil {
             return property != null && "ID".equals(property.getId()) && "Mock_job_for_Guess_schema".equals(property.getLabel()); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return false;
+    }
+    
+    /**
+     * TUP-32758:Used to judge if two components are compatible from name 
+     * for example tAmazonMysqlConnection and tMysqlConnection ,tAmazonOracleCommit and tOracleCommit
+     */
+    public static boolean isCompatibleByName(String componentName1, String componentName2) {
+        boolean isCompatable = false;
+        if ( componentName1 ==null || componentName2 == null 
+                || componentName1.length()<1 || componentName2.length() < 1) return false;
+        if (componentName1.replaceFirst("t", "tAmazon").equals(componentName2) ||
+                componentName2.replaceFirst("t", "tAmazon").equals(componentName1)) {
+            isCompatable = true;
+        }
+        return isCompatable;
+    }
+    
+    public static boolean isDatabaseFamily(String orginalFamilyName) {
+        boolean isDatabaseFamily = false;
+        String rootFamily = "";
+        rootFamily = orginalFamilyName != null ? orginalFamilyName.split("/")[0] : "";
+        if (rootFamily.equals("Databases")) {
+            isDatabaseFamily = true;
+        }
+        return isDatabaseFamily;
     }
 }

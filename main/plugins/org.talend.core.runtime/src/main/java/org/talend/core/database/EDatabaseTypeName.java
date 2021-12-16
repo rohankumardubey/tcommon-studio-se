@@ -146,7 +146,9 @@ public enum EDatabaseTypeName {
             "HBase", "HBase", Boolean.FALSE, "HBASE", EDatabaseSchemaOrCatalogMapping.Sid, EDatabaseSchemaOrCatalogMapping.Column_Family, true), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
     MAPRDB(
-            "MapRDB", "MapRDB", Boolean.FALSE, "MAPRDB", EDatabaseSchemaOrCatalogMapping.Sid, EDatabaseSchemaOrCatalogMapping.Column_Family, true);//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "MapRDB", "MapRDB", Boolean.FALSE, "MAPRDB", EDatabaseSchemaOrCatalogMapping.Sid, EDatabaseSchemaOrCatalogMapping.Column_Family, true),//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    SNOWFLAKE(
+            "SNOWFLAKE","SNOWFLAKE",Boolean.TRUE,"SNOWFLAKE",EDatabaseSchemaOrCatalogMapping.None, EDatabaseSchemaOrCatalogMapping.None);
 
     // displayName is used in Java code.
     private String displayName;
@@ -338,6 +340,9 @@ public enum EDatabaseTypeName {
             isSupport = isSupportODBC;
         } else if (EDatabaseTypeName.SAS == this) {
             isSupport = false;
+        } else if (EDatabaseTypeName.INGRES == this || EDatabaseTypeName.INTERBASE == this || EDatabaseTypeName.VECTORWISE == this
+                || EDatabaseTypeName.PARACCEL == this) {
+            return false;
         }
 
         return isSupport;

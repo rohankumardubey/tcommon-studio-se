@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.talend.studio</groupId>
         <artifactId>studio-maven-repository-tos</artifactId>
-        <version>8.0.1-SNAPSHOT</version>
+        <version>8.8.8-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>studio-maven-repository-unzip</artifactId>
@@ -16,11 +16,17 @@
         </repository>
     </repositories>
     <dependencies>
-		<dependency>
-			<groupId>org.talend.daikon</groupId>
-			<artifactId>crypto-utils</artifactId>
-			<version>${org.talend.daikon.crypto-utils.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.talend.daikon</groupId>
+            <artifactId>crypto-utils</artifactId>
+            <version>${org.talend.daikon.crypto-utils.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>	
 		<dependency>
             <groupId>com.fasterxml.jackson</groupId>
             <artifactId>jackson-bom</artifactId>

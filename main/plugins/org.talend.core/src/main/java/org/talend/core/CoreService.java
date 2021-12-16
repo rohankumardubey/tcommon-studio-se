@@ -519,6 +519,7 @@ public class CoreService implements ICoreService {
         List<IComponentInstallerTask> tasks = ComponentInstallerTaskRegistryReader.getInstance().getTasks();
         tasks.forEach(task -> {
             try {
+                ExceptionHandler.logDebug(task.getClass().getCanonicalName() + ", " + task.getComponentType() + "" + task.getComponentGAV().toString());
                 task.install(monitor);
             } catch (Exception e) {
                 ExceptionHandler.process(e);

@@ -26,5 +26,4 @@ public class SomeMetadatasImportHandler extends MetadataConnectionImportHandler 
     public SomeMetadatasImportHandler() {
         super();
     }
-
 }

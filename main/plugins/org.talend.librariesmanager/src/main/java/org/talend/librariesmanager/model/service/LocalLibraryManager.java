@@ -17,8 +17,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -40,6 +42,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
@@ -576,7 +579,18 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                 ByteArrayInputStream bais = new ByteArrayInputStream(lastUpdateStream);
                 ObjectInputStream ois;
                 try {
-                    ois = new ObjectInputStream(bais);
+                    ois = new ObjectInputStream(bais) {
+                        @Override
+                        protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+                            // Make sure we can only deserialize what we are expecting
+                            if (!(desc.getName().startsWith("java.util")
+                                || String.class.getName().equals(desc.getName())
+                                || Date.class.getName().equals(desc.getName()))) {
+                                throw new InvalidClassException("Unauthorized deserialization attempt", desc.getName());
+                            }
+                            return super.resolveClass(desc);
+                        }
+                    };
                     lastResolveDate = (HashMap) ois.readObject();
                     ois.close();
                     bais.close();
@@ -706,6 +720,10 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
         if (modulesNeeded == null || modulesNeeded.size() == 0) {
             return false;
         }
+        
+        // install local platform jars.
+        this.installModules(modulesNeeded, new NullProgressMonitor());
+        
         Set<ModuleNeeded> jarNotFound = new HashSet<>();
         boolean allIsOK = true;
         for (ModuleNeeded jar : modulesNeeded) {
@@ -1253,6 +1271,10 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
 
     @Override
     public void createModulesIndexFromComponentAndExtension(IProgressMonitor... monitorWrap) {
+        buildModulesIndexFromComponentAndExtension(monitorWrap);
+    }
+    
+    public Map<String, String> buildModulesIndexFromComponentAndExtension(IProgressMonitor... monitorWrap) {
         // key: moduleName, value: platformURL
         Map<String, String> platformURLMap = new HashMap<>();
         // key: moduleName, value: mvn uri
@@ -1289,7 +1311,7 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                 warnDuplicated(modules, duplicateMavenUri, "Maven Uri:");
             }
         }
-        
+
         if (service != null) {
             calculateModulesIndexFromComponentFolder(service, platformURLMap);
         }
@@ -1297,11 +1319,11 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
         // all of contents will be inside
         saveMavenIndex(mavenURIMap, monitorWrap);
         savePlatfromURLIndex(platformURLMap, monitorWrap);
-        
+
         if (service != null) {
             deployLibsFromCustomComponents(service, platformURLMap);
         }
-
+        return mavenURIMap;
     }
 
     /**

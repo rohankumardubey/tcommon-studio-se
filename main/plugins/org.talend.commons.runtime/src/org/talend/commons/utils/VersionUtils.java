@@ -36,6 +36,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.i18n.internal.Messages;
+import org.talend.utils.format.PresentableBox;
 
 /**
  * Represents a version. Contents a major and a minor version.<br/>
@@ -327,7 +328,12 @@ public class VersionUtils {
         String talendVersion = getTalendVersion();
         String majorVersion = StringUtils.substringBeforeLast(talendVersion, "."); //$NON-NLS-1$
         String artifactIdFolder = mojoType.getMojoArtifactIdFolder();
-        Optional<File> optional = Stream.of(new File(artifactIdFolder).listFiles())
+        File[] artifactFiles = new File[0];
+        File folder = new File(artifactIdFolder);
+        if (folder.exists()) {
+            artifactFiles = folder.listFiles();
+        }
+        Optional<File> optional = Stream.of(artifactFiles)
                 .filter(f -> f.isDirectory() && f.getName().startsWith(majorVersion))
                 .sorted((f1, f2) -> new DefaultArtifactVersion(f2.getName()).compareTo(new DefaultArtifactVersion(f1.getName())))
                 .findFirst();
@@ -355,6 +361,21 @@ public class VersionUtils {
         }
         System.setProperty(mojoKey, version);
         return version;
+    }
+
+    public static String getInternalMajorVersion() {
+        return StringUtils.substringBefore(getInternalVersion(), "."); //$NON-NLS-1$
+    }
+
+    public static String getDisplayPatchVersion(String patchName) {
+        try {
+            if (Integer.parseInt(StringUtils.substringAfterLast(patchName, "v")) > 1) { //$NON-NLS-1$
+                return patchName;
+            }
+            return StringUtils.substringBefore(patchName, "v"); //$NON-NLS-1$
+        } catch (NumberFormatException e) {
+            return patchName;
+        }
     }
 
     public static void clearCache() {
@@ -388,6 +409,16 @@ public class VersionUtils {
             }
         }
         return null;
+    }
+    
+    public static String getProductVersionLog() {
+            Object version = getDisplayVersion();
+            String mess = "Starting Talend's platform log system."; //$NON-NLS-1$
+            if (version != null) {
+                mess += ("VERSION= " + version); //$NON-NLS-1$
+            }
+            PresentableBox box = new PresentableBox("TALEND", mess, 0); //$NON-NLS-1$
+            return box.getFullBox();
     }
 
 }

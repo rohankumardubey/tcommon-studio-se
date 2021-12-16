@@ -13,6 +13,7 @@
 package org.talend.librariesmanager.librarydata;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,11 +23,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.designer.maven.aether.util.MavenLibraryResolverProvider;
+import org.talend.librariesmanager.prefs.LibrariesManagerUtils;
 
 public class LibraryDataService {
 
@@ -81,6 +86,8 @@ public class LibraryDataService {
 
     private static final Map<String, Library> mvnToLibraryMap = new ConcurrentHashMap<String, Library>();
 
+    private static final Map<String, Library> dynamicDisLibraryMap = new ConcurrentHashMap<String, Library>();
+
     private static LibraryDataService instance;
 
     private LibraryDataJsonProvider dataProvider;
@@ -103,19 +110,37 @@ public class LibraryDataService {
         dataProvider = new LibraryDataJsonProvider(studioLibraryDataFile);
         File currentUserDataFile = getCurrentUserLibraryDataFile();
         Map<String, Library> studioLibraryDataMap = dataProvider.loadLicenseData();
+
         if (!StringUtils.equals(currentUserDataFile.getAbsolutePath(), studioLibraryDataFile.getAbsolutePath())) {
             dataProvider = new LibraryDataJsonProvider(currentUserDataFile);
             Map<String, Library> userLibraryDataMap = dataProvider.loadLicenseData();
             if (userLibraryDataMap.size() == 0) {
                 mvnToLibraryMap.putAll(studioLibraryDataMap);
+                dynamicDisLibraryMap.putAll(getCacheForDynamicDist(studioLibraryDataMap));
             } else {
                 mvnToLibraryMap.putAll(userLibraryDataMap);
+                dynamicDisLibraryMap.putAll(getCacheForDynamicDist(userLibraryDataMap));
             }
         } else {
             mvnToLibraryMap.putAll(studioLibraryDataMap);
+            dynamicDisLibraryMap.putAll(getCacheForDynamicDist(studioLibraryDataMap));
         }
     }
 
+    private Map<String, Library> getCacheForDynamicDist(Map<String, Library> studioLibraryDataMap) {
+        Map<String, Library> dynamicDistCacheMap = new HashMap<String, Library>();
+        if (studioLibraryDataMap != null) {
+            for (String key : studioLibraryDataMap.keySet()) {
+                Library library = studioLibraryDataMap.get(key);
+                String version = library.getVersion();
+                String firstVersion = version.indexOf(".")==-1 ? version : version.substring(0, version.indexOf(".")); 
+                String dynamicDistKey = library.getGroupId() + "/" + library.getArtifactId() + "/"
+                        + firstVersion;
+                dynamicDistCacheMap.put(dynamicDistKey, library);
+            }
+        }
+        return dynamicDistCacheMap;
+    }
     public static LibraryDataService getInstance() {
         if (instance == null) {
             synchronized (LibraryDataService.class) {
@@ -186,7 +211,7 @@ public class LibraryDataService {
                             libraryObj.getLicenses().add(unknownLicense);
                         }
                         libraryObj.setPomMissing(false);
-                        if (null == properties.get("type") || "".equals((String) properties.get("type"))) {
+                        if (null == properties.get("type") || "".equals(properties.get("type"))) {
                             libraryObj.setType(MavenConstants.PACKAGING_POM);
                         }
                     }
@@ -241,6 +266,11 @@ public class LibraryDataService {
         Library libraryObj = resolve(mvnUrl);
         fillLibraryData(libraryObj, artifact);
         mvnToLibraryMap.put(getShortMvnUrl(mvnUrl), libraryObj);
+        String version = libraryObj.getVersion();
+        String firstVersion = version.indexOf(".")==-1 ? version : version.substring(0, version.indexOf("."));
+        dynamicDisLibraryMap.put(
+                libraryObj.getGroupId() + "/" + libraryObj.getArtifactId() + "/" + firstVersion,
+                libraryObj);
     }
 
     public boolean fillLibraryDataUseCache(String mvnUrl, MavenArtifact artifact) {
@@ -254,6 +284,19 @@ public class LibraryDataService {
         return isExist;
     }
 
+    public boolean fillLibraryDatabyDynamicDistCache(MavenArtifact artifact) {
+        boolean isExist = false;
+        String version = artifact.getVersion();
+        String firstVersion = version.indexOf(".") == -1 ? version : version.substring(0, version.indexOf("."));
+        String key = artifact.getGroupId() + "/" + artifact.getArtifactId() + "/"
+                + firstVersion;
+        Library object = dynamicDisLibraryMap.get(key);
+        if (object != null) {
+            fillLibraryData(object, artifact);
+            isExist = !isPackagePom(object);
+        }
+        return isExist;
+    }
     private boolean isPackagePom(Library libraryObj) {
         if (libraryObj != null) {
             if ("pom".equalsIgnoreCase(libraryObj.getType())) {
@@ -351,13 +394,30 @@ public class LibraryDataService {
      * @return
      */
     private File getCurrentUserLibraryDataFile() {
-        return new File(Platform.getConfigurationLocation().getURL().getPath(), LIBRARIES_DATA_FILE_NAME);
+        File folder = null;
+        try {
+            folder = new File(FileLocator
+                    .toFileURL(FileLocator
+                            .find(Platform.getBundle(LibrariesManagerUtils.BUNDLE_DI), new Path("/resources"), null))
+                    .getFile());
+        } catch (IOException e) {
+            ExceptionHandler.process(e);
+        }
+        return new File(folder, LIBRARIES_DATA_FILE_NAME);
     }
 
     private static File getStudioLibraryDataFile() {
         String folder = System.getProperty(KEY_LIBRARIES_DATA_FOLDER);
         if (folder == null) {
-            folder = new File(Platform.getInstallLocation().getURL().getPath(), "configuration").getAbsolutePath(); //$NON-NLS-1$
+            try {
+                folder = new File(FileLocator
+                        .toFileURL(FileLocator
+                                .find(Platform.getBundle(LibrariesManagerUtils.BUNDLE_DI), new Path("/resources"),
+                                        null))
+                        .getFile()).getAbsolutePath();
+            } catch (IOException e) {
+                ExceptionHandler.process(e);
+            }
         }
         return new File(folder, LIBRARIES_DATA_FILE_NAME);
     }

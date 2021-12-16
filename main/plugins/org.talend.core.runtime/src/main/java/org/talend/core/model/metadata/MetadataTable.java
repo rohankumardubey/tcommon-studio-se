@@ -300,6 +300,9 @@ public class MetadataTable implements IMetadataTable, Cloneable {
                 // no matter if this one is custom or not (all custom must be propagated too)
                 for (int i = 0; i < inputColumnListWithUnselected.size(); i++) {
                     IMetadataColumn inputColumn = inputColumnListWithUnselected.get(i);
+                    if(inputColumn.isCustom()) {
+                        continue;
+                    }
                     IMetadataColumn myColumn = this.getColumn(inputColumn.getLabel());
                     outputColumnsNotTested.remove(myColumn);
                     if (!inputColumn.sameMetacolumnAs(myColumn, options)) {

@@ -21,6 +21,7 @@ import java.util.concurrent.Callable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Priority;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
@@ -189,6 +190,14 @@ public class OnBoardingUtils {
     }
 
     public static boolean isSupportBrowser() {
+        String useBrowser = System.getProperty("USE_BROWSER");
+        if (StringUtils.isNotBlank(useBrowser)) {
+            return Boolean.parseBoolean(useBrowser);
+        }
+        if (StringUtils.equals(Platform.OS_LINUX, Platform.getOS())
+                && StringUtils.equals(Platform.ARCH_AARCH64, Platform.getOSArch())) {
+            return false;
+        }
         final ObjectBox<Boolean> isSupportBrowser = new ObjectBox<Boolean>();
         isSupportBrowser.value = true;
         Display.getDefault().syncExec(new Runnable() {

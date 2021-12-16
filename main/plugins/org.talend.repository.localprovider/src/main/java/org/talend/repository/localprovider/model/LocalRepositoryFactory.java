@@ -177,6 +177,7 @@ import org.talend.core.runtime.constants.UpdateConstants;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.service.IStudioLiteP2Service;
+import org.talend.core.service.IStudioLiteP2Service.AbsStudioLiteP2Exception;
 import org.talend.core.ui.IInstalledPatchService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.utils.DialogUtils;
@@ -3389,7 +3390,11 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                 updatePreferenceProjectVersion(project);
             }
             Project localProject = getRepositoryContext().getProject();
-
+            String localProdVersion = localProject.getEmfProject().getProductVersion();
+            if (StringUtils.isBlank(localProdVersion)) {
+                localProdVersion = "";
+            }
+            ProjectManager.getInstance().getProjectLabelWithOriginVersion().put(localProject.getLabel(), localProdVersion);
             checkProjectVersion(localProject);
         }
         try {
@@ -3398,24 +3403,38 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                 String profKey = p2Service.getProfileIdForProject(project.getTechnicalLabel(), false);
                 p2Service.setProfileKey(profKey);
                 IProgressMonitor subMonitor = SubMonitor.convert(monitor);
+                Project localProject = getRepositoryContext().getProject();
+                boolean doUpgrade = p2Service.checkProjectCompatibility(subMonitor, localProject);
                 int adaptResult = p2Service.adaptFeaturesForProject(subMonitor, project);
                 if (IStudioLiteP2Service.RESULT_DONE == adaptResult) {
                     // when switch product,need to set --disableLoginDialog to avoid pop up logindialog
                     EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(
                             EclipseCommandLine.TALEND_DISABLE_LOGINDIALOG_COMMAND, null, false, true);
+                    EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(
+                            EclipseCommandLine.TALEND_SKIP_PROJECT_VERSION_CHECK_FLAG, Boolean.TRUE.toString(), false);
                     throw new LoginException(LoginException.RESTART);
                 } else if (IStudioLiteP2Service.RESULT_CANCEL == adaptResult) {
-                    throw new LoginException(Messages.getString("LocalRepositoryFactory.login.userCancel"));
+                    throw new LoginException(IStudioLiteP2Service.RESULT_CANCEL,
+                            Messages.getString("LocalRepositoryFactory.login.userCancel"));
                 }
+            }
+        } catch (AbsStudioLiteP2Exception e) {
+            if (e.needBreakProcess()) {
+                throw new LoginException(e.getMessage(), e);
+            } else {
+                ExceptionHandler.process(e);
             }
         } catch (LoginException e) {
             throw e;
         } catch (Exception e) {
-            ExceptionHandler.process(e);
+            throw new LoginException(e.getMessage(), e);
         }
     }
 
-    protected void checkProjectVersion(Project localProject) throws PersistenceException {
+    private void checkProjectVersion(Project localProject) throws PersistenceException {
+        if (PluginChecker.isStudioLite()) {
+            return;
+        }
         ProjectPreferenceManager prefManager = new ProjectPreferenceManager(localProject, PluginChecker.CORE_TIS_PLUGIN_ID,
                 false);
         String remoteLastPatchName = prefManager.getValue(UpdateConstants.KEY_PREF_LAST_PATCH);
@@ -3428,11 +3447,9 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                     .getProductVersionWithoutBranding(localProject.getEmfProject().getProductVersion());
         } else {
             toOpenProjectVersion = remoteLastPatchName;
-            String simplifiedPatchName = VersionUtils.getSimplifiedPatchName(remoteLastPatchName);
-            if (StringUtils.isNotEmpty(simplifiedPatchName)) {
-                toOpenProjectVersion = simplifiedPatchName;
-            }
         }
+        toOpenProjectVersion = VersionUtils.getDisplayPatchVersion(toOpenProjectVersion);
+
         String productVersion = VersionUtils.getInternalVersion();
         String productLastestPatchVersion = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IInstalledPatchService.class)) {
@@ -3457,6 +3474,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
             ELoginInfoCase.STUDIO_LOWER_THAN_PROJECT.setContents(contents);
             DialogUtils.setWarningInfo(ELoginInfoCase.STUDIO_LOWER_THAN_PROJECT);
         }
+
         if (VersionUtils.productVersionIsNewer(localProject.getEmfProject().getProductVersion())) {
             String[] contents;
             if (StringUtils.isEmpty(remoteLastPatchName)) {
@@ -3466,9 +3484,12 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
                 contents = new String[] {
                         Messages.getString("LocalRepositoryFactory.productionNewer02", toOpenProjectVersion, productVersion) };
             }
-            ProjectManager.getInstance().getProjectLabelWithOriginVersion().put(localProject.getLabel(), localProject.getEmfProject().getProductVersion());
-            ELoginInfoCase.STUDIO_HIGHER_THAN_PROJECT.setContents(contents);
-            DialogUtils.setWarningInfo(ELoginInfoCase.STUDIO_HIGHER_THAN_PROJECT);// $NON-NLS-1$
+            
+            boolean skipCheck = Boolean.parseBoolean(EclipseCommandLine.getEclipseArgument(EclipseCommandLine.TALEND_SKIP_PROJECT_VERSION_CHECK_FLAG));
+            if (!skipCheck) {
+                ELoginInfoCase.STUDIO_HIGHER_THAN_PROJECT.setContents(contents);
+                DialogUtils.setWarningInfo(ELoginInfoCase.STUDIO_HIGHER_THAN_PROJECT);// $NON-NLS-1$
+            }
         }
         DialogUtils.syncOpenWarningDialog(Messages.getString("LocalRepositoryFactory.logonWarningTitle"));//$NON-NLS-1$
 

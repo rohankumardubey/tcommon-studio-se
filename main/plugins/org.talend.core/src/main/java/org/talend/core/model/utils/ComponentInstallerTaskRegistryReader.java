@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.SafeRunner;
 import org.osgi.framework.FrameworkUtil;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.utils.RegistryReader;
 
 /**
@@ -78,6 +79,7 @@ public class ComponentInstallerTaskRegistryReader extends RegistryReader {
             readRegistry();
             Collections.sort(ret, new TaskComparator());
         }
+        ExceptionHandler.logDebug("ComponentInstallerTaskRegistryReader, num of tasks: " + ret.size());
         return ret;
     }
 

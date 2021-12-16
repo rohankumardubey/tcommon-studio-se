@@ -22,6 +22,9 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
@@ -51,6 +54,7 @@ import org.talend.commons.runtime.service.ComponentsInstallComponent;
 import org.talend.commons.runtime.service.PatchComponent;
 import org.talend.commons.ui.runtime.update.PreferenceKeys;
 import org.talend.commons.ui.swt.dialogs.ErrorDialogWidthDetailArea;
+import org.talend.commons.utils.VersionUtils;
 import org.talend.commons.utils.network.NetworkUtil;
 import org.talend.commons.utils.network.TalendProxySelector;
 import org.talend.commons.utils.system.EclipseCommandLine;
@@ -91,7 +95,7 @@ public class Application implements IApplication {
     private static final String TALEND_FORCE_INITIAL_WORKSPACE_PROMPT_SYS_PROP =
             "talend.force.initial.workspace.prompt"; //$NON-NLS-1$
 
-    private static Logger log = Logger.getLogger(Application.class);
+    private static final Logger LOGGER = Logger.getLogger(Application.class);
 
     /**
      * pref node to store the first launch status.
@@ -108,11 +112,29 @@ public class Application implements IApplication {
                     Boolean.TRUE.toString(), false);
             return IApplication.EXIT_RELAUNCH;
         }
+
+        try {
+            String vmArgs = System.getProperty(EclipseCommandLine.PROP_VMARGS);
+            if (StringUtils.isNotBlank(vmArgs)) {
+                /**
+                 * Must update one property here, so that studio can init the exit data property used by relaunch if
+                 * needed; just pick the -clean, since the clean already succeed, no need it
+                 */
+                EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.CLEAN, null, true, true);
+            }
+        } catch (Throwable e) {
+            ExceptionHandler.process(e);
+        }
+
         System.setProperty(TalendPropertiesUtil.PROD_APP, this.getClass().getName());
 
         StudioKeysFileCheck.check(ConfigurationScope.INSTANCE.getLocation().toFile());
         
         Display display = PlatformUI.createDisplay();
+        
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info(VersionUtils.getProductVersionLog());
+        }
 
         try {
             StudioKeysFileCheck.validateJavaVersion();
@@ -201,13 +223,15 @@ public class Application implements IApplication {
                 return IApplication.EXIT_RELAUNCH;
             }
             boolean logUserOnProject = logUserOnProject(display.getActiveShell());
-            if (LoginHelper.isRestart && LoginHelper.isAutoLogonFailed) {
-                setRelaunchData();
-                EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.CLEAN, null, true, true);
-                EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.TALEND_RELOAD_COMMAND,
-                        Boolean.TRUE.toString(), true);
-                EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(
-                        EclipseCommandLine.TALEND_PROJECT_TYPE_COMMAND, null, true);
+            if (LoginHelper.isRestart) {
+                if (LoginHelper.isAutoLogonFailed) {
+                    setRelaunchData();
+                    EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.CLEAN, null, true, true);
+                    EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.TALEND_RELOAD_COMMAND,
+                            Boolean.TRUE.toString(), true);
+                    EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.TALEND_PROJECT_TYPE_COMMAND,
+                            null, true);
+                }
                 return IApplication.EXIT_RELAUNCH;
             }
             try {
@@ -216,18 +240,20 @@ public class Application implements IApplication {
                     // Platform.endSplash();
                     context.applicationRunning();
                     // ~
+                    try {
+                        IStudioLiteP2Service p2Service = IStudioLiteP2Service.get();
+                        if (p2Service != null) {
+                            p2Service.closingStudioGUI(false);
+                        }
+                    } catch (Throwable e) {
+                        ExceptionHandler.process(e);
+                    }
                     return EXIT_OK;
                 }
             } finally {
                 if (shell != null) {
                     shell.dispose();
                 }
-            }
-
-            // if some commands are set to relaunch (not restart) the eclipse then relaunch it
-            // this happens when project type does not match the running product type
-            if (System.getProperty(org.eclipse.equinox.app.IApplicationContext.EXIT_DATA_PROPERTY) != null) {
-                return IApplication.EXIT_RELAUNCH;
             }
 
             boolean afterUpdate = false;
@@ -272,8 +298,19 @@ public class Application implements IApplication {
                 System.setProperty("clearPersistedState", Boolean.TRUE.toString());
             }
 
+            cleanupNonExistingProjects();
+
             int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
-            if (returnCode == PlatformUI.RETURN_RESTART) {
+            boolean restart = returnCode == PlatformUI.RETURN_RESTART;
+            try {
+                IStudioLiteP2Service p2Service = IStudioLiteP2Service.get();
+                if (p2Service != null) {
+                    p2Service.closingStudioGUI(restart);
+                }
+            } catch (Throwable e) {
+                ExceptionHandler.process(e);
+            }
+            if (restart) {
                 // use relaunch instead of restart to remove change the restart property that may have been added in the
                 // previous
                 // relaunch
@@ -283,7 +320,7 @@ public class Application implements IApplication {
                         EclipseCommandLine.TALEND_PROJECT_TYPE_COMMAND, null, true);
                 // if relaunch, should delete the "disableLoginDialog" argument in eclipse data for bug TDI-19214
                 EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(
-                        EclipseCommandLine.TALEND_DISABLE_LOGINDIALOG_COMMAND, null, true, true);
+                        EclipseCommandLine.TALEND_RESTART_FLAG, Boolean.TRUE.toString(), false);
                 // TDI-8426, fix the swith project failure, when in dev also.
                 // if dev, can't be restart, so specially for dev.
                 if (Platform.inDevelopmentMode()) {
@@ -301,6 +338,21 @@ public class Application implements IApplication {
             }
         }
 
+    }
+
+    private void cleanupNonExistingProjects() {
+        IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+        for (IProject project : projects) {
+            if (project.getLocation() == null || !project.getLocation().toFile().exists()) {
+                if (!project.isOpen()) {
+                    try {
+                        project.delete(false, true, null);
+                    } catch (CoreException e) {
+                        //
+                    }
+                }
+            }
+        }
     }
 
     private boolean installed = false;
@@ -329,7 +381,7 @@ public class Application implements IApplication {
                 }
             }
         } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
+            LOGGER.error(e.getLocalizedMessage(), e);
         }
 
         boolean needRelaunch = false;
@@ -352,14 +404,14 @@ public class Application implements IApplication {
             try {
                 dialog.run(true, false, runnable);
             } catch (InvocationTargetException | InterruptedException e) {
-                log.log(Level.ERROR, e.getMessage());
+                LOGGER.log(Level.ERROR, e.getMessage());
             }
 
 
             if (installed) {
                 final String installedMessages = patchComponent.getInstalledMessages();
                 if (installedMessages != null) {
-                    log.log(Level.INFO, installedMessages);
+                    LOGGER.log(Level.INFO, installedMessages);
                     MessageDialog.openInformation(Display.getDefault().getActiveShell(), "Installing Patches", installedMessages);
                 }
                 if (patchComponent.needRelaunch()) {
@@ -369,7 +421,7 @@ public class Application implements IApplication {
                 afterInstallPatch();
             }
             if (StringUtils.isNotEmpty(patchComponent.getFailureMessage())) {
-                log.log(Level.ERROR, patchComponent.getFailureMessage());
+                LOGGER.log(Level.ERROR, patchComponent.getFailureMessage());
             }
             installed = false;
         }
@@ -382,7 +434,7 @@ public class Application implements IApplication {
                 if (installComponent.install()) {
                     final String installedMessages = installComponent.getInstalledMessages();
                     if (installedMessages != null) {
-                        log.log(Level.INFO, installedMessages);
+                        LOGGER.log(Level.INFO, installedMessages);
                         MessageDialog.openInformation(Display.getDefault().getActiveShell(), "Installing Components",
                                 installedMessages);
                     }
@@ -393,7 +445,7 @@ public class Application implements IApplication {
                     afterInstallPatch();
                 }
                 if (StringUtils.isNotEmpty(installComponent.getFailureMessage())) {
-                    log.log(Level.ERROR, installComponent.getFailureMessage());
+                    LOGGER.log(Level.ERROR, installComponent.getFailureMessage());
                 }
             } finally {
                 installComponent.setLogin(false);
@@ -406,7 +458,7 @@ public class Application implements IApplication {
                 tisService.refreshPatchesFolderCache();
             }
         } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
+            LOGGER.error(e.getLocalizedMessage(), e);
         }
         return needRelaunch;
     }
@@ -416,7 +468,7 @@ public class Application implements IApplication {
     }
 
     private void setRelaunchData() {
-        EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.CLEAN, null, false, true);
+//        EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.CLEAN, null, false, true);
         EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.TALEND_RELOAD_COMMAND,
                 Boolean.TRUE.toString(), false);
         EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(EclipseCommandLine.ARG_TALEND_BUNDLES_CLEANED,
@@ -433,6 +485,11 @@ public class Application implements IApplication {
      * DOC ggu Comment method "checkForBrowser".
      */
     private void checkBrowserSupport() {
+        if (StringUtils.equals(Platform.OS_LINUX, Platform.getOS())
+                && StringUtils.equals(Platform.ARCH_AARCH64, Platform.getOSArch())) {
+            System.setProperty("USE_BROWSER", Boolean.FALSE.toString());
+            return;
+        }
         Shell shell = new Shell();
         try {
             Browser browser = new Browser(shell, SWT.BORDER);
@@ -504,7 +561,7 @@ public class Application implements IApplication {
                             Messages.getString("Application.WorkspaceCannotBeSetMessage")); //$NON-NLS-1$
                 }
             } catch (IOException e) {
-                log.error("Could not obtain lock for workspace location", //$NON-NLS-1$
+                LOGGER.error("Could not obtain lock for workspace location", //$NON-NLS-1$
                         e);
                 MessageDialog.openError(shell, "internal error", e.getMessage());
             }
@@ -526,7 +583,7 @@ public class Application implements IApplication {
                 try {
                     node.flush();
                 } catch (BackingStoreException e) {
-                    log.error("failed to store workspace location in preferences :", e); //$NON-NLS-1$
+                    LOGGER.error("failed to store workspace location in preferences :", e); //$NON-NLS-1$
                 }
                 // keep going to force the promp to appear
             } else {
@@ -548,7 +605,7 @@ public class Application implements IApplication {
                     return null;
                 }
             } catch (IllegalStateException e) {
-                log.error(e);
+                LOGGER.error(e);
                 MessageDialog.openError(shell, Messages.getString("Application.WorkspaceCannotBeSetTitle"), //$NON-NLS-1$
                         Messages.getString("Application.WorkspaceCannotBeSetMessage", workspaceUrl.getFile()));
                 return EXIT_OK;

@@ -47,6 +47,7 @@ import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.swt.widgets.Display;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IESBService;
 import org.talend.core.ILibraryManagerService;
@@ -154,7 +155,15 @@ public class AggregatorPomsHelper {
 
     public IFolder getProjectPomsFolder() {
         IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        return workspace.getRoot().getFolder(new Path(projectTechName + "/" + DIR_POMS)); //$NON-NLS-1$
+        IFolder pomsFolder = workspace.getRoot().getFolder(new Path(projectTechName + "/" + DIR_POMS)); //$NON-NLS-1$
+        if (!pomsFolder.exists()) {
+            try {
+                ResourceUtils.createFolder(pomsFolder);
+            } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
+            }
+        }
+        return pomsFolder;
     }
 
     public void updateCodeProjects(IProgressMonitor monitor, boolean forceBuild) {
@@ -538,7 +547,7 @@ public class AggregatorPomsHelper {
         }
         BuildCacheManager.getInstance().clearAllCaches();
 
-        boolean isCIMode = IRunProcessService.get().isCIMode();
+        Boolean isCIMode = IRunProcessService.get().isCIMode();
 
         List<IRepositoryViewObject> objects = new ArrayList<>();
         for (ERepositoryObjectType type : ERepositoryObjectType.getAllTypesOfProcess2()) {
@@ -570,15 +579,10 @@ public class AggregatorPomsHelper {
         // codes pom
         monitor.subTask("Synchronize code poms"); //$NON-NLS-1$
 
-        if (isCIMode) {
-            System.setProperty("ignore.ci.mode", Boolean.TRUE.toString());
-            updateCodeProjects(monitor, true);
-            System.setProperty("ignore.ci.mode", Boolean.FALSE.toString());
-        } else {
-            updateCodeProjects(monitor, true);
-        }
-
+        System.setProperty("ignore.ci.mode", isCIMode.toString());
+        updateCodeProjects(monitor, true);
         CodesJarM2CacheManager.updateCodesJarProject(monitor, true, true, true);
+        System.setProperty("ignore.ci.mode", Boolean.FALSE.toString());
 
         monitor.worked(1);
         if (monitor.isCanceled()) {
@@ -647,6 +651,8 @@ public class AggregatorPomsHelper {
                     updateCodeProjectPom(monitor, codeType, codeProject.getProjectPom());
                 }
             }
+            CodesJarResourceCache.getAllCodesJars().stream().filter(CodesJarInfo::isInCurrentMainProject)
+                    .forEach(info -> CodesJarM2CacheManager.updateCodesJarProjectPom(monitor, info));
         }
 
         monitor.done();

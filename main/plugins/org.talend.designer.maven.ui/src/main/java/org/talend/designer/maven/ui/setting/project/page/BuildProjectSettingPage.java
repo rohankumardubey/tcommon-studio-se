@@ -46,7 +46,7 @@ public class BuildProjectSettingPage extends EmptyProjectSettingPage {
         parent.setLayout(new GridLayout());
         preferenceStore = getPreferenceStore();
         allowRecursiveJobsCheckbox = new Button(parent, SWT.CHECK);
-        allowRecursiveJobsCheckbox.setText(Messages.getString("BuildProjectSettingPage.allowRecursiveJobs")); //$NON-NLS-1$
+        allowRecursiveJobsCheckbox.setText(Messages.getString("BuildProjectSettingPage.allowRecursiveJobsJoblets")); //$NON-NLS-1$
         allowRecursiveJobsCheckbox.setSelection(!preferenceStore.getBoolean(MavenConstants.SKIP_LOOP_DEPENDENCY_CHECK));
     }
 

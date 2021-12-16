@@ -4,11 +4,30 @@
 	<parent>
 		<groupId>org.talend.studio</groupId>
 		<artifactId>tcommon-studio-se</artifactId>
-		<version>8.0.1-SNAPSHOT</version>
+		<version>8.8.8-SNAPSHOT</version>
 		<relativePath>../../../</relativePath>
 	</parent>
 	<artifactId>org.talend.librariesmanager</artifactId>
 	<packaging>eclipse-plugin</packaging>
+	
+	<repositories>
+		<repository>
+			<id>snapshots</id>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<url>${talend.nexus.host}/nexus/content/repositories/snapshots/</url>
+		</repository>
+	</repositories>
+
+	<properties>
+		<talend.nexus.host>https://artifacts-oss.talend.com</talend.nexus.host>
+        <talend.nexus.host.oss>https://artifacts-oss.talend.com</talend.nexus.host.oss>
+    </properties>
+        
 	<build>
 		<plugins>
 			<plugin>
@@ -77,6 +96,31 @@
 									<artifactId>slf4j-api</artifactId>
 									<version>${slf4j-api.version}</version> <!-- Please sync the version with /org.talend.designer.maven.lite/resources/required/pom.xml -->
 									<overWrite>true</overWrite>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.jboss.marshalling</groupId>
+									<artifactId>jboss-marshalling</artifactId>
+									<version>2.0.12.Final</version>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-studio-index</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>studioIndex</artifactId>
+									<version>8.8.8-SNAPSHOT</version>
+									<type>zip</type>
+									<classifier />
+									<overWrite>true</overWrite>
+									<outputDirectory>${project.basedir}/resources</outputDirectory>
 								</artifactItem>
 							</artifactItems>
 						</configuration>

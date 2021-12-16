@@ -62,6 +62,12 @@
                name="crypto-utils-@@CRYPTOUTILS_VERSION@@.jar">
          </library>
       </systemRoutine>
+      <systemRoutine
+            name="IPersistableLookupRow">
+         <library
+               name="mvn:org.jboss.marshalling/jboss-marshalling/2.0.12.Final">
+         </library>
+      </systemRoutine>
    </extension>
    <extension
          point="org.talend.core.runtime.artifact_handler">

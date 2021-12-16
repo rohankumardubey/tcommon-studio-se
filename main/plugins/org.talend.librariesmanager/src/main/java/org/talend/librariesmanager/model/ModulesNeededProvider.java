@@ -113,9 +113,11 @@ public class ModulesNeededProvider {
 
     private static IRepositoryService repositoryService = null;
 
-    private static List<ModuleNeeded> importNeedsListForRoutes = new ArrayList<ModuleNeeded>();;
+    private static List<ModuleNeeded> importNeedsListForRoutes = new ArrayList<ModuleNeeded>();
 
     private static List<ModuleNeeded> importNeedsListForBeans;
+    
+    private static List<ModuleNeeded> importNeedsListForCamelCore = new ArrayList<ModuleNeeded>();;
 
     private static ILibraryManagerService libManagerService = null;
 
@@ -329,17 +331,28 @@ public class ModulesNeededProvider {
     }
 
     public static void collectModuleNeeded(String context, IMPORTType importType, List<ModuleNeeded> importNeedsList) {
-        List<ModuleNeeded> importModuleFromExtension = ExtensionModuleManager.getInstance().getModuleNeededForComponent(context,
-                importType);
+        collectModuleNeeded(context, importType, importNeedsList, null);
+    }
+    
+    public static void collectModuleNeeded(String context, IMPORTType importType, List<ModuleNeeded> importNeedsList, String distribution) {
+        List<ModuleNeeded> importModuleFromExtension = ExtensionModuleManager.getInstance().getModuleNeededForComponent(context, importType);
         boolean foundModule = importModuleFromExtension.size() > 0;
         if (!foundModule) { // If cannot find the jar from extension point then do it like before.
-            createModuleNeededForComponent(context, importType, importNeedsList);
+            createModuleNeededForComponent(context, importType, importNeedsList, distribution);
         } else {
+            if (!StringUtils.isEmpty(distribution)) {
+                importModuleFromExtension.forEach(m -> m.setDynamicDistributionVersion(distribution));
+            }
             importNeedsList.addAll(importModuleFromExtension);
         }
     }
 
+
     public static void createModuleNeededForComponent(String context, IMPORTType importType, List<ModuleNeeded> importNeedsList) {
+        createModuleNeededForComponent(context, importType, importNeedsList, null);
+    }
+    
+    public static void createModuleNeededForComponent(String context, IMPORTType importType, List<ModuleNeeded> importNeedsList, String distribution) {
         if (importType.getMODULE() == null) {
             if (importType.getMODULEGROUP() != null) {
                 CommonExceptionHandler.warn("Missing module group definition: " + importType.getMODULEGROUP());
@@ -358,6 +371,9 @@ public class ModulesNeededProvider {
         moduleNeeded.setMrRequired(importType.isMRREQUIRED());
         moduleNeeded.setShow(importType.isSHOW());
         moduleNeeded.setModuleLocaion(importType.getUrlPath());
+        if (!StringUtils.isEmpty(distribution)) {
+            moduleNeeded.setDynamicDistributionVersion(distribution);
+        }
         importNeedsList.add(moduleNeeded);
     }
 
@@ -609,6 +625,7 @@ public class ModulesNeededProvider {
             if (!isRequired) {
                 toAdd.getExtraAttributes().put("IS_OSGI_EXCLUDED", Boolean.TRUE);
                 if ("RoutineItem".equals(item.eClass().getName())) {
+                    toAdd.getExtraAttributes().put("ROUTINE_EXCLUDE", Boolean.TRUE);
                     toAdd.setExcluded(true);
                 }
             }
@@ -706,6 +723,25 @@ public class ModulesNeededProvider {
         importNeedsListForRoutes.removeIf(m-> (m==null));
         
         return importNeedsListForRoutes;
+    }
+    
+    public static List<ModuleNeeded> getModulesNeededForCamelCore() {
+        ILibrariesService service = null;
+        if (!GlobalServiceRegister.getDefault().isServiceRegistered(ILibrariesService.class)) {
+            return null;
+        }
+        service = (ILibrariesService) GlobalServiceRegister.getDefault().getService(ILibrariesService.class);
+        
+        if (importNeedsListForCamelCore.isEmpty()) {
+
+        	importNeedsListForCamelCore = new ArrayList<ModuleNeeded>();
+
+        	importNeedsListForCamelCore.addAll(service.getModuleNeeded("camel-core", true));
+        }
+        
+        importNeedsListForCamelCore.removeIf(m-> (m==null));
+        
+        return importNeedsListForCamelCore;
     }
 
     public static List<ModuleNeeded> getModulesNeededForRoutes() {
