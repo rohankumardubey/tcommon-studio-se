@@ -27,6 +27,7 @@ import org.talend.core.model.general.Project;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.repository.ProjectManager;
+import org.talend.utils.io.FilesUtils;
 
 public class CodeM2CacheManager {
 
@@ -66,7 +67,15 @@ public class CodeM2CacheManager {
 
     public static void updateCacheStatus(String projectTechName, ERepositoryObjectType codeType, boolean isUpdated) {
         if (projectTechName == null) {
-            projectTechName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
+            Project currentProject = ProjectManager.getInstance().getCurrentProject();
+            if (currentProject == null) {
+                if (cacheFolder.exists()) {
+                    FilesUtils.deleteFolder(cacheFolder, true);
+                }
+                cacheFolder.mkdirs();
+                return;
+            }
+            projectTechName = currentProject.getTechnicalLabel();
         }
         File cacheFile = getCacheFile(projectTechName, codeType);
         try (OutputStream out = new FileOutputStream(cacheFile)) {
