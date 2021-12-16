@@ -47,11 +47,7 @@ abstract public class BaseComponentInstallerTask implements IComponentInstallerT
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseComponentInstallerTask.class);
     private static final String SYS_PROP_TCOMPV0 = "tcompv0.update";
     private static final String SYS_PROP_OVERWRITE = "m2.overwrite";
-
-    /**
-     * force to overwrite, since need to sync maven-metadata-local.xml
-     */
-    private static final String SYS_PROP_OVERWRITE_DEFAULT = "true";
+    private static final String SYS_PROP_OVERWRITE_DEFAULT = Boolean.FALSE.toString();
 
     private static final String SYS_CUSTOM_MAVEN_REPO = "maven.local.repository";
     
@@ -62,7 +58,10 @@ abstract public class BaseComponentInstallerTask implements IComponentInstallerT
     private Set<ComponentGAV> gavs = new HashSet<ComponentGAV>();
     
     protected boolean overWriteM2() {
-        String prop = System.getProperty(SYS_PROP_OVERWRITE, SYS_PROP_OVERWRITE_DEFAULT);
+        /**
+         * force to overwrite, since need to sync maven-metadata-local.xml
+         */
+        String prop = System.getProperty(SYS_PROP_OVERWRITE, Boolean.TRUE.toString());
         return Boolean.valueOf(prop);
     }
     
