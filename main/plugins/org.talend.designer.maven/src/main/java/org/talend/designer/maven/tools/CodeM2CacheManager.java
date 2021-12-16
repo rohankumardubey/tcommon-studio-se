@@ -22,6 +22,7 @@ import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.utils.VersionUtils;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.designer.maven.utils.PomIdsHelper;
@@ -79,7 +80,7 @@ public class CodeM2CacheManager {
 
     public static File getCacheFile(String projectTechName, ERepositoryObjectType codeType) {
         String cacheFileName = PomIdsHelper.getProjectGroupId(projectTechName) + "." + codeType.name().toLowerCase() + "-" //$NON-NLS-1$ //$NON-NLS-2$
-                + PomIdsHelper.getCodesVersion(projectTechName) + ".cache"; // $NON-NLS-1$
+                + PomIdsHelper.getCodesVersion(projectTechName) + "-" + VersionUtils.getInternalVersion() + ".cache"; // $NON-NLS-1$
         return new File(cacheFolder, cacheFileName);
     }
 
