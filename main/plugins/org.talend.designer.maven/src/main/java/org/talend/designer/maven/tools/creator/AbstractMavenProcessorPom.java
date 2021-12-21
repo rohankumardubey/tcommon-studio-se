@@ -207,6 +207,38 @@ public abstract class AbstractMavenProcessorPom extends CreateMavenBundleTemplat
                 shade.setGroupId("org.apache.maven.plugins"); //$NON-NLS-1$
                 shade.setArtifactId("maven-shade-plugin"); //$NON-NLS-1$
                 shade.setVersion("3.1.0"); //$NON-NLS-1$
+                
+                Dependency codecDep = new Dependency();
+                codecDep.setGroupId("commons-codec");
+                codecDep.setArtifactId("commons-codec");
+                codecDep.setVersion("1.15");
+                
+                Dependency guavaDep = new Dependency();
+                guavaDep.setGroupId("com.google.guava");
+                guavaDep.setArtifactId("guava");
+                guavaDep.setVersion("30.0-jre");
+                
+                Dependency ioDep = new Dependency();
+                ioDep.setGroupId("commons-io");
+                ioDep.setArtifactId("commons-io");
+                ioDep.setVersion("2.8.0");
+                
+                Dependency sharedUtilsDep = new Dependency();
+                sharedUtilsDep.setGroupId("org.apache.maven.shared");
+                sharedUtilsDep.setArtifactId("maven-shared-utils");
+                sharedUtilsDep.setVersion("3.3.3");
+                
+                Dependency mavenCoreDep = new Dependency();
+                mavenCoreDep.setGroupId("org.apache.maven");
+                mavenCoreDep.setArtifactId("maven-core");
+                mavenCoreDep.setVersion("3.8.1");
+                
+                shade.getDependencies().add(guavaDep);
+                shade.getDependencies().add(codecDep);
+                shade.getDependencies().add(ioDep);
+                shade.getDependencies().add(sharedUtilsDep);
+                shade.getDependencies().add(mavenCoreDep);
+                              
                 List<PluginExecution> executions = shade.getExecutions();
                 PluginExecution execution = new PluginExecution();
                 executions.add(execution);
