@@ -16,7 +16,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.core.pendo.PendoTrackSender;
 import org.talend.core.runtime.i18n.Messages;
 import org.talend.repository.model.RepositoryConstants;
 import org.talend.utils.json.JSONException;
@@ -215,7 +217,15 @@ public class ConnectionBean implements Cloneable {
     public String getUser() {
         try {
             if (conDetails.has(USER)) {
-                return conDetails.getString(USER);
+                String user = conDetails.getString(USER);
+                if (isToken()) {
+                    String url = getDynamicFields().get(RepositoryConstants.REPOSITORY_URL);
+                    user = PendoTrackSender.getInstance().getTmcUser(url, getPassword());
+                    if (StringUtils.isNotBlank(user)) {
+                        setUser(user);
+                    }
+                }
+                return user;
             }
         } catch (JSONException e) {
             ExceptionHandler.process(e);
