@@ -86,7 +86,10 @@ public class PendoTrackSender {
             instance = new PendoTrackSender();
         }
         if (StringUtils.isBlank(adminUrl)) {
-            adminUrl = getRepositoryContext().getFields().get(RepositoryConstants.REPOSITORY_URL);
+            RepositoryContext repositoryContext = getRepositoryContext();
+            if (repositoryContext != null) {
+                adminUrl = repositoryContext.getFields().get(RepositoryConstants.REPOSITORY_URL);
+            }
         }
         return instance;
     }
@@ -206,14 +209,18 @@ public class PendoTrackSender {
     }
 
     private String getPendoInfo() throws Exception {
+        return getPendoInfo(getBaseUrl(), getToken());
+    }
+
+    private String getPendoInfo(String baseUrl, String token) throws Exception {
         CloseableHttpClient client = null;
         CloseableHttpResponse response = null;
         try {
             client = HttpClients.createDefault();
-            String url = getBaseUrl() + PENDO_INFO;
+            String url = baseUrl + PENDO_INFO;
 
             HttpGet httpGet = new HttpGet(url);
-            httpGet.setHeader(HEAD_AUTHORIZATION, "Bearer " + getToken());
+            httpGet.setHeader(HEAD_AUTHORIZATION, "Bearer " + token);
             response = client.execute(httpGet, HttpClientContext.create());
             StatusLine statusLine = response.getStatusLine();
             String responseStr = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
@@ -248,7 +255,11 @@ public class PendoTrackSender {
     }
 
     public String getBaseUrl() throws Exception {
-        if (StringUtils.isNotBlank(apiBaseUrl)) {
+        return getBaseUrl(adminUrl, false);
+    }
+
+    public String getBaseUrl(String adminUrl, boolean token) throws Exception {
+        if (StringUtils.isNotBlank(apiBaseUrl) && !token) {
             return apiBaseUrl;
         }
 
@@ -277,6 +288,19 @@ public class PendoTrackSender {
 
     private String getToken() {
         return getRepositoryContext().getClearPassword();
+    }
+
+    public String getTmcUser(String url, String token) {
+        try {
+            String pendoInfo = getPendoInfo(getBaseUrl(url, true), token);
+            if (StringUtils.isNotBlank(pendoInfo)) {
+                JSONObject infoJson = new JSONObject(pendoInfo);
+                return ((JSONObject) infoJson.get("visitor")).getString("id"); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        return ""; //$NON-NLS-1$
     }
 
     private String getPendoKeyFromLicense() throws Exception {
