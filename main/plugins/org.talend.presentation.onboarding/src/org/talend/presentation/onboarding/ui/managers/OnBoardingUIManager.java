@@ -14,6 +14,9 @@ package org.talend.presentation.onboarding.ui.managers;
 
 import java.util.Collection;
 
+import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
@@ -29,6 +32,8 @@ import org.talend.presentation.onboarding.utils.WidgetFinder;
  *
  */
 public class OnBoardingUIManager {
+
+    private static Logger log = Logger.getLogger(OnBoardingUIManager.class);
 
     private HighlightShell highlightShell;
 
@@ -86,6 +91,31 @@ public class OnBoardingUIManager {
     public void onHighlightShellMoveCompleted() {
         if (!onBoardingShell.getOnBoardingShell().isDisposed()) {
             onBoardingShell.setVisible(true);
+            Shell parentShell = this.onBoardingManager.getParentShell();
+            if (parentShell != null) {
+                Shell[] children = parentShell.getShells();
+                for (Shell child : children) {
+                    if (child == null) {
+                        continue;
+                    } else if (child == parentShell) {
+                        continue;
+                    } else if (child == this.highlightShell.getHighlightShell()) {
+                        continue;
+                    } else if (child == this.onBoardingShell.getOnBoardingShell()) {
+                        continue;
+                    } else {
+                        int style = child.getStyle();
+                        if (0 < (style & SWT.APPLICATION_MODAL) || 0 < (style & SWT.PRIMARY_MODAL)) {
+                            child.open();
+                            if (!Platform.OS_WIN32.equals(Platform.getOS())) {
+                                onBoardingManager.close();
+                                log.info("force onBoardingShell to close for ubuntu and macos to avoid studio freezed");
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
