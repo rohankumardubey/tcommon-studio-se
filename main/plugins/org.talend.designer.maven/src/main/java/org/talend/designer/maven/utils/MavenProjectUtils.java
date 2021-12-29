@@ -14,6 +14,7 @@ package org.talend.designer.maven.utils;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -141,6 +142,23 @@ public class MavenProjectUtils {
         } catch (
 
         CoreException e) {
+            ExceptionHandler.process(e);
+        }
+    }
+
+    public static void addProjectClasspathEntry(IProgressMonitor monitor, IProject project, List<IClasspathEntry> entries) {
+        try {
+            Set<IClasspathEntry> classpathentries = new LinkedHashSet<IClasspathEntry>();
+            IJavaProject javaProject = JavaCore.create(project);
+            IClasspathEntry[] rawClasspathEntries = javaProject.getRawClasspath();
+            for (IClasspathEntry entry : rawClasspathEntries) {
+                classpathentries.add(entry);
+            }
+            classpathentries.addAll(entries);
+            rawClasspathEntries = classpathentries.toArray(new IClasspathEntry[] {});
+            javaProject.setRawClasspath(rawClasspathEntries, monitor);
+            javaProject.setOutputLocation(project.getFolder(MavenSystemFolders.JAVA.getOutputPath()).getFullPath(), monitor);
+        } catch (Exception e) {
             ExceptionHandler.process(e);
         }
     }
