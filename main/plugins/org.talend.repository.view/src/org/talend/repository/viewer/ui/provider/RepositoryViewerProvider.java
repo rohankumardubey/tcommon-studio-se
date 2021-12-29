@@ -15,6 +15,7 @@ package org.talend.repository.viewer.ui.provider;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
@@ -24,6 +25,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.widgets.Composite;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.utils.RepositoryManagerHelper;
 import org.talend.core.repository.model.ProjectRepositoryNode;
@@ -31,6 +33,7 @@ import org.talend.core.repository.ui.utils.RecombineRepositoryNodeUtil;
 import org.talend.core.repository.ui.view.RepositoryLabelProvider;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.IRepositoryNode.ENodeType;
+import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.model.nodes.IProjectRepositoryNode;
 import org.talend.repository.navigator.RepoViewCommonNavigator;
@@ -107,6 +110,8 @@ public class RepositoryViewerProvider extends AbstractViewerProvider {
             sorter = viewer.getSorter();
         }
         final ViewerSorter viewerSorter = sorter;
+        IRepositoryService service = (IRepositoryService) GlobalServiceRegister.getDefault()
+                .getService(IRepositoryService.class);
         // TDI-20528
         // treeViewer.setSorter(sorter);
         treeViewer.setSorter(new TreePathViewerSorter() {
@@ -127,7 +132,35 @@ public class RepositoryViewerProvider extends AbstractViewerProvider {
                     // do special for simple folder,TDI-20528
                     if (node1.getType() == IRepositoryNode.ENodeType.SIMPLE_FOLDER
                             || node2.getType() == IRepositoryNode.ENodeType.SIMPLE_FOLDER) {
-                        return e1.toString().compareTo(e2.toString());
+                        int ret = e1.toString().compareTo(e2.toString());
+                        // TUP-33214:sort between leaf node and embedded folder node. should return positive integer
+                        // when leaf node is in prefix folder of folder node instead of comparing the string simply.
+                        if (node1.getType() != IRepositoryNode.ENodeType.SIMPLE_FOLDER) {
+                            IRepositoryNode parent = node1.getParent();
+                            if (parent != null && parent.getType() != IRepositoryNode.ENodeType.SIMPLE_FOLDER) {
+                                ret = 1;
+                            }
+                            if (parent != null && parent.getType() == IRepositoryNode.ENodeType.SIMPLE_FOLDER) {
+                                IPath path1 = service.getRepositoryPath(parent);
+                                IPath path2 = service.getRepositoryPath(node2);
+                                if (path1 != null && (path1.isPrefixOf(path2) || path1.equals(path2))) {
+                                    ret = 1;
+                                }
+                            }
+                        } else if (node2.getType() != IRepositoryNode.ENodeType.SIMPLE_FOLDER) {
+                            IRepositoryNode parent = node2.getParent();
+                            if (parent != null && parent.getType() != IRepositoryNode.ENodeType.SIMPLE_FOLDER) {
+                                ret = -1;
+                            }
+                            if (parent != null && parent.getType() == IRepositoryNode.ENodeType.SIMPLE_FOLDER) {
+                                IPath path2 = service.getRepositoryPath(parent);
+                                IPath path1 = service.getRepositoryPath(node1);
+                                if (path2 != null && (path2.equals(path1) || path2.isPrefixOf(path1))) {
+                                    ret = -1;
+                                }
+                            }
+                        }
+                        return ret;
                     } else if (viewerSorter != null) {
                         if (viewerSorter instanceof TreePathViewerSorter) {
                             if (!node1.isInitialized() && !node2.isInitialized()) {
