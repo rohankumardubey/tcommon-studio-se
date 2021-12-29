@@ -12,11 +12,17 @@
 // ============================================================================
 package org.talend.designer.maven;
 
+import java.util.List;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jdt.core.IClasspathEntry;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.runtime.services.IDesignerMavenService;
 import org.talend.designer.maven.tools.CodesJarM2CacheManager;
 import org.talend.designer.maven.utils.CodesJarMavenUtil;
+import org.talend.designer.maven.utils.MavenProjectUtils;
 
 public class DesignerMavenService implements IDesignerMavenService {
 
@@ -33,6 +39,16 @@ public class DesignerMavenService implements IDesignerMavenService {
     @Override
     public void updateCodeJarMavenProject(CodesJarInfo info, boolean needReSync) throws Exception {
         CodesJarM2CacheManager.updateCodesJarProject(info, needReSync);
+    }
+
+    @Override
+    public void enableMavenNature(IProgressMonitor monitor, IProject project) {
+        MavenProjectUtils.enableMavenNature(monitor, project);
+    }
+
+    @Override
+    public void addProjectClasspathEntry(IProgressMonitor monitor, IProject project, List<IClasspathEntry> entries) {
+        MavenProjectUtils.addProjectClasspathEntry(monitor, project, entries);
     }
 
 }

@@ -46,6 +46,7 @@ import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuild
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
@@ -56,6 +57,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.jdt.core.IClasspathAttribute;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.ui.IEditorPart;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.CommonExceptionHandler;
@@ -119,6 +123,7 @@ import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.runtime.repository.build.BuildExportManager;
+import org.talend.core.runtime.services.IDesignerMavenService;
 import org.talend.core.service.IResourcesDependenciesService;
 import org.talend.core.services.ICoreTisService;
 import org.talend.core.services.ISVNProviderService;
@@ -1570,6 +1575,7 @@ public class ProcessorUtilities {
         }
         jobInfo.setProcessItem(null);
         if (!BitwiseOptionUtils.containOption(option, GENERATE_MAIN_ONLY)) {
+            List<JobInfo> firstSubjobs = new ArrayList<JobInfo>();
             // handle subjob in joblet. see bug 004937: tRunJob in a Joblet
             for (INode node : currentProcess.getGeneratingNodes()) {
                 String componentName = node.getComponent().getName();
@@ -1658,6 +1664,8 @@ public class ProcessorUtilities {
 
                                 if (!BitwiseOptionUtils.containOption(option, GENERATE_WITH_FIRST_CHILD)) {
                                     currentProcess.setNeedRegenerateCode(true);
+                                } else {
+                                    firstSubjobs.add(subJobInfo);
                                 }
                             }
 
@@ -1666,6 +1674,9 @@ public class ProcessorUtilities {
                     }
                 }
             }
+            if (BitwiseOptionUtils.containOption(option, GENERATE_WITH_FIRST_CHILD)) {
+                handleGenerateFirstChildOnlyClasspath(progressMonitor, jobInfo, firstSubjobs);
+            }
         }
     }
 
@@ -1673,6 +1684,32 @@ public class ProcessorUtilities {
         int includeESBFlag = jobInfo.getIncludeESBFlag();
         includeESBFlag |= esbIncludingOption;
         jobInfo.setIncludeESBFlag(includeESBFlag);
+    }
+
+    private static void handleGenerateFirstChildOnlyClasspath(IProgressMonitor progressMonitor, JobInfo jobInfo,
+            List<JobInfo> subjobInfoList) {
+        IDesignerMavenService mavenService = IDesignerMavenService.get();
+        if (mavenService == null || jobInfo == null || subjobInfoList.isEmpty()) {
+            return;
+        }
+        List<IClasspathEntry> classpathEntries = new ArrayList<IClasspathEntry>();
+        for (JobInfo subJobInfo : subjobInfoList) {
+            if (subJobInfo.getProcessor() != null) {
+                IProject codeProject = subJobInfo.getProcessor().getCodeProject();
+                if (codeProject != null) {
+                    mavenService.enableMavenNature(progressMonitor, codeProject);
+                    IClasspathEntry classpathEntry = JavaCore.newSourceEntry(codeProject.getFullPath(), new IPath[0],
+                            new IPath[0], null, new IClasspathAttribute[] {});
+                    classpathEntries.add(classpathEntry);
+                }
+            }
+        }
+        if (jobInfo.getProcessor() != null) {
+            IProject codeProject = jobInfo.getProcessor().getCodeProject();
+            if (codeProject != null) {
+                mavenService.addProjectClasspathEntry(progressMonitor, codeProject, classpathEntries);
+            }
+        }
     }
 
     static void setGenerationInfoWithChildrenJob(INode node, JobInfo jobInfo, final JobInfo subJobInfo) {
@@ -2048,7 +2085,7 @@ public class ProcessorUtilities {
     }
 
     public static IProcessor generateCode(IProcess process, IContext context, boolean statistics, boolean trace,
-            boolean properties, int option) throws ProcessorException {
+            boolean properties, int option, IProgressMonitor progressMonitor) throws ProcessorException {
         // added by nma, to refresh routines when generating code in SVN mode. 10225.
         ISVNProviderService service = null;
         if (PluginChecker.isSVNProviderPluginLoaded()) {
@@ -2060,8 +2097,7 @@ public class ProcessorUtilities {
         // achen modify to fix 0006107
         JobInfo jobInfo = new JobInfo(process, context);
         resetBuildFlagsAndCaches();
-        IProcessor genCode = generateCode(jobInfo, context.getName(), statistics, trace, properties, option,
-                new NullProgressMonitor());
+        IProcessor genCode = generateCode(jobInfo, context.getName(), statistics, trace, properties, option, progressMonitor);
         resetBuildFlagsAndCaches();
         return genCode;
     }

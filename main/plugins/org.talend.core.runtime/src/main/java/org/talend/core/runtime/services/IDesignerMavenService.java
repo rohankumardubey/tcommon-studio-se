@@ -12,6 +12,11 @@
 // ============================================================================
 package org.talend.core.runtime.services;
 
+import java.util.List;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jdt.core.IClasspathEntry;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
 import org.talend.core.model.properties.RoutineItem;
@@ -24,6 +29,10 @@ public interface IDesignerMavenService extends IService {
     String getImportGAVPackageForCodesJar(CodesJarInfo info);
 
     void updateCodeJarMavenProject(CodesJarInfo info, boolean needReSync) throws Exception;
+
+    void enableMavenNature(IProgressMonitor monitor, IProject project);
+
+    void addProjectClasspathEntry(IProgressMonitor monitor, IProject project, List<IClasspathEntry> entries);
 
     public static IDesignerMavenService get() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IDesignerMavenService.class)) {
