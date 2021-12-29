@@ -56,19 +56,20 @@ public final class RepositoryManagerHelper {
         if (CommonsPlugin.isHeadless()) {
             return null;
         }
-        IViewPart part = null;
-        IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        if (activeWorkbenchWindow != null) {
-            // bug 16594
-            IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
-            if (page != null) {
-                part = page.findView(IRepositoryView.VIEW_ID);
-                if (part != null) {
-                    return (IRepositoryView) part;
-                } else {
-                    part = page.findView(IRepositoryView.MAPPER_VIEW_ID);
+        if (PlatformUI.isWorkbenchRunning()) {
+            IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+            if (activeWorkbenchWindow != null) {
+                // bug 16594
+                IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
+                if (page != null) {
+                    IViewPart part = page.findView(IRepositoryView.VIEW_ID);
                     if (part != null) {
                         return (IRepositoryView) part;
+                    } else {
+                        part = page.findView(IRepositoryView.MAPPER_VIEW_ID);
+                        if (part != null) {
+                            return (IRepositoryView) part;
+                        }
                     }
                 }
             }
