@@ -83,7 +83,6 @@ import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.metadata.managment.connection.manager.HiveConnectionManager;
 import org.talend.metadata.managment.hive.EmbeddedHiveDataBaseMetadata;
-import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.repository.ProjectManager;
 import org.talend.utils.exceptions.MissingDriverException;
 import org.talend.utils.sql.ConnectionUtils;
@@ -1453,10 +1452,6 @@ public class ExtractMetaDataUtils {
         if (StringUtils.isEmpty(defautVal)) {
             return;
         }
-        if (defautVal.trim().equals("NULL")) {
-            initialValue.setBody("");
-            return;
-        }
         defautVal = defautVal.trim();
         boolean defaultValueIsFunction = false;
         List<String> functions = getAllDBFuctions(dbMetaData);
@@ -1474,12 +1469,45 @@ public class ExtractMetaDataUtils {
                     defautVal = TalendQuoteUtils.addQuotes(defautVal, TalendQuoteUtils.SINGLE_QUOTE);
                 }
             } else {
-                defautVal = TalendQuoteUtils.addSingleQuotesIfNotExist(defautVal);
+                defautVal = adaptForDBs(defautVal,dbMetaData);
+                if(!defautVal.trim().equalsIgnoreCase("NULL")) {
+                    defautVal = TalendQuoteUtils.addSingleQuotesIfNotExist(defautVal);
+                }
             }
         }
         initialValue.setBody(defautVal);
     }
-
+    /*
+     * add special code for different DBs as they may have special return value if set default NULL. (for now only add mysql/oracle/mssql , could add more later if customer requests)
+     */
+    private String adaptForDBs(String defaultVal,DatabaseMetaData dbMetaData) {
+        String dbType= "";
+        try {
+            String type = dbMetaData.getDatabaseProductName();
+            if(type != null) {
+                dbType = type;
+            }
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+        }
+        if(EDatabaseTypeName.MYSQL.getDisplayName().equalsIgnoreCase(dbType)) {
+            if("NULL".equalsIgnoreCase(defaultVal)) {
+                defaultVal = TalendQuoteUtils.addSingleQuotesIfNotExist(defaultVal);
+            }
+        }else if(EDatabaseTypeName.ORACLE_OCI.getProduct().equalsIgnoreCase(dbType)) {
+            //oracle do nothing for now
+        }else if(EDatabaseTypeName.MSSQL.getDisplayName().equalsIgnoreCase(dbType)) {
+            defaultVal = removeBracketsIfExist(defaultVal);
+        }
+        return defaultVal;
+    }
+    
+    private String removeBracketsIfExist(String value) {
+        if (StringUtils.isNotEmpty(value)&&value.startsWith("(") && value.endsWith(")")) {
+            value= value.substring(1,value.length()-1);
+        }
+        return value;
+    }
     public String getSchema() {
         return schema;
     }
