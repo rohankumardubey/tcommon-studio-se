@@ -231,7 +231,7 @@ public abstract class AbstractMavenProcessorPom extends CreateMavenBundleTemplat
                 Dependency mavenCoreDep = new Dependency();
                 mavenCoreDep.setGroupId("org.apache.maven");
                 mavenCoreDep.setArtifactId("maven-core");
-                mavenCoreDep.setVersion("3.8.1");
+                mavenCoreDep.setVersion("3.8.3");
                 
                 shade.getDependencies().add(guavaDep);
                 shade.getDependencies().add(codecDep);
