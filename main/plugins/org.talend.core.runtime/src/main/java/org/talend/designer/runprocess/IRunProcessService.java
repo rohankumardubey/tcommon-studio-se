@@ -234,6 +234,8 @@ public interface IRunProcessService extends IService {
 
     void clearProjectRelatedSettings();
 
+    void clearAllBuildCaches();
+
     void batchDeleteAllVersionTalendJobProject(List<String> idList);
 
     boolean isExportConfig();

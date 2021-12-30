@@ -66,7 +66,6 @@ import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
-import org.talend.commons.runtime.utils.io.FileCopyUtils;
 import org.talend.commons.utils.PasswordEncryptUtil;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.time.TimeMeasure;
@@ -1280,39 +1279,6 @@ public class ProcessorUtilities {
         }
     }
 
-    private static void syncContextResourcesForParentJob(IProcess currentProcess, IProgressMonitor progressMonitor) {
-        ITalendProcessJavaProject processJavaProject = mainJobInfo.getProcessor().getTalendJavaProject();
-
-        final IFolder mainResourcesFolder = processJavaProject.getExternalResourcesFolder();
-        final File targetFolder = mainResourcesFolder.getLocation().toFile();
-
-        final Set<JobInfo> dependenciesItems = mainJobInfo.getProcessor().getBuildChildrenJobs();
-
-        final IRunProcessService runProcessService = (IRunProcessService) GlobalServiceRegister.getDefault().getService(
-                IRunProcessService.class);
-
-        List<ProcessItem> dependenciesItemsFiltered = dependenciesItems.stream().filter(jobInfo -> !jobInfo.isJoblet())
-                .map(JobInfo::getProcessItem).collect(Collectors.toList());
-        
-        if (dependenciesItemsFiltered.size() > 0) {
-            dependenciesItemsFiltered.forEach(item -> {
-                ITalendProcessJavaProject childJavaProject = runProcessService.getTalendJobJavaProject(item.getProperty());
-                if (childJavaProject != null) {
-                    final IFolder childResourcesFolder = childJavaProject.getExternalResourcesFolder();
-                    if (childResourcesFolder.exists()) {
-                        FileCopyUtils.syncFolder(childResourcesFolder.getLocation().toFile(), targetFolder, false);
-                    }
-                }
-            });
-
-            try {
-                mainResourcesFolder.refreshLocal(IResource.DEPTH_INFINITE, progressMonitor);
-            } catch (CoreException e) {
-                ExceptionHandler.process(e);
-            }
-        }
-    }
-
     private static Set<ModuleNeeded> getAllJobTestcaseModules(ProcessItem selectedProcessItem) {
         Set<ModuleNeeded> neededLibraries = new HashSet<>();
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
@@ -1519,7 +1485,6 @@ public class ProcessorUtilities {
                 }
             }
         }
-        syncContextResourcesForParentJob(currentProcess, progressMonitor);
     }
 
     /**
