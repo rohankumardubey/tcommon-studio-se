@@ -4495,6 +4495,20 @@ public class DatabaseForm extends AbstractForm {
             };
         } else if (isImpalaDBConnSelected()) {
             final IMetadataConnection metadataConn = ConvertionHelper.convert(connectionItem.getConnection(), true);
+            
+            if( !("".equals(metadataConn.getPassword()) || "\"\"".equals(metadataConn.getPassword())) ) {
+                String url = metadataConn.getUrl().replace(";auth=noSasl", "");
+
+                if (url.startsWith("jdbc:hive2")) {
+                    url = url + ";user=" + metadataConn.getUsername() + ";password=" + metadataConn.getPassword();
+                } else {
+                    url = url + ";AuthMech=3;UID=" + metadataConn.getUsername() + ";PWD=" + metadataConn.getPassword();
+                }
+                
+                metadataConn.setUrl(url);
+            }
+            
+            
             checkingDialog = new AProgressMonitorDialogWithCancel<Boolean>(getShell()) {
 
                 @Override
@@ -8695,7 +8709,7 @@ public class DatabaseForm extends AbstractForm {
                 hiveVersion == null ? null : hiveVersion.getVersion(), false);
         if (impalaDriverDisplay != null && impalaDriverDisplay.length == 0) {
             // hive2 by default
-            impalaDriverCombo.getCombo().setItems(EImpalaDriver.HIVE2.getDisplayName());
+            impalaDriverCombo.getCombo().setItems(EImpalaDriver.HIVE2.getDisplayName().split("\n"));
         } else {
             impalaDriverCombo.getCombo().setItems(impalaDriverDisplay);
         }
