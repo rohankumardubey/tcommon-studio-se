@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -15,6 +16,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.emf.common.notify.Adapter;
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.TreeIterator;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EOperation;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +43,10 @@ import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.MetadataColumn;
 
 import junit.framework.Assert;
+import orgomg.cwm.objectmodel.core.CoreFactory;
+import orgomg.cwm.objectmodel.core.CorePackage;
 import orgomg.cwm.objectmodel.core.Expression;
+import orgomg.cwm.objectmodel.core.impl.ExpressionImpl;
 
 /**
  * @author zshen
@@ -804,6 +819,126 @@ public class ExtractMetaDataUtilsTest {
         verify(initialValue, times(2)).setBody(initialValue.getBody());
     }
 
+    @Test
+    public void testHandleDefaultValueWhenOracleNULL() throws SQLException {
+        DatabaseMetaData dbMetadata = mock(DatabaseMetaData.class);
+        when(dbMetadata.getDatabaseProductName()).thenReturn("ORACLE");
+        MetadataColumn metadataColumn = mock(MetadataColumn.class);
+        when(metadataColumn.getTalendType()).thenReturn("id_String");
+        Expression initialValue =  CoreFactory.eINSTANCE.createExpression();
+        when(metadataColumn.getInitialValue()).thenReturn(initialValue);
+        initialValue.setBody("NULL");
+        extractMetaManger.handleDefaultValue(metadataColumn, dbMetadata);
+        Assert.assertEquals(initialValue.getBody(), "NULL");
+    }
+    @Test
+    public void testHandleDefaultValueWhenOraclenull() throws SQLException {
+        DatabaseMetaData dbMetadata = mock(DatabaseMetaData.class);
+        when(dbMetadata.getDatabaseProductName()).thenReturn("ORACLE");
+        MetadataColumn metadataColumn = mock(MetadataColumn.class);
+        when(metadataColumn.getTalendType()).thenReturn("id_String");
+        Expression initialValue =  CoreFactory.eINSTANCE.createExpression();
+        when(metadataColumn.getInitialValue()).thenReturn(initialValue);
+        initialValue.setBody("null");
+        extractMetaManger.handleDefaultValue(metadataColumn, dbMetadata);
+        Assert.assertEquals(initialValue.getBody(), "null");
+    }
+    @Test
+    public void testHandleDefaultValueOracleNullWithQuotes() throws SQLException {
+        DatabaseMetaData dbMetadata = mock(DatabaseMetaData.class);
+        when(dbMetadata.getDatabaseProductName()).thenReturn("ORACLE");
+        MetadataColumn metadataColumn = mock(MetadataColumn.class);
+        when(metadataColumn.getTalendType()).thenReturn("id_String");
+        Expression initialValue =  CoreFactory.eINSTANCE.createExpression();
+        when(metadataColumn.getInitialValue()).thenReturn(initialValue);
+        initialValue.setBody("'NULL'");
+        extractMetaManger.handleDefaultValue(metadataColumn, dbMetadata);
+        Assert.assertEquals(initialValue.getBody(), "'NULL'");
+    }
+    @Test
+    public void testHandleDefaultValueOracleCommon() throws SQLException {
+        DatabaseMetaData dbMetadata = mock(DatabaseMetaData.class);
+        when(dbMetadata.getDatabaseProductName()).thenReturn("ORACLE");
+        MetadataColumn metadataColumn = mock(MetadataColumn.class);
+        when(metadataColumn.getTalendType()).thenReturn("id_String");
+        Expression initialValue =  CoreFactory.eINSTANCE.createExpression();
+        when(metadataColumn.getInitialValue()).thenReturn(initialValue);
+        initialValue.setBody("abc");
+        extractMetaManger.handleDefaultValue(metadataColumn, dbMetadata);
+        Assert.assertEquals(initialValue.getBody(), "'abc'");
+    }
+    @Test
+    public void testHandleDefaultValueWhenMysqlNULL() throws SQLException {
+        DatabaseMetaData dbMetadata = mock(DatabaseMetaData.class);
+        when(dbMetadata.getDatabaseProductName()).thenReturn("MySQL");
+        MetadataColumn metadataColumn = mock(MetadataColumn.class);
+        when(metadataColumn.getTalendType()).thenReturn("id_String");
+        Expression initialValue =  CoreFactory.eINSTANCE.createExpression();
+        when(metadataColumn.getInitialValue()).thenReturn(initialValue);
+        initialValue.setBody(null);
+        extractMetaManger.handleDefaultValue(metadataColumn, dbMetadata);
+        Assert.assertEquals(initialValue.getBody(), null);
+    }
+    @Test
+    public void testHandleDefaultValueMysqlNullWithQuotes() throws SQLException {
+        DatabaseMetaData dbMetadata = mock(DatabaseMetaData.class);
+        when(dbMetadata.getDatabaseProductName()).thenReturn("MySQL");
+        MetadataColumn metadataColumn = mock(MetadataColumn.class);
+        when(metadataColumn.getTalendType()).thenReturn("id_String");
+        Expression initialValue =  CoreFactory.eINSTANCE.createExpression();
+        when(metadataColumn.getInitialValue()).thenReturn(initialValue);
+        initialValue.setBody("NULL");
+        extractMetaManger.handleDefaultValue(metadataColumn, dbMetadata);
+        Assert.assertEquals(initialValue.getBody(), "'NULL'");
+    }
+    @Test
+    public void testHandleDefaultValueMysqlCommon() throws SQLException {
+        DatabaseMetaData dbMetadata = mock(DatabaseMetaData.class);
+        when(dbMetadata.getDatabaseProductName()).thenReturn("MySQL");
+        MetadataColumn metadataColumn = mock(MetadataColumn.class);
+        when(metadataColumn.getTalendType()).thenReturn("id_String");
+        Expression initialValue =  CoreFactory.eINSTANCE.createExpression();
+        when(metadataColumn.getInitialValue()).thenReturn(initialValue);
+        initialValue.setBody("abc");
+        extractMetaManger.handleDefaultValue(metadataColumn, dbMetadata);
+        Assert.assertEquals(initialValue.getBody(), "'abc'");
+    }
+    @Test
+    public void testHandleDefaultValueWhenMssqlNULL() throws SQLException {
+        DatabaseMetaData dbMetadata = mock(DatabaseMetaData.class);
+        when(dbMetadata.getDatabaseProductName()).thenReturn("Microsoft SQL Server");
+        MetadataColumn metadataColumn = mock(MetadataColumn.class);
+        when(metadataColumn.getTalendType()).thenReturn("id_String");
+        Expression initialValue =  CoreFactory.eINSTANCE.createExpression();
+        when(metadataColumn.getInitialValue()).thenReturn(initialValue);
+        initialValue.setBody("(NULL)");
+        extractMetaManger.handleDefaultValue(metadataColumn, dbMetadata);
+        Assert.assertEquals(initialValue.getBody(), "NULL");
+    }
+    @Test
+    public void testHandleDefaultValueMssqlNullWithQuotes() throws SQLException {
+        DatabaseMetaData dbMetadata = mock(DatabaseMetaData.class);
+        when(dbMetadata.getDatabaseProductName()).thenReturn("Microsoft SQL Server");
+        MetadataColumn metadataColumn = mock(MetadataColumn.class);
+        when(metadataColumn.getTalendType()).thenReturn("id_String");
+        Expression initialValue =  CoreFactory.eINSTANCE.createExpression();
+        when(metadataColumn.getInitialValue()).thenReturn(initialValue);
+        initialValue.setBody("('NULL')");
+        extractMetaManger.handleDefaultValue(metadataColumn, dbMetadata);
+        Assert.assertEquals(initialValue.getBody(), "'NULL'");
+    }
+    @Test
+    public void testHandleDefaultValueMssqlCommon() throws SQLException {
+        DatabaseMetaData dbMetadata = mock(DatabaseMetaData.class);
+        when(dbMetadata.getDatabaseProductName()).thenReturn("Microsoft SQL Server");
+        MetadataColumn metadataColumn = mock(MetadataColumn.class);
+        when(metadataColumn.getTalendType()).thenReturn("id_String");
+        Expression initialValue =  CoreFactory.eINSTANCE.createExpression();
+        when(metadataColumn.getInitialValue()).thenReturn(initialValue);
+        initialValue.setBody("abc");
+        extractMetaManger.handleDefaultValue(metadataColumn, dbMetadata);
+        Assert.assertEquals(initialValue.getBody(), "'abc'");
+    }
     @Test
     public void testGetMultiSchems() {
         // null
