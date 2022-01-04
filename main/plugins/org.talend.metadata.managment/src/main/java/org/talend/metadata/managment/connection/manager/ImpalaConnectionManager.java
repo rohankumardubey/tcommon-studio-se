@@ -70,9 +70,25 @@ public class ImpalaConnectionManager extends DataBaseConnectionManager {
             @Override
             public Connection call() throws Exception {
                 Connection conn = null;
+                
+                if( !("".equals( metadataConn.getPassword() ) ||  "\"\"".equals( metadataConn.getPassword() )) ) {
+                    String url = metadataConn.getUrl().replace(";auth=noSasl", "");
+
+                    
+                    if (url.startsWith("jdbc:hive2") && !url.contains(";user=")) {
+                        url = url + ";user=" + metadataConn.getUsername() + ";password=" + metadataConn.getPassword();
+                    } else if (!url.contains(";AuthMech=3;UID=")) {
+                        url = url + ";AuthMech=3;UID=" + metadataConn.getUsername() + ";PWD=" + metadataConn.getPassword();
+                    }
+                    
+                    metadataConn.setUrl(url);
+                }
+                
+                
                 String connURL = metadataConn.getUrl();
                 String username = metadataConn.getUsername();
-                String password = metadataConn.getPassword();
+                String password = metadataConn.getPassword();                
+                
                 // 1. Get class loader.
                 ClassLoader currClassLoader = Thread.currentThread().getContextClassLoader();
                 ClassLoader impalaClassLoader = getClassLoader(metadataConn);
@@ -147,8 +163,11 @@ public class ImpalaConnectionManager extends DataBaseConnectionManager {
                     Properties info = new Properties();
                     username = username != null ? username : ""; //$NON-NLS-1$
                     password = password != null ? password : "";//$NON-NLS-1$
-                    info.setProperty("user", username);//$NON-NLS-1$
-                    info.setProperty("password", password);//$NON-NLS-1$
+                    
+                    
+//	                    info.setProperty("user", username);//$NON-NLS-1$
+//	                    info.setProperty("password", password);//$NON-NLS-1$
+                    
                     conn = hiveDriver.connect(connURL, info);
                 } finally {
                     Thread.currentThread().setContextClassLoader(currClassLoader);
