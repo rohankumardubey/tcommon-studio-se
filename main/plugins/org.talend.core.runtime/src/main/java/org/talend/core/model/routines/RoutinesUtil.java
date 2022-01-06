@@ -22,6 +22,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.jobs.Job;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
@@ -50,6 +51,8 @@ import org.talend.repository.model.IProxyRepositoryFactory;
  * ggu class global comment. Detailled comment
  */
 public final class RoutinesUtil {
+
+    private static Job syncCodesjob;
 
     private RoutinesUtil() {
     }
@@ -304,7 +307,7 @@ public final class RoutinesUtil {
         }
         ICodeGeneratorService codegenService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ICodeGeneratorService.class)) {
-            codegenService = (ICodeGeneratorService) GlobalServiceRegister.getDefault().getService(ICodeGeneratorService.class);
+            codegenService = GlobalServiceRegister.getDefault().getService(ICodeGeneratorService.class);
         }
         if (codegenService == null) {
             return errorItems;
@@ -328,7 +331,7 @@ public final class RoutinesUtil {
             return;
         }
         if (synchronizer == null && GlobalServiceRegister.getDefault().isServiceRegistered(ICodeGeneratorService.class)) {
-            ICodeGeneratorService codegenService = (ICodeGeneratorService) GlobalServiceRegister.getDefault().getService(
+            ICodeGeneratorService codegenService = GlobalServiceRegister.getDefault().getService(
                     ICodeGeneratorService.class);
             synchronizer = codegenService.createRoutineSynchronizer();
         }
@@ -407,6 +410,14 @@ public final class RoutinesUtil {
             routinesParameters = ((ProcessItem) item).getProcess().getParameters().getRoutinesParameter();
         }
         return routinesParameters;
+    }
+
+    public static Job getSyncCodesjob() {
+        return syncCodesjob;
+    }
+
+    public static void setSyncCodesjob(Job syncCodesjob) {
+        RoutinesUtil.syncCodesjob = syncCodesjob;
     }
 
 }

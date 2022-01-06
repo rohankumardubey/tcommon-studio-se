@@ -135,6 +135,7 @@ import org.talend.core.model.repository.RepositoryContentManager;
 import org.talend.core.model.repository.RepositoryObject;
 import org.talend.core.model.repository.RepositoryViewObject;
 import org.talend.core.model.routines.CodesJarInfo;
+import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.model.utils.RepositoryManagerHelper;
 import org.talend.core.repository.CoreRepositoryPlugin;
 import org.talend.core.repository.constants.Constant;
@@ -2499,8 +2500,8 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
 
             };
             job.setUser(false);
-            job.setPriority(Job.LONG);
             job.schedule();
+            RoutinesUtil.setSyncCodesjob(job);
         }
     }
 
