@@ -167,6 +167,7 @@ import org.talend.core.repository.recyclebin.RecycleBinManager;
 import org.talend.core.repository.ui.view.RepositoryLabelProvider;
 import org.talend.core.repository.utils.AbstractResourceChangesService;
 import org.talend.core.repository.utils.ProjectDataJsonProvider;
+import org.talend.core.repository.utils.RepositoryNodeManager;
 import org.talend.core.repository.utils.ResourceFilenameHelper;
 import org.talend.core.repository.utils.RoutineUtils;
 import org.talend.core.repository.utils.TDQServiceRegister;
@@ -857,8 +858,8 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
         List<MigrationTask> realMigrationTaskList = new ArrayList<MigrationTask>();
         MigrationTask fakeMigratonTask = ProjectDataJsonProvider.createFakeMigrationTask();
         boolean foundFakeTask = false;
-        for (int i = 0; i < project.getEmfProject().getMigrationTask().size(); i++) {
-            MigrationTask task = (MigrationTask) project.getEmfProject().getMigrationTask().get(i);
+        for (Object element : project.getEmfProject().getMigrationTask()) {
+            MigrationTask task = (MigrationTask) element;
             if (!StringUtils.equals(task.getId(), fakeMigratonTask.getId())) {
                 realMigrationTaskList.add(task);
             } else {
@@ -940,7 +941,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
 
         // filter out illegal migration task entries
         List<MigrationTask> FilteredTasks = tasks.stream().filter((e) -> {
-            MigrationTask task = (MigrationTask) e;
+            MigrationTask task = e;
             return task.getId() != null;
         }).collect(Collectors.toList());
 
@@ -1907,12 +1908,16 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
             if(type == null){
                 type = objToMove.getRepositoryObjectType();
             }
+            ERepositoryObjectType itemType = ERepositoryObjectType.getItemType(objToMove.getProperty().getItem());
+            boolean isTacokit = RepositoryNodeManager.isTacokit(type);
+            if (isTacokit && itemType != null && itemType != type) {
+                type = itemType;
+            }
             String folderName = ERepositoryObjectType.getFolderName(type) + IPath.SEPARATOR
                     + newPath;
             IFolder folder = ResourceUtils.getFolder(fsProject, folderName, true);
             parentPath = folder.getFullPath();
 
-            ERepositoryObjectType itemType = ERepositoryObjectType.getItemType(objToMove.getProperty().getItem());
             FolderItem folderItem = getFolderItem(project, itemType, newPath);
 
             // get all objects from the current folder.
@@ -2421,12 +2426,12 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
         ContextType[] newContextArray = EcoreUtil
                 .getObjectsByType(itemResource.getContents(), TalendFilePackageImpl.eINSTANCE.getContextType())
                 .toArray(new ContextType[0]);
-        for (int i = 0; i < newContextArray.length; i++) {
-            ContextTypeImpl newContextType = (ContextTypeImpl) newContextArray[i];
+        for (ContextType element : newContextArray) {
+            ContextTypeImpl newContextType = (ContextTypeImpl) element;
             ResourceHelper.setUUid(newContextType, contextIdMaps.get(newContextType.getName()));
             Map<String, String> idMap = paramIdMaps.get(newContextType.getName());
-            for (int j = 0; j < newContextType.getContextParameter().size(); j++) {
-                ContextParameterType newParam = (ContextParameterType) newContextType.getContextParameter().get(j);
+            for (Object element2 : newContextType.getContextParameter()) {
+                ContextParameterType newParam = (ContextParameterType) element2;
                 ResourceHelper.setUUid(newParam, idMap.get(newParam.getName()));
             }
         }
@@ -3367,8 +3372,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
         // MOD mzhao resource change listener so that TOP can react the changes.
         AbstractResourceChangesService resChangeService = TDQServiceRegister.getInstance().getResourceChangeService(
                 AbstractResourceChangesService.class);
-        for (int i = 0; i < resourceToUnload.size(); i++) {
-            Resource resource = resourceToUnload.get(i);
+        for (Resource resource : resourceToUnload) {
             if (resource.isLoaded()) {
                 if (resChangeService != null) {
                     resChangeService.handleUnload(resource);
@@ -3382,7 +3386,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
     @Override
     public void beforeLogon(IProgressMonitor monitor, Project project) throws PersistenceException, LoginException {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IBrandingService.class)) {
-            IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault()
+            IBrandingService brandingService = GlobalServiceRegister.getDefault()
                     .getService(IBrandingService.class);
             String productVersion = VersionUtils.getDisplayVersion();
             String version = brandingService.getFullProductName() + "-" + productVersion; //$NON-NLS-1$
@@ -3453,7 +3457,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
         String productVersion = VersionUtils.getInternalVersion();
         String productLastestPatchVersion = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IInstalledPatchService.class)) {
-            IInstalledPatchService pachService = (IInstalledPatchService) GlobalServiceRegister.getDefault()
+            IInstalledPatchService pachService = GlobalServiceRegister.getDefault()
                     .getService(IInstalledPatchService.class);
             if (pachService != null) {
                 productLastestPatchVersion = pachService.getLatestInstalledVersion(true);
@@ -3841,7 +3845,7 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
 
     @Override
     public void executeMigrations(Project mainProject, boolean beforeLogon, SubMonitor monitorWrap) throws PersistenceException {
-        IMigrationToolService service = (IMigrationToolService) GlobalServiceRegister.getDefault().getService(
+        IMigrationToolService service = GlobalServiceRegister.getDefault().getService(
                 IMigrationToolService.class);
         service.executeMigrationTasksForLogon(mainProject, beforeLogon, monitorWrap);
     }

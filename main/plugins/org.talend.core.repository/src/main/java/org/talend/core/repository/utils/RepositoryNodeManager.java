@@ -14,10 +14,13 @@ package org.talend.core.repository.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.ui.internal.navigator.NavigatorContentServiceContentProvider;
+import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.MetadataColumn;
@@ -137,6 +140,19 @@ public class RepositoryNodeManager {
             }
         }
         return new Object[0];
+    }
+
+    public static boolean isTacokit(ERepositoryObjectType repoType) {
+        if (repoType == null) {
+            return false;
+        }
+        boolean isTacokit = false;
+        try {
+            isTacokit = Optional.ofNullable(ITaCoKitService.getInstance()).map(s -> s.isTaCoKitType(repoType)).orElse(false);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        return isTacokit;
     }
 
 }
