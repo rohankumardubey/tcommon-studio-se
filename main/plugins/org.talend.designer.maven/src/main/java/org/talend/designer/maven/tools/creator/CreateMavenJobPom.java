@@ -274,6 +274,37 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
         checkPomProperty(properties, "talend.job.type", ETalendMavenVariables.JobType,
                 jobInfoProp.getProperty(JobInfoProperties.JOB_TYPE));
 
+        org.talend.core.model.general.Project currentProject = ProjectManager.getInstance()
+                .getProjectFromProjectTechLabel(project.getTechnicalLabel());
+        String branchName = ProjectManager.getInstance().getMainProjectBranch(project);
+        try {
+            if (branchName == null) {
+                ProjectPreferenceManager preferenceManager =
+                        new ProjectPreferenceManager(currentProject, "org.talend.repository", false);
+                branchName = preferenceManager.getValue(RepositoryConstants.PROJECT_BRANCH_ID);
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        if (null != branchName && branchName.startsWith("branches/")) {
+            branchName = branchName.substring(9);
+            properties.setProperty("talend.project.branch.name", branchName);
+        }
+
+        try {
+            if ((ProcessorUtilities.isCIMode() || !currentProject.isLocal()) && IGITProviderService.get() != null
+                    && IGITProviderService.get().isGITProject(currentProject) && IGitInfoService.get() != null) {
+                additionalProperties.clear();
+                additionalProperties.putAll(IGitInfoService.get().getGitInfo(property));
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        properties.setProperty("talend.job.git.author", additionalProperties.getOrDefault(IGitInfoService.GIT_AUTHOR, ""));
+        properties.setProperty("talend.job.git.commit.id", additionalProperties.getOrDefault(IGitInfoService.GIT_COMMIT_ID, ""));
+        properties.setProperty("talend.job.git.commit.date",
+                additionalProperties.getOrDefault(IGitInfoService.GIT_COMMIT_DATE, ""));
+
         boolean publishAsSnapshot = BooleanUtils
                 .toBoolean((String) property.getAdditionalProperties().get(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT));
 
@@ -583,32 +614,13 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
         if (!isOptionChecked(TalendProcessArgumentConstant.ARG_AVOID_BRANCH_NAME)) {
             jobInfoContent = StringUtils.replace(jobInfoContent, "${talend.project.branch}", mainProjectBranch);
         }
-        String gitAuthor = "";
-        String gitCommitId = "";
-        String gitCommitDate = "";
-        Map<String, String> gitInfo = null;
-        GlobalServiceRegister serviceRegister = GlobalServiceRegister.getDefault();
-        IGITProviderService gitProviderService = null;
-        if (serviceRegister.isServiceRegistered(IGITProviderService.class)) {
-            gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault().getService(IGITProviderService.class);
-        }
-        if ((ProcessorUtilities.isCIMode() || !project.isLocal()) && gitProviderService != null
-                && gitProviderService.isGITProject(project)) {
-            try {
-                if (serviceRegister.isServiceRegistered(IGitInfoService.class)) {
-                    IGitInfoService gitInfoService = serviceRegister.getService(IGitInfoService.class);
-                    gitInfo = gitInfoService.getGitInfo(property);
-                    gitAuthor = gitInfo.get(IGitInfoService.GIT_AUTHOR);
-                    gitCommitId = gitInfo.get(IGitInfoService.GIT_COMMIT_ID);
-                    gitCommitDate = gitInfo.get(IGitInfoService.GIT_COMMIT_DATE);
-                }
-            } catch (Exception e) {
-                ExceptionHandler.process(e);
-            }
-        }
-        jobInfoContent = StringUtils.replace(jobInfoContent, "${talend.git.author}", gitAuthor);
-        jobInfoContent = StringUtils.replace(jobInfoContent, "${talend.git.commitId}", gitCommitId);
-        jobInfoContent = StringUtils.replace(jobInfoContent, "${talend.git.commitDate}", gitCommitDate);
+
+        jobInfoContent = StringUtils.replace(jobInfoContent, "${talend.git.author}",
+                additionalProperties.getOrDefault(IGitInfoService.GIT_AUTHOR, ""));
+        jobInfoContent = StringUtils.replace(jobInfoContent, "${talend.git.commitId}",
+                additionalProperties.getOrDefault(IGitInfoService.GIT_COMMIT_ID, ""));
+        jobInfoContent = StringUtils.replace(jobInfoContent, "${talend.git.commitDate}",
+                additionalProperties.getOrDefault(IGitInfoService.GIT_COMMIT_DATE, ""));
 
         IFolder templateFolder = codeProject.getTemplatesFolder();
         IFile shFile = templateFolder.getFile(IProjectSettingTemplateConstants.JOB_RUN_SH_TEMPLATE_FILE_NAME);

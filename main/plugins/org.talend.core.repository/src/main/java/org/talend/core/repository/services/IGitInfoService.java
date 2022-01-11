@@ -15,6 +15,7 @@ package org.talend.core.repository.services;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Property;
@@ -50,5 +51,11 @@ public interface IGitInfoService extends IService {
      */
     public Map<String, String> getGitInfo(Property property) throws Exception;
 
+    public static IGitInfoService get() {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGitInfoService.class)) {
+            return GlobalServiceRegister.getDefault().getService(IGitInfoService.class);
+        }
+        return null;
+    }
 
 }
