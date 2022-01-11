@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.maven.tools.creator;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -39,6 +40,8 @@ public abstract class CreateMaven {
     private String packaging = TalendMavenConstants.PACKAGING_JAR;
 
     private Map<String, Object> argumentsMap;
+
+    protected Map<String, String> additionalProperties = new HashMap<>();
 
     public String getVersion() {
         return this.version;
