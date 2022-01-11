@@ -51,6 +51,8 @@ public interface IGitInfoService extends IService {
      */
     public Map<String, String> getGitInfo(Property property) throws Exception;
 
+    public boolean isPushedToRemote(Property property) throws Exception;
+
     public static IGitInfoService get() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGitInfoService.class)) {
             return GlobalServiceRegister.getDefault().getService(IGitInfoService.class);
