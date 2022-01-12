@@ -71,6 +71,8 @@ public class RepositoryConstants {
                                                                             // folder
 
     public static final String FOLDER_PATTERN = "^[a-zA-Z]+[a-zA-Z0-9\\_]*$"; //$NON-NLS-1$
+    
+    public static final String RESOURCES_PATTERN = "^[a-zA-Z]+[a-zA-Z0-9\\_]*$"; //$NON-NLS-1$
 
     public static final String REPOSITORY_ITEM_PATTERN_INTERN = "a-zA-Z0-9\\.\\-\\_\\ \\(\\)\\[\\]="; //$NON-NLS-1$
 
@@ -151,10 +153,11 @@ public class RepositoryConstants {
                 || type == ERepositoryObjectType.METADATA_WSDL_SCHEMA
                 || type == ERepositoryObjectType.METADATA_VALIDATION_RULES
                 || type == ERepositoryObjectType.METADATA_FILE_FTP || type == ERepositoryObjectType.METADATA_EDIFACT) {
-            return METADATA_NAME_PATTERN;
-        }
+            return METADATA_NAME_PATTERN;            
+        } else if( type == ERepositoryObjectType.RESOURCES) {
+            return RESOURCES_PATTERN;
         // GLIU: add for TESB-3837
-        else if (type != null && "SERVICES".equals(type.getType())) { //$NON-NLS-1$
+        } else if (type != null && "SERVICES".equals(type.getType())) { //$NON-NLS-1$
             return SERVICES_NAME_PATTERN;
         } else if (type != null && type.getType() != null && type.getType().startsWith("MDM.")) { //$NON-NLS-1$
             return MDM_ITEM_PATTERN;
