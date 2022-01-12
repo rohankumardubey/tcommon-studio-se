@@ -10,6 +10,6 @@
   <artifactId>org.talend.libraries.persist.lookup</artifactId>
   <packaging>eclipse-plugin</packaging>
     <properties>
-		<tycho.buildtimestamp.format>${timestamp}</tycho.buildtimestamp.format>
+		<tycho.buildtimestamp.format>20220112_1100</tycho.buildtimestamp.format>
 	</properties>
 </project>
