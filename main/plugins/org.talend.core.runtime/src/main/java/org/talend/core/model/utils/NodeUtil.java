@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
@@ -1525,33 +1526,11 @@ public class NodeUtil {
     
     public static String getLabel(INode node) {
         String label = node.getLabel();
-        if(label == null) {
-            label = node.getUniqueName();
-        }
-        
-        if(isValidJavaStringLiteral(label)) {
-            return "\"" + label + "\"";
-        }
-        
-        return label;
-    }
-    
-    private static boolean isValidJavaStringLiteral(String value) {
-        boolean escape = false;
-        for(int i=0;i<value.length();i++) {
-            char c = value.charAt(i);
-            
-            if(c == '"' && !escape) {
-                return false;
-            }
-            
-            if(c == '\\') {
-                escape = !escape;
-            } else {
-                escape = false;
-            }
-        }
-        
-        return true;
+		if (label == null) {
+			label = node.getUniqueName();
+		} else {
+			label = StringEscapeUtils.escapeJava(label);
+		}
+		return label;
     }
 }
