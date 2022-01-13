@@ -103,3 +103,4 @@ Export-Package:
  org.exolab.castor.xml.wls8
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
+
