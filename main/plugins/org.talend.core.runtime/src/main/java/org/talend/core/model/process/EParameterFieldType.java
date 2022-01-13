@@ -98,6 +98,7 @@ public enum EParameterFieldType {
     HADOOP_LIBRARIES,
     DATA_PREP_ID, // wchen added for TDI-33791
     DP_VERSION, // hwang added for TUP-16686
+    TDS_VERSION, // zshen added for TDQ-19814
     FETCH_SCHEMA, // TDI-33791
     DATA_SET_ID,
 
