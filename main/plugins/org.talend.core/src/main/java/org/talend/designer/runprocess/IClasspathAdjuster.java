@@ -34,4 +34,11 @@ public interface IClasspathAdjuster {
     {
         return adjustClassPath(modulesToAjust);//modulesToAjust;
     };
+
+    /**
+     * Have a chance to add some modules when generate pom file
+     */
+    default public Set<ModuleNeeded> adjustPomGeneration(IProcess process, Set<ModuleNeeded> modulesToAjust) {
+        return modulesToAjust;
+    };
 }
