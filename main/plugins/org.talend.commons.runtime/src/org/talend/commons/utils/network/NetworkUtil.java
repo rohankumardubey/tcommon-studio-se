@@ -50,8 +50,6 @@ public class NetworkUtil {
 
     private static final String TALEND_DISABLE_INTERNET = "talend.disable.internet";//$NON-NLS-1$
 
-    private static final String HTTP_NETWORK_URL = "https://talend-update.talend.com";
-
     private static final int DEFAULT_TIMEOUT = 4000;
 
     private static final int DEFAULT_NEXUS_TIMEOUT = 20000;// same as preference value
@@ -89,7 +87,7 @@ public class NetworkUtil {
         }
         HttpURLConnection conn = null;
         try {
-            URL url = new URL(HTTP_NETWORK_URL);
+            URL url = new URL(getCheckUrl());
             conn = (HttpURLConnection) url.openConnection();
             conn.setDefaultUseCaches(false);
             conn.setUseCaches(false);
@@ -110,6 +108,15 @@ public class NetworkUtil {
             conn.disconnect();
         }
         return true;
+    }
+
+    private static String getCheckUrl() {
+        String customUrl = System.getProperty("talend.studio.network.checkUrlPath");
+        if (StringUtils.isNotBlank(customUrl)) {
+            return customUrl;
+        } else {
+            return "https://talend-update.talend.com/nexus/content/repositories/libraries/";
+        }
     }
 
     public static boolean isNetworkValid(String url, Integer timeout) {
