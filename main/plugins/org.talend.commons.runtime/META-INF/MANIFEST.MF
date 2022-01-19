@@ -64,4 +64,6 @@ Bundle-ClassPath: .,
  fakejdbc_driver.jar
 Bundle-Vendor: .Talend SA.
 Bundle-ActivationPolicy: lazy
-Import-Package: org.apache.xerces.jaxp
+Import-Package:
+ javax.xml.stream,
+ org.apache.xerces.jaxp
