@@ -40,6 +40,7 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
+import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.runtime.repository.item.ItemProductKeys;
 import org.talend.core.runtime.util.ItemDateParser;
 import org.talend.designer.maven.launch.MavenPomCommandLauncher;
@@ -239,7 +240,8 @@ public class BuildCacheManager {
             IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getSpecificVersion(property.getId(),
                     property.getVersion(), true);
             if (obj != null) {
-                IRunProcessService.get().generatePom(obj.getProperty().getItem());
+				IRunProcessService.get().generatePom(obj.getProperty().getItem(),
+						TalendProcessOptionConstants.GENERATE_POM_NOT_CLEAR_CACHE);
             }
         }
     }
