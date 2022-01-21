@@ -45,6 +45,8 @@ public interface TalendProcessOptionConstants {
     public static final int GENERATE_NO_CODEGEN = 1 << 9;
 
     public static final int GENERATE_POM_NO_FILTER = 1 << 10;
+    
+    public static final int GENERATE_POM_NOT_CLEAR_CACHE = 1 << 11;
 
     /**
      * clean options
