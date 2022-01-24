@@ -286,8 +286,8 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
-        if (null != branchName && branchName.startsWith("branches/")) {
-            branchName = branchName.substring(9);
+
+        if (null != branchName) {
             properties.setProperty("talend.project.branch.name", branchName);
         }
 
