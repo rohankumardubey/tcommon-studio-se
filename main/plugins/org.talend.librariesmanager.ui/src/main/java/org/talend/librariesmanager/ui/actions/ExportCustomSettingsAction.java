@@ -49,7 +49,7 @@ public class ExportCustomSettingsAction extends Action {
     public void run() {
         Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-        dialog.setText(Messages.getString("ImportCustomSettingsAction.title"));
+        dialog.setText(Messages.getString("ExportCustomSettingsAction.title"));
         String selectedFile = dialog.open();
         if (selectedFile != null) {
             CustomUriManager.getInstance().exportSettings(dialog.getFilterPath(), dialog.getFileName());
