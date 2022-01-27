@@ -710,9 +710,8 @@ public class ModulesNeededProvider {
             importNeedsListForRoutes.addAll(service.getModuleNeeded("camel-core", true));
             importNeedsListForRoutes.addAll(service.getModuleNeeded("camel-spring", true));
 
-            if (System.getProperty("java.version") != null && System.getProperty("java.version").startsWith("11")) {
-                getModulesNeededForRoutesJava11();
-            }
+            getModulesNeededForRoutesJava11();
+
             for (ModuleNeeded mod : importNeedsListForRoutes) {
                 if (ELibraryInstallStatus.INSTALLED != mod.getStatus()) {
                     installModuleForRountine = true;
