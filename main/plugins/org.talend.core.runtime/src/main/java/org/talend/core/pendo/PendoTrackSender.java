@@ -14,6 +14,7 @@ package org.talend.core.pendo;
 
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -31,8 +32,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -41,10 +41,12 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.VersionUtils;
+import org.talend.commons.utils.network.IProxySelectorProvider;
 import org.talend.commons.utils.network.NetworkUtil;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
+import org.talend.core.nexus.HttpClientTransport;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.service.IRemoteService;
 import org.talend.core.service.IStudioLiteP2Service;
@@ -118,8 +120,9 @@ public class PendoTrackSender {
             return;
         }
 
-        CloseableHttpClient client = null;
+        DefaultHttpClient client = null;
         CloseableHttpResponse response = null;
+        IProxySelectorProvider proxySelectorProvider = null;
         try {
             String pendoInfo = getPendoInfo();
             if (StringUtils.isBlank(pendoInfo)) {
@@ -130,11 +133,14 @@ public class PendoTrackSender {
                 throw new Exception("Pendo key is empty");
             }
             
-            client = HttpClients.createDefault();
+            client = new DefaultHttpClient();
             String url = getBaseUrl() + PENDO_TRACK;
             HttpPost httpPost = new HttpPost(url);
             httpPost.setHeader(HEAD_CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
             httpPost.setHeader(HEAD_PENDO_KEY, pendoKey);
+
+            proxySelectorProvider = HttpClientTransport.addProxy(client, new URI(url));
+
             EntityBuilder entityBuilder = EntityBuilder.create();
             entityBuilder.setText(generateTrackData(pendoInfo)).setContentType(ContentType.APPLICATION_JSON);
             HttpEntity entity = entityBuilder.build();
@@ -146,6 +152,8 @@ public class PendoTrackSender {
                 throw new Exception(statusLine.toString() + ", server message: [" + responseStr + "]");
             }
         } finally {
+            HttpClientTransport.removeProxy(proxySelectorProvider);
+            client.getConnectionManager().shutdown();
             if (response != null) {
                 try {
                     response.close();
@@ -213,14 +221,18 @@ public class PendoTrackSender {
     }
 
     private String getPendoInfo(String baseUrl, String token) throws Exception {
-        CloseableHttpClient client = null;
+        DefaultHttpClient client = null;
         CloseableHttpResponse response = null;
+        IProxySelectorProvider proxySelectorProvider = null;
         try {
-            client = HttpClients.createDefault();
+            client = new DefaultHttpClient();
+
             String url = baseUrl + PENDO_INFO;
 
             HttpGet httpGet = new HttpGet(url);
             httpGet.setHeader(HEAD_AUTHORIZATION, "Bearer " + token);
+            proxySelectorProvider = HttpClientTransport.addProxy(client, new URI(url));
+
             response = client.execute(httpGet, HttpClientContext.create());
             StatusLine statusLine = response.getStatusLine();
             String responseStr = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
@@ -229,6 +241,8 @@ public class PendoTrackSender {
             }
             return responseStr;
         } finally {
+            HttpClientTransport.removeProxy(proxySelectorProvider);
+            client.getConnectionManager().shutdown();
             if (response != null) {
                 try {
                     response.close();
