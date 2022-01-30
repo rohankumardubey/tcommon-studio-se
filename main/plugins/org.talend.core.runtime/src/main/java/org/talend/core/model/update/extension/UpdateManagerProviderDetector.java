@@ -310,8 +310,8 @@ public enum UpdateManagerProviderDetector {
         Item item = node.getObject().getProperty().getItem();
         List<Relation> allRelations = new ArrayList<Relation>();
         if (node.getObject() != null) {
-            List<Relation> relations = RelationshipItemBuilder.getInstance().getItemsRelatedTo(item.getProperty().getId(),
-                    RelationshipItemBuilder.LATEST_VERSION, RelationshipItemBuilder.PROPERTY_RELATION);
+            List<Relation> relations = RelationshipItemBuilder.getInstance().getItemsHaveRelationWith(item.getProperty().getId(),
+                    RelationshipItemBuilder.LATEST_VERSION);
             if (relations != null && relations.size() > 0) {
                 allRelations.addAll(relations);
             }

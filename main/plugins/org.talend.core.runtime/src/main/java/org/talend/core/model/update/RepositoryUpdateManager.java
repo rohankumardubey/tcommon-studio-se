@@ -2023,8 +2023,8 @@ public abstract class RepositoryUpdateManager {
 
         };
         repositoryUpdateManager.checkAddContextGroup = detectAddContextGroup;
-        repositoryUpdateManager.isConfigContextGroup = repositoryContextManager.isConfigContextGroup();
         if (repositoryContextManager != null) {
+            repositoryUpdateManager.isConfigContextGroup = repositoryContextManager.isConfigContextGroup();
             // add for bug 9119 context group
             Map<ContextItem, List<IContext>> repositoryContextGroupMap = new HashMap<ContextItem, List<IContext>>();
             List<IContext> addGroupContext = repositoryContextManager.getAddGroupContext();
