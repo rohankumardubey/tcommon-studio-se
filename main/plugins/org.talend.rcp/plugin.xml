@@ -485,6 +485,13 @@
               </with> 
             </visibleWhen> 
       </command> 
+      <control class="org.talend.rcp.ui.toolbar.ResourceToolbarContribution">
+          <visibleWhen> 
+              <with variable="ResourceToolbarProvider.showToolbar"> 
+                <equals value="true"></equals> 
+              </with> 
+            </visibleWhen> 
+        </control>
     </toolbar> 
   </menuContribution>  
   <menuContribution locationURI="menu:org.talend.resoruses.toolbar.referenceCommand"> 
