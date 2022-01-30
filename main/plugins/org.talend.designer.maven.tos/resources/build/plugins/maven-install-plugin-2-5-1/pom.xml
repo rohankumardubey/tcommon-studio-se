@@ -19,6 +19,10 @@
 					<groupId>commons-codec</groupId>
 					<artifactId>commons-codec</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.apache.maven.shared</groupId>
+					<artifactId>maven-shared-utils</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
