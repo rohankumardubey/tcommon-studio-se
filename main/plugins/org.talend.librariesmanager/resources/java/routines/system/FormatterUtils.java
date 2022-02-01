@@ -138,7 +138,6 @@ public class FormatterUtils {
                 c.setTime(date);
                 c.add(Calendar.DATE, 1462);
                 return c.getTime();
-        }
     }
 
 
