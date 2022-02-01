@@ -19,7 +19,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.Locale;
-
+import java.util.Calendar;
 import routines.TalendDate;
 
 public class FormatterUtils {
@@ -133,6 +133,21 @@ public class FormatterUtils {
             return null;
         }
     }
+    public static String format_Date(java.util.Date date, String pattern, boolean isDate1904) {
+
+        if (date != null) {
+            if(isDate1904){
+                Calendar c = Calendar.getInstance();
+                c.setTime(date);
+                c.add(Calendar.DATE, 1462);
+                date = c.getTime();
+            }
+            return TalendDate.formatDate(pattern == null ? Constant.dateDefaultPattern : pattern, date);
+        } else {
+            return null;
+        }
+    }
+
 
     /**
      * Formats a Date into a date/time string under an user specified timezone.
