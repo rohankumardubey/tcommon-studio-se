@@ -133,18 +133,11 @@ public class FormatterUtils {
             return null;
         }
     }
-    public static String format_Date(java.util.Date date, String pattern, boolean isDate1904) {
-
-        if (date != null) {
-            if(isDate1904){
+    public static String format_Date(java.util.Date date, boolean isDate1904) {
                 Calendar c = Calendar.getInstance();
                 c.setTime(date);
                 c.add(Calendar.DATE, 1462);
-                date = c.getTime();
-            }
-            return TalendDate.formatDate(pattern == null ? Constant.dateDefaultPattern : pattern, date);
-        } else {
-            return null;
+                return c.getTime();
         }
     }
 
