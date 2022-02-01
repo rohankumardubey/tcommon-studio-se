@@ -18,6 +18,7 @@ import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Date;
+import java.util.Calendar;
 import java.util.Locale;
 
 import routines.TalendDate;
@@ -73,6 +74,12 @@ public class FormatterUtils {
         } else {
             return null;
         }
+    }
+    public static Date convert_Date1904(java.util.Date date, boolean isDate1904) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.DATE, 1462);
+        return c.getTime();
     }
 
     public static String format(BigDecimal decimal, String pattern) {
