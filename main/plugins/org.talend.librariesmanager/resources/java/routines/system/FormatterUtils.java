@@ -133,7 +133,7 @@ public class FormatterUtils {
             return null;
         }
     }
-    public static Date convert_Date1904(java.util.Date date, boolean isDate1904) {
+    public static Date convert_Date1904(java.util.Date datess) {
                 Calendar c = Calendar.getInstance();
                 c.setTime(date);
                 c.add(Calendar.DATE, 1462);
