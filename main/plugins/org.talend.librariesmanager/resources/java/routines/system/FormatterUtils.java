@@ -18,9 +18,8 @@ import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Date;
-import java.util.Calendar;
 import java.util.Locale;
-
+import java.util.Calendar;
 import routines.TalendDate;
 
 public class FormatterUtils {
