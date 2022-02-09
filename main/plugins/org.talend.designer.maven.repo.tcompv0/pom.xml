@@ -137,35 +137,6 @@
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>${jackson-codehaus.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.talend.daikon-ee</groupId>
-			<artifactId>format-detection-csv</artifactId>
-			<version>${daikon-ee.format.verison}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bouncycastle</groupId>
-					<artifactId>bcmail-jdk15on</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.tika</groupId>
-					<artifactId>tika-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.tika</groupId>
-					<artifactId>tika-parsers</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.talend.daikon-ee</groupId>
-			<artifactId>format-detection-core</artifactId>
-			<version>${daikon-ee.format.verison}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.talend.daikon-ee</groupId>
-			<artifactId>format-type-detection-csv</artifactId>
-			<version>${daikon-ee.format.verison}</version>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
