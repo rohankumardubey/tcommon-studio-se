@@ -1609,8 +1609,12 @@ public class ProcessorUtilities {
                                     subJobOption |= GENERATE_WITHOUT_COMPILING;
                                 }
                                 // children won't have stats / traces
-                                generateCode(subJobInfo, selectedContextName, statistics, false, properties,
-                                        isNeedLoadmodules, subJobOption, progressMonitor);
+                                IProcessor childProcessor = generateCode(subJobInfo, selectedContextName, statistics, false,
+                                        properties, isNeedLoadmodules, subJobOption, progressMonitor);
+                                // TUP-34489:forward interpreter to sub job
+                                if (CommonsPlugin.isHeadless() && interpreter != null) {
+                                    childProcessor.setInterpreter(interpreter);
+                                }
 
                                 if (!BitwiseOptionUtils.containOption(option, GENERATE_WITH_FIRST_CHILD)) {
                                     currentProcess.setNeedRegenerateCode(true);
