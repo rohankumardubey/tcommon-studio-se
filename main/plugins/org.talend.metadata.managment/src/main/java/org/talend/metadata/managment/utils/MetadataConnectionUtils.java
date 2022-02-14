@@ -576,6 +576,16 @@ public class MetadataConnectionUtils {
         return false;
     }
     
+    public static boolean isH2(DatabaseMetaData connectionMetadata) throws SQLException {
+        if (connectionMetadata.getDriverName() != null && connectionMetadata.getDatabaseProductName() != null) {
+            if (EDatabaseTypeName.H2.getDbType().equalsIgnoreCase(connectionMetadata.getDatabaseProductName().trim())) {
+                return true;
+
+            }
+        }
+        return false;
+    }
+    
     public static boolean isSybase16SA(IMetadataConnection connectionMetadata) throws SQLException {
         boolean isSybase16SA = false;
         if(connectionMetadata!=null) {
