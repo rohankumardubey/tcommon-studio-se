@@ -4,7 +4,7 @@ Bundle-Name: H2
 Bundle-SymbolicName: org.talend.libraries.jdbc.h2
 Bundle-Version: 8.0.1.qualifier
 Bundle-ClassPath: .,
- lib/h2-1.4.198.jar
+ lib/h2-2.0.206.jar
 Export-Package: org.h2,
  org.h2.api;uses:="org.h2.command.ddl,org.h2.table",
  org.h2.bnf;uses:="org.h2.server.web",
@@ -35,7 +35,6 @@ Export-Package: org.h2,
    org.h2.value,
    org.h2.util",
  org.h2.compress,
- org.h2.constant,
  org.h2.constraint;
   uses:="org.h2.expression,
    org.h2.result,
@@ -155,4 +154,4 @@ Export-Package: org.h2,
    org.h2.message,
    org.h2.engine"
 Bundle-ActivationPolicy: lazy
-Eclipse-BundleShape: dir
+Eclipse-BundleShape: dir  
