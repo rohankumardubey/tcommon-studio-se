@@ -107,9 +107,14 @@ abstract public class DownloadModuleRunnable implements IRunnableWithProgress {
         ArtifactDownloadManager downloadManager = new ArtifactDownloadManager(canBeDownloadList, monitor);
         downloadManager.start();
         List<ModuleToInstall> finishedList = downloadManager.getDownloadFinishedList();
+        List<ModuleToInstall> downloadedTCKConnectors = new ArrayList<ModuleToInstall>();
         for (ModuleToInstall module : finishedList) {
             installedModules.add(module.getName());
+            if (module.isTCKConnector()) {
+                downloadedTCKConnectors.add(module);
+            }
         }
+        
         Map<ModuleToInstall, Exception> failedMap = downloadManager.getDownloadFailedMap();
         for (ModuleToInstall module : failedMap.keySet()) {
             downloadFailed.add(module.getName());
@@ -129,6 +134,11 @@ abstract public class DownloadModuleRunnable implements IRunnableWithProgress {
                     .getService(ILibrariesService.class);
             librariesService.checkLibraries();
         }
+        
+        if (downloadedTCKConnectors.size() > 0) {
+            new ExternalTCKConnectorInstaller(downloadedTCKConnectors).run();
+        }
+
     }
 
     protected boolean hasLicensesToAccept() {
@@ -205,3 +215,4 @@ abstract public class DownloadModuleRunnable implements IRunnableWithProgress {
     }
 
 }
+

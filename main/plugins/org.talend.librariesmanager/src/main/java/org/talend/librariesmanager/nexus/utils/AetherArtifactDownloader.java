@@ -64,6 +64,9 @@ public class AetherArtifactDownloader implements IDownloadHelper, DownloadListen
             resolver.addDownloadListener(this);
             try {
                 resolvedFile = resolver.resolveArtifact(parseMvnUrl, nServer);
+                if (module != null) {
+                    module.setModuleFile(resolvedFile);
+                }
             } catch (Exception ex) {
                 deleteResolvedFileIfExist();
                 throw ex;

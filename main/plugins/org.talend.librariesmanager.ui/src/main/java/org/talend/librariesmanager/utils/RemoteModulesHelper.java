@@ -450,6 +450,7 @@ public class RemoteModulesHelper {
                 name = neededModules.get(0).getModuleName();
                 m.setName(name);
                 m.setDescription(getFirstDescription(neededModules));
+                m.setTCKConnector(neededModules.get(0).isTCKConnector());
             }
             if (CommonsPlugin.isDebugMode()) {
                 ExceptionHandler.log("The download URL for " + name + " is not available (" + mvnUri + ")");//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

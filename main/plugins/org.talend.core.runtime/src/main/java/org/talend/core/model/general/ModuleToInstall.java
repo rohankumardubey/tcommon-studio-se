@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.core.model.general;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,7 +50,11 @@ public class ModuleToInstall {
     private String distribution = "";
 
     private boolean fromCustomNexus;
-
+    
+    private boolean isTCKConnector = false;
+    
+    private File moduleFile = null; 
+    
     public String getName() {
         return this.name;
     }
@@ -205,6 +210,7 @@ public class ModuleToInstall {
         module.setMavenUri(this.mavenUri);
         module.setUrl_description(this.url_description);
         module.setUrl_download(this.url_download);
+        module.setTCKConnector(this.isTCKConnector);
         return module;
     }
 
@@ -238,4 +244,27 @@ public class ModuleToInstall {
     public boolean isFromCustomNexus() {
         return this.fromCustomNexus;
     }
+
+    
+    public boolean isTCKConnector() {
+        return isTCKConnector;
+    }
+
+    
+    public void setTCKConnector(boolean isTCKConnector) {
+        this.isTCKConnector = isTCKConnector;
+    }
+
+    
+    public File getModuleFile() {
+        return moduleFile;
+    }
+
+    
+    public void setModuleFile(File moduleFile) {
+        this.moduleFile = moduleFile;
+    }
+    
+    
+    
 }
