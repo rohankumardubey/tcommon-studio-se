@@ -107,6 +107,8 @@ public class ModuleNeeded {
     private boolean useReleaseVersion = false;
 
     private Map<String, String> attributes;
+    
+    private boolean isTCKConnector = false;
 
     ILibraryManagerService libManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault()
             .getService(ILibraryManagerService.class);
@@ -767,4 +769,12 @@ public class ModuleNeeded {
     public void setDynamicDistributionVersion(String distribution) {
         attributes.put(ATTR_DYNAMIC_DISTRIBUTION_VERSION, distribution);
     }
+ 
+    public boolean isTCKConnector() {
+        return isTCKConnector;
+    }
+  
+    public void setTCKConnector(boolean isTCKConnector) {
+        this.isTCKConnector = isTCKConnector;
+    }  
 }
