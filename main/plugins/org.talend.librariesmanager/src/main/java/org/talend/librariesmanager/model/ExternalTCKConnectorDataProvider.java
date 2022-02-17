@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.log4j.Logger;
@@ -171,3 +170,4 @@ class ExternalConnector {
     }
 
 }
+
