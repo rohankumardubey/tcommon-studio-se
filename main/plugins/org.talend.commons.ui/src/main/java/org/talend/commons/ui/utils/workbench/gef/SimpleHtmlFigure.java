@@ -113,6 +113,10 @@ public class SimpleHtmlFigure extends Figure {
         add(horizContainer);
     }
 
+    public void setText(final String text) {
+        setText(text, false);
+    }
+
     /**
      * Display some HTML text..
      *
@@ -120,7 +124,7 @@ public class SimpleHtmlFigure extends Figure {
      * @param isSysDefaultColor true if use system default font color
      */
     @SuppressWarnings("unchecked")
-    public void setText(final String text) {
+    public void setText(final String text, boolean isSysDefaultColor) {
 
         if (this.text.equals(text)) {
             // if the text is the same, there's nothing to change, so return.
@@ -138,14 +142,16 @@ public class SimpleHtmlFigure extends Figure {
         newHorizContainer();
 
         List<Color> colorStack = new ArrayList<Color>();
-        buildFigures(text, SWT.None, colorStack);
+        colorStack.add(ColorConstants.black);
+        // for some dark theme system like Ubuntu,if true use default system font color
+        buildFigures(text, SWT.None, colorStack, isSysDefaultColor);
 
         setPreferredSize(computePreferedSize());
 
         this.text = text;
     }
 
-    private void buildFigures(final String newText, final int fontCode, final List<Color> colorStack) {
+    private void buildFigures(final String newText, final int fontCode, final List<Color> colorStack, boolean isSysDefaultColor) {
         // Optimize
         if (newText == null || newText.length() == 0) {
             return;
@@ -161,7 +167,7 @@ public class SimpleHtmlFigure extends Figure {
         if (isFirstIndex(boldIndex, italicIndex, fontIndex, brIndex)) {
             if (boldIndex > 0) {
                 String begText = newText.substring(0, boldIndex);
-                buildFigures(begText, newFontCode, colorStack);
+                buildFigures(begText, newFontCode, colorStack, isSysDefaultColor);
             }
             newFontCode = newFontCode | SWT.BOLD;
 
@@ -170,17 +176,17 @@ public class SimpleHtmlFigure extends Figure {
             if (endBoldIndex != -1) {
                 String boldText = newText.substring(boldIndex + TAG_BOLD_BEG.length(), endBoldIndex);
                 endText = newText.substring(endBoldIndex + TAG_BOLD_END.length());
-                buildFigures(boldText, newFontCode, colorStack);
+                buildFigures(boldText, newFontCode, colorStack, isSysDefaultColor);
             } else {
                 endText = newText.substring(boldIndex + TAG_BOLD_BEG.length());
             }
 
             newFontCode = newFontCode ^ SWT.BOLD;
-            buildFigures(endText, newFontCode, colorStack);
+            buildFigures(endText, newFontCode, colorStack, isSysDefaultColor);
         } else if (isFirstIndex(italicIndex, boldIndex, fontIndex, brIndex)) {
             if (italicIndex > 0) {
                 String begText = newText.substring(0, italicIndex);
-                buildFigures(begText, newFontCode, colorStack);
+                buildFigures(begText, newFontCode, colorStack, isSysDefaultColor);
             }
             newFontCode = newFontCode | SWT.ITALIC;
 
@@ -189,59 +195,52 @@ public class SimpleHtmlFigure extends Figure {
             if (endItalicIndex != -1) {
                 String italicText = newText.substring(italicIndex + TAG_ITALIC_BEG.length(), endItalicIndex);
                 endText = newText.substring(endItalicIndex + TAG_ITALIC_END.length());
-                buildFigures(italicText, newFontCode, colorStack);
+                buildFigures(italicText, newFontCode, colorStack, isSysDefaultColor);
             } else {
                 endText = newText.substring(italicIndex + TAG_ITALIC_BEG.length());
             }
             newFontCode = newFontCode ^ SWT.ITALIC;
 
-            buildFigures(endText, newFontCode, colorStack);
+            buildFigures(endText, newFontCode, colorStack, isSysDefaultColor);
         } else if (isFirstIndex(fontIndex, boldIndex, italicIndex, brIndex)) {
             if (fontIndex > 0) {
                 String begText = newText.substring(0, fontIndex);
-                buildFigures(begText, newFontCode, colorStack);
+                buildFigures(begText, newFontCode, colorStack, isSysDefaultColor);
             }
             int colorIndex = newText.indexOf(TAG_FONT_COLOR_BEG_1);
 
-            Color color = null;
+            Color color;
             int colorIndex2 = newText.indexOf(TAG_FONT_BEG_2);
             if (colorIndex2 != -1) {
                 String colorCode = newText.substring(colorIndex + TAG_FONT_COLOR_BEG_1.length(), colorIndex2);
                 color = getColor(colorCode);
-            } else if (colorStack.size() > 0){
+            } else {
                 color = colorStack.get(colorStack.size() - 1);
             }
-            
-            boolean isPushed = false;
-            if (color != null) {
-                colorStack.add(color);
-                isPushed = true;
-            }
+            colorStack.add(color);
 
             String endText;
             int endColorIndex = newText.indexOf(TAG_FONT_END);
             if (endColorIndex != -1) {
                 String colorText = newText.substring(colorIndex2 + TAG_FONT_BEG_2.length(), endColorIndex);
                 endText = newText.substring(endColorIndex + TAG_FONT_END.length());
-                buildFigures(colorText, newFontCode, colorStack);
+                buildFigures(colorText, newFontCode, colorStack, isSysDefaultColor);
             } else {
                 endText = newText.substring(colorIndex2 + TAG_FONT_BEG_2.length());
             }
 
-            if (isPushed) {
-                colorStack.remove(colorStack.size() - 1); 
-            }
-            buildFigures(endText, newFontCode, colorStack);
+            colorStack.remove(colorStack.size() - 1);
+            buildFigures(endText, newFontCode, colorStack, isSysDefaultColor);
         } else if (isFirstIndex(brIndex, boldIndex, italicIndex, fontIndex)) {
             if (brIndex > 0) {
                 String begText = newText.substring(0, brIndex);
-                buildFigures(begText, newFontCode, colorStack);
+                buildFigures(begText, newFontCode, colorStack, isSysDefaultColor);
             }
 
             newHorizContainer();
 
             String endText = newText.substring(brIndex + TAG_BR.length());
-            buildFigures(endText, newFontCode, colorStack);
+            buildFigures(endText, newFontCode, colorStack, isSysDefaultColor);
         } else {
             Font fontToUse;
             Label label = new Label();
@@ -260,7 +259,7 @@ public class SimpleHtmlFigure extends Figure {
                 }
             }
             label.setFont(fontToUse);
-            if (colorStack.size() > 0) {
+            if (!isSysDefaultColor) {
                 label.setForegroundColor(colorStack.get(colorStack.size() - 1));
             }
             horizContainer.add(label);
