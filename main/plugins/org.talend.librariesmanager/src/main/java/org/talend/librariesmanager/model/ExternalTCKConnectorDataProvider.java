@@ -55,7 +55,18 @@ public class ExternalTCKConnectorDataProvider {
         connector.setFileName(module.getModuleFile().getName());
         connector.setMvnUrl(module.getMavenUri());
         connector.setInstalled(false);
+        connector.setFamily(module.getFamily());
 
+        ExternalConnector c = null;
+        for (ExternalConnector t : data.getConnectorList()) {
+            if (StringUtils.equals(t.getFamily(), connector.getFamily())) {
+                c = t;
+                break;
+            }
+        }
+        if (c != null) {
+            data.getConnectorList().remove(c);
+        }
         data.getConnectorList().add(connector);
         saveExtConnectorData();
     }
@@ -76,10 +87,13 @@ public class ExternalTCKConnectorDataProvider {
             logger.error("Can't install connector file:" + fileName);
         }
     }
-    
-    public boolean isNeedHide(String family) {
+
+    public boolean isHidenConnector(String family) {
+        if ("TRUE".equalsIgnoreCase(System.getProperty("talend.show.hidden.connector"))) {
+            return false;
+        }
         for (ExternalConnector c : data.getConnectorList()) {
-            if (StringUtils.equals(c.getFamily(), family)) {
+            if (family != null && family.equalsIgnoreCase(c.getFamily())) {
                 return true;
             }
         }
@@ -96,7 +110,9 @@ public class ExternalTCKConnectorDataProvider {
             } catch (IOException e) {
                 ExceptionHandler.process(e);
             }
-        } else {
+        }
+
+        if (data == null) {
             data = new ExternalConnectorData();
         }
     }
@@ -155,7 +171,7 @@ class ExternalConnector {
 
     @JsonProperty("installed")
     private boolean isInstalled;
-    
+
     @JsonProperty("family")
     private String family;
 
@@ -182,14 +198,13 @@ class ExternalConnector {
     public void setInstalled(boolean isInstalled) {
         this.isInstalled = isInstalled;
     }
-    
+
     public String getFamily() {
         return family;
     }
-   
+
     public void setFamily(String family) {
         this.family = family;
     }
 
 }
-
