@@ -53,6 +53,8 @@ public class ModuleToInstall {
     
     private boolean isTCKConnector = false;
     
+    private String family = null;
+    
     private File moduleFile = null; 
     
     public String getName() {
@@ -211,6 +213,8 @@ public class ModuleToInstall {
         module.setUrl_description(this.url_description);
         module.setUrl_download(this.url_download);
         module.setTCKConnector(this.isTCKConnector);
+        module.setModuleFile(this.moduleFile);
+        module.setFamily(this.family);
         return module;
     }
 
@@ -263,6 +267,16 @@ public class ModuleToInstall {
     
     public void setModuleFile(File moduleFile) {
         this.moduleFile = moduleFile;
+    }
+
+    
+    public String getFamily() {
+        return family;
+    }
+
+    
+    public void setFamily(String family) {
+        this.family = family;
     }
     
     

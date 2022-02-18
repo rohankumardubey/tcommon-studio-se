@@ -76,6 +76,15 @@ public class ExternalTCKConnectorDataProvider {
             logger.error("Can't install connector file:" + fileName);
         }
     }
+    
+    public boolean isNeedHide(String family) {
+        for (ExternalConnector c : data.getConnectorList()) {
+            if (StringUtils.equals(c.getFamily(), family)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private void loadExtConnectorData() {
         TypeReference<ExternalConnectorData> typeReference = new TypeReference<ExternalConnectorData>() {
@@ -146,6 +155,9 @@ class ExternalConnector {
 
     @JsonProperty("installed")
     private boolean isInstalled;
+    
+    @JsonProperty("family")
+    private String family;
 
     public String getMvnUrl() {
         return mvnUrl;
@@ -169,6 +181,14 @@ class ExternalConnector {
 
     public void setInstalled(boolean isInstalled) {
         this.isInstalled = isInstalled;
+    }
+    
+    public String getFamily() {
+        return family;
+    }
+   
+    public void setFamily(String family) {
+        this.family = family;
     }
 
 }

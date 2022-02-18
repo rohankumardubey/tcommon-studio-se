@@ -109,6 +109,8 @@ public class ModuleNeeded {
     private Map<String, String> attributes;
     
     private boolean isTCKConnector = false;
+    
+    private String family = null;
 
     ILibraryManagerService libManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault()
             .getService(ILibraryManagerService.class);
@@ -776,5 +778,17 @@ public class ModuleNeeded {
   
     public void setTCKConnector(boolean isTCKConnector) {
         this.isTCKConnector = isTCKConnector;
-    }  
+    }
+
+    
+    public String getFamily() {
+        return family;
+    }
+
+    
+    public void setFamily(String family) {
+        this.family = family;
+    } 
+    
+    
 }

@@ -317,6 +317,7 @@ public class RemoteModulesHelper {
                         if (mvnUri.equals(module.getMavenUri())) {
                             m.setName(module.getModuleName());
                             m.setTCKConnector(module.isTCKConnector());
+                            m.setFamily(module.getFamily());
                         }
                     }
                 }
@@ -379,6 +380,7 @@ public class RemoteModulesHelper {
                             if (moduleToInstall.getName().equals(needed.getModuleName())) {
                                 moduleToInstall.setRequired(needed.isRequired());
                                 moduleToInstall.setTCKConnector(needed.isTCKConnector());
+                                moduleToInstall.setFamily(needed.getFamily());
                             }
                         }
                     }
@@ -453,6 +455,7 @@ public class RemoteModulesHelper {
                 m.setName(name);
                 m.setDescription(getFirstDescription(neededModules));
                 m.setTCKConnector(neededModules.get(0).isTCKConnector());
+                m.setFamily(neededModules.get(0).getFamily());
             }
             if (CommonsPlugin.isDebugMode()) {
                 ExceptionHandler.log("The download URL for " + name + " is not available (" + mvnUri + ")");//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
