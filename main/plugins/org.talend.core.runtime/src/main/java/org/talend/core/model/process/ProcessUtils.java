@@ -1086,6 +1086,18 @@ public final class ProcessUtils {
                     }
                 }
             }
+            if ("cHttp".equals(node.getComponentName())) {
+                for (Object elementParameter : node.getElementParameter()) {
+                    ElementParameterType elementParameterType = (ElementParameterType)elementParameter;
+
+                    String name = elementParameterType.getName();
+                    String value = elementParameterType.getValue();
+
+                    if ("SERVER".equals(name) && (value != null && "true".equals(value.toString()))) {
+                        return true;
+                    }
+                }
+            }
         }
 
         return false;
