@@ -654,42 +654,90 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
         Set<String> talendLibCoordinate = new HashSet<>();
         Set<String> _3rdLibCoordinate = new HashSet<>();
         Map<String, Set<Dependency>> duplicateLibs = new HashMap<>();
+        Set<Dependency> parentJobDependencies = new HashSet<Dependency>();
         IProcessor processor = getJobProcessor();
+        Map<String, Object> processorArgs = processor.getArguments();
+        
+        boolean buidTypeAsMs = false;
+        boolean needLauncher = false;
+        for (Map.Entry<String, Object> entry : processorArgs.entrySet()) {
+            String key = entry.getKey();
+            Object val = entry.getValue();
+            if (!buidTypeAsMs && TalendProcessArgumentConstant.ARG_BUILD_TYPE.equals(key)
+                    && ("ROUTE_MICROSERVICE".equals(val) || "REST_MS".equals(val))) {
+                buidTypeAsMs = true;
+            }
+            if (!needLauncher && TalendProcessArgumentConstant.ARG_NEED_LAUNCHER.equals(key)
+                    && Boolean.TRUE.equals(val)) {
+                needLauncher = true;
+            }
+        }
+        
+        boolean isBuildAsMsZip = buidTypeAsMs && needLauncher;
 
-        // current job
+        // talend libraries and codes
+        List<Dependency> dependencies = new ArrayList<>();
+        Set<ModuleNeeded> modules = new HashSet<>();
+         // current job
         Property currentJobProperty = processor.getProperty();
         jobCoordinate.add(getJobCoordinate(currentJobProperty));
 
+        if(!isBuildAsMsZip) {
+            // codes
+            List<Dependency> codeDependencies = new ArrayList<>();
+            addCodesDependencies(codeDependencies);
+            // codesjar
+            codeDependencies.addAll(getCodesJarDependenciesFromChildren());
+            dependencies.addAll(codeDependencies);
+
+            // codes dependencies (optional)
+            ERepositoryObjectType.getAllTypesOfCodes().forEach(t -> dependencies.addAll(PomUtil.getCodesDependencies(t)));
+            
+            // libraries of talend/3rd party
+            parentJobDependencies  = processor
+                    .getNeededModules(
+                            TalendProcessOptionConstants.MODULES_EXCLUDE_SHADED | TalendProcessOptionConstants.MODULES_WITH_CODESJAR)
+                    .stream()
+                    .filter(m -> !m.isExcluded()).map(m -> createDenpendency(m, false))
+                    .collect(Collectors.toSet());
+            dependencies.addAll(parentJobDependencies);
+            
+            // get codesjar libraries from related joblets
+            dependencies.addAll(processor.getCodesJarModulesNeededOfJoblets().stream().map(m -> createDenpendency(m, false))
+                    .collect(Collectors.toSet()));
+            
+            // testcase modules from current job (optional)
+            modules.addAll(ProcessorDependenciesManager.getTestcaseNeededModules(currentJobProperty));
+            dependencies.addAll(
+                    modules.stream().filter(m -> !m.isExcluded()).map(m -> createDenpendency(m, true)).collect(Collectors.toSet()));
+
+            dependencies.stream().filter(d -> !MavenConstants.PACKAGING_POM.equals(d.getType())).forEach(d -> {
+                String coordinate = getCoordinate(d);
+                String groupId = d.getGroupId();
+                boolean optional = ((SortableDependency) d).isAssemblyOptional();
+                if (jobCoordinate.contains(coordinate) || talendLibCoordinate.contains(coordinate)
+                        || _3rdLibCoordinate.contains(coordinate)) {
+                    return;
+                }
+                if (MavenConstants.DEFAULT_LIB_GROUP_ID.equals(groupId) || codeDependencies.contains(d)) {
+                    if (!optional) {
+                        talendLibCoordinate.add(coordinate);
+                    }
+                } else {
+                    if (!optional) {
+                        _3rdLibCoordinate.add(coordinate);
+                    }
+                    addToDuplicateLibs(duplicateLibs, d);
+                }
+            });
+        }
+        
         // children jobs without test cases
         Set<JobInfo> childrenJobInfo = processor.getBuildChildrenJobs().stream().filter(j -> !j.isTestContainer())
                 .collect(Collectors.toSet());
         if (!hasLoopDependency()) {
             childrenJobInfo.forEach(j -> jobCoordinate.add(getJobCoordinate(j.getProcessItem().getProperty())));
         }
-
-        // talend libraries and codes
-        List<Dependency> dependencies = new ArrayList<>();
-        List<Dependency> codeDependencies = new ArrayList<>();
-        // codes
-        addCodesDependencies(codeDependencies);
-        // codesjar
-        codeDependencies.addAll(getCodesJarDependenciesFromChildren());
-
-        // codes dependencies (optional)
-        ERepositoryObjectType.getAllTypesOfCodes().forEach(t -> dependencies.addAll(PomUtil.getCodesDependencies(t)));
-        dependencies.addAll(codeDependencies);
-        // libraries of talend/3rd party
-        Set<Dependency> parentJobDependencies = processor
-                .getNeededModules(
-                        TalendProcessOptionConstants.MODULES_EXCLUDE_SHADED | TalendProcessOptionConstants.MODULES_WITH_CODESJAR)
-                .stream()
-                .filter(m -> !m.isExcluded()).map(m -> createDenpendency(m, false))
-                .collect(Collectors.toSet());
-        dependencies.addAll(parentJobDependencies);
-
-        // get codesjar libraries from related joblets
-        dependencies.addAll(processor.getCodesJarModulesNeededOfJoblets().stream().map(m -> createDenpendency(m, false))
-                .collect(Collectors.toSet()));
 
         // missing modules from the job generation of children
         Map<String, Set<Dependency>> childjobDependencies = new HashMap<String, Set<Dependency>>();
@@ -699,39 +747,14 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
                             LastGenerationInfo.getInstance().getCodesJarModulesNeededPerJob(j.getJobId(), j.getJobVersion())
                                     .stream())
                     .filter(m -> !m.isExcluded()).map(m -> createDenpendency(m, false)).collect(Collectors.toSet());
-            dependencies.addAll(collectDependency);
+            if(!isBuildAsMsZip) {
+                dependencies.addAll(collectDependency);
+            }
             childjobDependencies.put(j.getJobId(), collectDependency);});
-
-        Set<ModuleNeeded> modules = new HashSet<>();
-        // testcase modules from current job (optional)
-        modules.addAll(ProcessorDependenciesManager.getTestcaseNeededModules(currentJobProperty));
-
+     
         // testcase modules from children job (optional)
         childrenJobInfo.forEach(
                 j -> modules.addAll(ProcessorDependenciesManager.getTestcaseNeededModules(j.getProcessItem().getProperty())));
-
-        dependencies.addAll(
-                modules.stream().filter(m -> !m.isExcluded()).map(m -> createDenpendency(m, true)).collect(Collectors.toSet()));
-
-        dependencies.stream().filter(d -> !MavenConstants.PACKAGING_POM.equals(d.getType())).forEach(d -> {
-            String coordinate = getCoordinate(d);
-            String groupId = d.getGroupId();
-            boolean optional = ((SortableDependency) d).isAssemblyOptional();
-            if (jobCoordinate.contains(coordinate) || talendLibCoordinate.contains(coordinate)
-                    || _3rdLibCoordinate.contains(coordinate)) {
-                return;
-            }
-            if (MavenConstants.DEFAULT_LIB_GROUP_ID.equals(groupId) || codeDependencies.contains(d)) {
-                if (!optional) {
-                    talendLibCoordinate.add(coordinate);
-                }
-            } else {
-                if (!optional) {
-                    _3rdLibCoordinate.add(coordinate);
-                }
-                addToDuplicateLibs(duplicateLibs, d);
-            }
-        });
 
         Iterator<String> iterator = duplicateLibs.keySet().iterator();
         while (iterator.hasNext()) {
@@ -751,25 +774,28 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
 
         try {
             Document document = PomUtil.loadAssemblyFile(null, assemblyFile);
-            // add talend libs & codes
-            setupDependencySetNode(document, talendLibCoordinate, "lib", "${artifact.artifactId}.${artifact.extension}", false,
-                    false);
-            // add 3rd party libs: groupId:artifactId:type:version
-            setupDependencySetNode(document,
-                    _3rdLibCoordinate.stream().filter(s -> s.split(":").length == 4).collect(Collectors.toSet()), "lib", null,
-                    false, false);
-            // add 3rd party libs with classifier: groupId:artifactId:type:classifier:version
-            setupDependencySetNode(document,
-                    _3rdLibCoordinate.stream().filter(s -> s.split(":").length == 5).collect(Collectors.toSet()), "lib", null,
-                    false, false);
-            // FIXME if later add classifier for org.talend.libraries libs, code and job artifact, need to handle it
-            // like 3rd libs as well
+            if(!isBuildAsMsZip) {
+             // add talend libs & codes
+                setupDependencySetNode(document, talendLibCoordinate, "lib", "${artifact.artifactId}.${artifact.extension}", false,
+                        false, false);
+                // add 3rd party libs: groupId:artifactId:type:version
+                setupDependencySetNode(document,
+                        _3rdLibCoordinate.stream().filter(s -> s.split(":").length == 4).collect(Collectors.toSet()), "lib", null,
+                        false, false, false);
+                // add 3rd party libs with classifier: groupId:artifactId:type:classifier:version
+                setupDependencySetNode(document,
+                        _3rdLibCoordinate.stream().filter(s -> s.split(":").length == 5).collect(Collectors.toSet()), "lib", null,
+                        false, false, false);
+                // FIXME if later add classifier for org.talend.libraries libs, code and job artifact, need to handle it
+                // like 3rd libs as well
+                
+                // add duplicate dependencies if exists
+                setupFileNode(document, parentJobDependencies, childjobDependencies, duplicateLibs);
+            }
 
             // add jobs
             setupDependencySetNode(document, jobCoordinate, "${talend.job.name}",
-                    "${artifact.build.finalName}.${artifact.extension}", true, false);
-            // add duplicate dependencies if exists
-            setupFileNode(document, parentJobDependencies, childjobDependencies, duplicateLibs);
+                    "${artifact.build.finalName}.${artifact.extension}", true, false, isBuildAsMsZip);
 
             PomUtil.saveAssemblyFile(assemblyFile, document);
         } catch (Exception e) {
@@ -869,12 +895,12 @@ public class CreateMavenJobPom extends AbstractMavenProcessorPom {
     }
 
     protected void setupDependencySetNode(Document document, Set<String> libIncludes, String outputDir, String fileNameMapping,
-            boolean useProjectArtifact, boolean unpack) {
-        if (libIncludes.isEmpty()) {
+            boolean useProjectArtifact, boolean unpack, boolean isBuildAsMsZip) {
+        if (!isBuildAsMsZip && libIncludes.isEmpty()) {
             return;
         }
         Node dependencySetsNode = document.getElementsByTagName("dependencySets").item(0);
-        if (dependencySetsNode == null) {
+        if (!isBuildAsMsZip && dependencySetsNode == null) {
             return;
         }
         Node dependencySetNode = document.createElement("dependencySet");
