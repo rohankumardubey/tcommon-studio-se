@@ -69,6 +69,8 @@ public interface IMetadataTable {
 
     public boolean sameMetadataAs(IMetadataTable other, int options);
 
+    public boolean sameMetadataAs(List<IMetadataColumn> otherMetadataTableColumns, int options);
+
     public void sortCustomColumns();
 
     public boolean isReadOnly();
