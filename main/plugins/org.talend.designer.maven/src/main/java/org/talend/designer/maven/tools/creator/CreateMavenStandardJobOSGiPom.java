@@ -194,7 +194,7 @@ public class CreateMavenStandardJobOSGiPom extends CreateMavenJobPom {
             Document document = PomUtil.loadAssemblyFile(null, assemblyFile);
             // add jobs
             setupDependencySetNode(document, jobCoordinate, null, "${artifact.build.finalName}.${artifact.extension}", true,
-                    true, false);
+                    true);
             PomUtil.saveAssemblyFile(assemblyFile, document);
         } catch (Exception e) {
             ExceptionHandler.process(e);
