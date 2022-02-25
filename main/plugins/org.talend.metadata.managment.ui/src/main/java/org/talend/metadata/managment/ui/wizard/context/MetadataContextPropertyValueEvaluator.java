@@ -16,12 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.avro.Schema;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.talend.commons.runtime.model.components.IComponentConstants;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.runtime.evaluator.AbstractPropertyValueEvaluator;
 import org.talend.core.runtime.maven.MavenUrlHelper;
+import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.daikon.properties.property.Property;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
@@ -84,6 +86,14 @@ public class MetadataContextPropertyValueEvaluator extends AbstractPropertyValue
             }
 
         }
+        if (GenericTypeUtils.isStringType(property)) {
+            String val = String.valueOf(storedValue);
+            if (property.isFlag(Property.Flags.ENCRYPT)) {
+                return val;
+            }
+            return TalendQuoteUtils.removeQuotes(StringEscapeUtils.unescapeJava(val));
+        }
+
         return getTypedValue(property, currentStoredValue, storedValue);
     }
 
