@@ -139,11 +139,16 @@ public class TalendProxySelector extends ProxySelector {
     private boolean updateSystemPropertiesForJre = true;
 
     private boolean excludeLoopbackAddressAutomatically = false;
-    
+
     private ProxySelector getStardardJreProxySelector() {
+        if (this.jreDefaultSelector != null) {
+            return this.jreDefaultSelector;
+        }
         Object o = System.getProperties().get(SYS_JRE_PROXY_SELECTOR);
         if (o != null && o instanceof ProxySelector) {
-            return (ProxySelector) o;
+            this.jreDefaultSelector = (ProxySelector) o;
+            System.getProperties().remove(SYS_JRE_PROXY_SELECTOR);
+            return this.jreDefaultSelector;
         }
         return getDefault();
     }
