@@ -91,7 +91,6 @@ public class MetadataContextPropertyValueEvaluator extends AbstractPropertyValue
             if (property.isFlag(Property.Flags.ENCRYPT)) {
                 return val;
             }
-            return TalendQuoteUtils.removeQuotes(StringEscapeUtils.unescapeJava(val));
         }
 
         return getTypedValue(property, currentStoredValue, storedValue);
