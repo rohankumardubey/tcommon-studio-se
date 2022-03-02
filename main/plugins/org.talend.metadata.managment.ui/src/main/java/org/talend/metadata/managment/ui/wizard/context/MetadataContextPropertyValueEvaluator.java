@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.avro.Schema;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.talend.commons.runtime.model.components.IComponentConstants;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -90,7 +89,6 @@ public class MetadataContextPropertyValueEvaluator extends AbstractPropertyValue
             if (property.isFlag(Property.Flags.ENCRYPT)) {
                 return val;
             }
-            return TalendQuoteUtils.removeQuotes(StringEscapeUtils.unescapeJava(val));
         }
         return getTypedValue(property, currentStoredValue, storedValue);
     }
