@@ -93,8 +93,8 @@
        <RepositoryComponent
              name="EXASOL"
              withSchema="true"
-             input="tExasolInput"
-             output="tExasolOutput">
+             input="tEXAInput"
+             output="tEXAOutput">
           <Item
                 clazz="org.talend.core.model.properties.DatabaseConnectionItem">
           </Item>

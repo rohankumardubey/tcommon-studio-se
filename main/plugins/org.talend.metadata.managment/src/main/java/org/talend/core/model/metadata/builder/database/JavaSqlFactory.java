@@ -13,6 +13,8 @@
 package org.talend.core.model.metadata.builder.database;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import metadata.managment.i18n.Messages;
@@ -32,6 +34,7 @@ import org.talend.core.model.metadata.builder.connection.DelimitedFileConnection
 import org.talend.core.model.metadata.builder.connection.MDMConnection;
 import org.talend.core.model.metadata.builder.database.dburl.SupportDBUrlStore;
 import org.talend.core.model.metadata.builder.database.dburl.SupportDBUrlType;
+import org.talend.core.model.process.IContextParameter;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.cwm.helper.ConnectionHelper;
@@ -58,6 +61,52 @@ public final class JavaSqlFactory {
     private static Logger log = Logger.getLogger(JavaSqlFactory.class);
 
     private JavaSqlFactory() {
+    }
+
+    // the cache used for prompt context variables
+    public static boolean haveSetPromptContextVars = false;
+
+    // key = group name + context id + context variable name
+    public static Map<String, String> promptContextVars = new HashMap<String, String>();
+
+    public static String getPromptConVarsMapKey(Connection conn, String variableName) {
+        return getPromptConVarsMapKey(conn.getContextName(), conn.getContextId(), variableName);
+    }
+
+    public static String getPromptConVarsMapKey(String contextGroupName, String uniqueId, String variableName) {
+        // if connection, key = group name + context id + context variable name
+        // if analysis internal context, key = group name + ResourceHelper.getUUID(cpt) + context variable name
+        return contextGroupName + "-" + uniqueId + "-" + variableName; //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    public static void savePromptConVars2Cache(Connection conn, IContextParameter param) {
+        if (param != null && param.isPromptNeeded()) {
+            String promptConVarsMapKey = getPromptConVarsMapKey(conn, "context." + param.getName()); //$NON-NLS-1$
+            promptContextVars.put(promptConVarsMapKey, param.getValue());
+        }
+    }
+
+    public static void clearPromptContextCache() {
+        if (Platform.isRunning()) {
+            haveSetPromptContextVars = false;
+            promptContextVars.clear();
+        }
+    }
+
+    public static void saveReportPromptConVars2Cache(String groupName, IContextParameter param) {
+        if (param != null && param.isPromptNeeded()) {
+            String promptConVarsMapKey =
+                    getPromptConVarsMapKey(groupName, param.getSource(), "context." + param.getName()); //$NON-NLS-1$
+            promptContextVars.put(promptConVarsMapKey, param.getValue());
+        }
+    }
+
+    public static String getReportPromptConValueFromCache(String groupName, String contextId, String contextVarName) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(groupName, contextId, contextVarName);
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            return promptContextVars.get(promptConVarsMapKey);
+        }
+        return StringUtils.EMPTY;
     }
 
     /**
@@ -197,7 +246,7 @@ public final class JavaSqlFactory {
         String userName = "";//$NON-NLS-1$
         DatabaseConnection dbConn = SwitchHelpers.DATABASECONNECTION_SWITCH.doSwitch(conn);
         if (dbConn != null) {
-            userName = getOriginalValueConnection(dbConn).getUsername();
+            userName = getOriginalValueConnection(dbConn).getUsername();// root
         } else {
             MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
             if (mdmConn != null) {
@@ -220,7 +269,12 @@ public final class JavaSqlFactory {
         DatabaseConnection dbConn = SwitchHelpers.DATABASECONNECTION_SWITCH.doSwitch(conn);
         String psw = "";//$NON-NLS-1$
         if (dbConn != null) {
-            psw = getOriginalValueConnection(dbConn).getRawPassword();
+            String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getPassword());
+            if (Platform.isRunning() && haveSetPromptContextVars && promptContextVars.containsKey(promptConVarsMapKey)) {// context.a2_Password
+                psw = promptContextVars.get(promptConVarsMapKey);
+            } else {
+                psw = getOriginalValueConnection(dbConn).getRawPassword();// ""
+            }
         } else {
             MDMConnection mdmConn = SwitchHelpers.MDMCONNECTION_SWITCH.doSwitch(conn);
             if (mdmConn != null) {
@@ -251,6 +305,80 @@ public final class JavaSqlFactory {
      */
     public static void setPassword(Connection conn, String password) {
         ConnectionHelper.setPassword(conn, password);
+    }
+
+    /**
+     * set connection prompt context values from cache.
+     * 
+     * @param conn
+     */
+    public static void setPromptContextValues(Connection conn) {
+        if (Platform.isRunning()) {
+            DatabaseConnection dbConn = SwitchHelpers.DATABASECONNECTION_SWITCH.doSwitch(conn);
+            if (dbConn != null) {
+                setPromptContextPassword(dbConn);
+                setPromptContextUsername(dbConn);
+                setPromptContextServerName(dbConn);
+                setPromptContextPort(dbConn);
+                setPromptContextSID(dbConn);
+                setPromptContextAdditionalParams(dbConn);
+                setPromptContextUiSchema(dbConn);
+            }
+        }
+    }
+
+    private static void setPromptContextPassword(DatabaseConnection dbConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getPassword());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            dbConn.setRawPassword(promptContextVars.get(promptConVarsMapKey));
+        }
+    }
+
+    private static void setPromptContextUsername(DatabaseConnection dbConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getUsername());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            dbConn.setUsername(promptContextVars.get(promptConVarsMapKey));
+        }
+    }
+
+    /**
+     * // host
+     * 
+     * @param dbConn
+     */
+    private static void setPromptContextServerName(DatabaseConnection dbConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getServerName());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            dbConn.setServerName(promptContextVars.get(promptConVarsMapKey));
+        }
+    }
+
+    private static void setPromptContextPort(DatabaseConnection dbConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getPort());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            dbConn.setPort(promptContextVars.get(promptConVarsMapKey));
+        }
+    }
+
+    private static void setPromptContextSID(DatabaseConnection dbConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getSID());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            dbConn.setSID(promptContextVars.get(promptConVarsMapKey));
+        }
+    }
+
+    private static void setPromptContextUiSchema(DatabaseConnection dbConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getUiSchema());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            dbConn.setUiSchema(promptContextVars.get(promptConVarsMapKey));
+        }
+    }
+
+    private static void setPromptContextAdditionalParams(DatabaseConnection dbConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(dbConn, dbConn.getAdditionalParams());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            dbConn.setAdditionalParams(promptContextVars.get(promptConVarsMapKey));
+        }
     }
 
     /**

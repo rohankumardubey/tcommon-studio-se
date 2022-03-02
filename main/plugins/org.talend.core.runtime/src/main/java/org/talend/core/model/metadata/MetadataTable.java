@@ -257,8 +257,13 @@ public class MetadataTable implements IMetadataTable, Cloneable {
         if (!(input instanceof IMetadataTable)) {
             return false;
         }
-        List<IMetadataColumn> thisColumnListWithUnselected = this.getListColumns(true);
         List<IMetadataColumn> inputColumnListWithUnselected = input.getListColumns(true);
+        return sameMetadataAs(inputColumnListWithUnselected, options, order);
+    }
+
+    @Override
+    public boolean sameMetadataAs(List<IMetadataColumn> inputColumnListWithUnselected, int options, boolean order) {
+        List<IMetadataColumn> thisColumnListWithUnselected = this.getListColumns(true);
         if (thisColumnListWithUnselected == null) {
             if (inputColumnListWithUnselected != null) {
                 return false;
@@ -300,9 +305,6 @@ public class MetadataTable implements IMetadataTable, Cloneable {
                 // no matter if this one is custom or not (all custom must be propagated too)
                 for (int i = 0; i < inputColumnListWithUnselected.size(); i++) {
                     IMetadataColumn inputColumn = inputColumnListWithUnselected.get(i);
-                    if(inputColumn.isCustom()) {
-                        continue;
-                    }
                     IMetadataColumn myColumn = this.getColumn(inputColumn.getLabel());
                     outputColumnsNotTested.remove(myColumn);
                     if (!inputColumn.sameMetacolumnAs(myColumn, options)) {
