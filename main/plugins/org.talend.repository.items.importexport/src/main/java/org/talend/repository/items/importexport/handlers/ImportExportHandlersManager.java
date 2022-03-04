@@ -658,8 +658,9 @@ public class ImportExportHandlersManager {
 
                                 importItemRecordsWithRelations(monitor, resManager, checkedItemRecords, overwrite,
                                         allImportItemRecords, destinationPath);
-                             
-                              RelationshipItemBuilder.getInstance().buildAndSaveIndex();
+                                if (!CommonsPlugin.isTUJTest()) {
+                                    RelationshipItemBuilder.getInstance().buildAndSaveIndex();
+                                }
                             } catch (Exception e) {
                                 if (Platform.inDebugMode()) {
                                     ExceptionHandler.process(e);
