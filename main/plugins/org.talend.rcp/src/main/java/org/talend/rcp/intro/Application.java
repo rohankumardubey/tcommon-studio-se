@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.rcp.intro;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -44,6 +45,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.urischeme.AutoRegisterSchemeHandlersJob;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 import org.talend.commons.exception.BusinessException;
@@ -112,8 +114,19 @@ public class Application implements IApplication {
                     Boolean.TRUE.toString(), false);
             return IApplication.EXIT_RELAUNCH;
         }
-
-        try {
+        new AutoRegisterSchemeHandlersJob().schedule();
+//        Desktop.getDesktop().setOpenURIHandler((event) -> {
+//            LOGGER.info("Open URI: " + event.getURI());
+//            // do something with the URI
+//        });
+        if (context.getArguments().get("application.args") != null ) {
+            for (int i = 0; i < ((String[])context.getArguments().get("application.args")).length; i++) {
+                LOGGER.info("======1" + ((String[])context.getArguments().get("application.args"))[i]);
+            }
+        } else {
+            LOGGER.info("====== Can't find parameter application.args ");
+        }
+         try {
             String vmArgs = System.getProperty(EclipseCommandLine.PROP_VMARGS);
             if (StringUtils.isNotBlank(vmArgs)) {
                 /**
