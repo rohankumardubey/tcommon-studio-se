@@ -15,6 +15,7 @@ package org.talend.core.service;
 import org.talend.core.IService;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.process.IConnection;
+import org.talend.core.model.process.INode;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 
 /**
@@ -45,5 +46,25 @@ public interface IDQComponentService extends IService {
      * @param node The node which need to be modified
      */
     void covertConfindWeight2Int(NodeType node);
+
+    /**
+     *
+     * Handle component chaged
+     *
+     * @param oldMetadataTable
+     * @param newMetadataTable
+     */
+    void externalComponentInputMetadataChange(INode node, IMetadataTable newMetadataTable,
+            IMetadataTable oldMetadataTable);
+
+    /**
+     *
+     * Handle component chaged
+     *
+     * @param oldMetadataTable
+     * @param newMetadataTable
+     */
+    void externalComponentOutputMetadataChange(INode node, IMetadataTable newMetadataTable,
+            IMetadataTable oldMetadataTable);
 
 }
