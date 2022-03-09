@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2022 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.core.pendo;
+package org.talend.core.pendo.properties;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * DOC jding  class global comment. Detailled comment
  */
-public class PendoLoginProperties {
+public class PendoLoginProperties implements IPendoDataProperties {
 
     @JsonProperty("studio_version")
     private String studioVersion;
@@ -29,6 +29,12 @@ public class PendoLoginProperties {
 
     @JsonProperty("enabled_features")
     private List<String> enabledFeatures;
+
+    @JsonProperty("referenced_project_number")
+    private String refProjectCount;
+
+    @JsonProperty("referenced_projects")
+    private List<String> refProjectList;
 
     /**
      * Getter for studio_version.
@@ -82,6 +88,42 @@ public class PendoLoginProperties {
      */
     public void setEnabledFeatures(List<String> enabledFeatures) {
         this.enabledFeatures = enabledFeatures;
+    }
+
+    /**
+     * Getter for refProjectCount.
+     * 
+     * @return the refProjectCount
+     */
+    public String getRefProjectCount() {
+        return refProjectCount;
+    }
+
+    /**
+     * Sets the refProjectCount.
+     * 
+     * @param refProjectCount the refProjectCount to set
+     */
+    public void setRefProjectCount(String refProjectCount) {
+        this.refProjectCount = refProjectCount;
+    }
+
+    /**
+     * Getter for refProjectList.
+     * 
+     * @return the refProjectList
+     */
+    public List<String> getRefProjectList() {
+        return refProjectList;
+    }
+
+    /**
+     * Sets the refProjectList.
+     * 
+     * @param refProjectList the refProjectList to set
+     */
+    public void setRefProjectList(List<String> refProjectList) {
+        this.refProjectList = refProjectList;
     }
 
 }
