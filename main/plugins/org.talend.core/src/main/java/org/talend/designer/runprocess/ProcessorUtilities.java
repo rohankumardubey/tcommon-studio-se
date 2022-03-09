@@ -1312,6 +1312,19 @@ public class ProcessorUtilities {
                     }
                 }
             }
+            // clean up sub job external resources folder if needed
+            if (currentProcess != null && currentProcess instanceof IProcess2) {
+                String projectFolderName = JavaResourcesHelper.getProjectFolderName(((IProcess2) currentProcess).getProperty());
+                IFolder externalResourcesFolder = jobProject.getExternalResourcesFolder().getFolder(projectFolderName);
+                if (externalResourcesFolder.exists()) {
+                    for (IResource resource : externalResourcesFolder.members()) {
+                        if (resource.exists()
+                                && !resource.getProjectRelativePath().toPortableString().endsWith(jobPackageFolder)) {
+                            resource.delete(true, progressMonitor);
+                        }
+                    }
+                }
+            }
         } catch (CoreException e) {
             ExceptionHandler.process(e);
         }
