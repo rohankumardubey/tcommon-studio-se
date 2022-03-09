@@ -17,9 +17,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,21 +37,18 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.commons.utils.VersionUtils;
 import org.talend.commons.utils.network.IProxySelectorProvider;
 import org.talend.commons.utils.network.NetworkUtil;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
 import org.talend.core.nexus.HttpClientTransport;
+import org.talend.core.pendo.PendoTrackDataUtil.TrackEvent;
+import org.talend.core.pendo.properties.IPendoDataProperties;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.service.IRemoteService;
-import org.talend.core.service.IStudioLiteP2Service;
-import org.talend.core.ui.IInstalledPatchService;
 import org.talend.repository.model.RepositoryConstants;
 import org.talend.utils.json.JSONObject;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * DOC jding  class global comment. Detailled comment
@@ -73,15 +67,13 @@ public class PendoTrackSender {
 
     private static final String HEAD_PENDO_KEY = "x-pendo-integration-key";
 
-    private static final String FEATURE_PREFIX = "org.talend.lite.";
-
-    private static final String FEATURE_TAIL = ".feature.feature.group";
-
     private static PendoTrackSender instance;
 
     private static String adminUrl;
 
     private static String apiBaseUrl;
+
+    private static String pendoInfo;
 
     public static PendoTrackSender getInstance() {
         if (instance == null) {
@@ -96,13 +88,13 @@ public class PendoTrackSender {
         return instance;
     }
 
-    public void sendToPendo() {
+    public void sendToPendo(TrackEvent event, IPendoDataProperties properties) {
         Job job = new Job("send pendo track") {
 
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    sendTrackData();
+                    sendTrackData(event, properties);
                 } catch (Exception e) {
                     // warning only
                     ExceptionHandler.process(e, Level.WARN);
@@ -115,7 +107,7 @@ public class PendoTrackSender {
         job.schedule();
     }
 
-    public void sendTrackData() throws Exception {
+    public void sendTrackData(TrackEvent event, IPendoDataProperties properties) throws Exception {
         if (!checkTokenUsed(adminUrl) || !NetworkUtil.isNetworkValid()) {
             return;
         }
@@ -142,7 +134,8 @@ public class PendoTrackSender {
             proxySelectorProvider = HttpClientTransport.addProxy(client, new URI(url));
 
             EntityBuilder entityBuilder = EntityBuilder.create();
-            entityBuilder.setText(generateTrackData(pendoInfo)).setContentType(ContentType.APPLICATION_JSON);
+            String trackData = PendoTrackDataUtil.generateTrackData(pendoInfo, event, properties);
+            entityBuilder.setText(trackData).setContentType(ContentType.APPLICATION_JSON);
             HttpEntity entity = entityBuilder.build();
             httpPost.setEntity(entity);
             response = client.execute(httpPost, HttpClientContext.create());
@@ -171,53 +164,11 @@ public class PendoTrackSender {
         }
     }
 
-    // TODO maybe we will have more event handler later
-    private String generateTrackData(String pendoInfo) throws Exception {
-        JSONObject infoJson = new JSONObject(pendoInfo);
-        String visitorId = ((JSONObject) infoJson.get("visitor")).getString("id");
-        String accountId = ((JSONObject) infoJson.get("account")).getString("id");
-
-        String studioPatch = null;
-        Date date = new Date();
-        IInstalledPatchService installedPatchService = IInstalledPatchService.get();
-        if (installedPatchService != null) {
-            studioPatch = installedPatchService.getLatestInstalledPatchVersion();
-        }
-        List<String> enabledFeatures = new ArrayList<String>();
-        IStudioLiteP2Service studioLiteP2Service = IStudioLiteP2Service.get();
-        if (studioLiteP2Service != null) {
-            List<String> enabledFeaturesList = studioLiteP2Service.getCurrentProjectEnabledFeatures();
-            enabledFeaturesList.stream().forEach(feature -> {
-                String result = feature;
-                if (result.startsWith(FEATURE_PREFIX)) {
-                    result = result.substring(FEATURE_PREFIX.toCharArray().length);
-                }
-                if (result.endsWith(FEATURE_TAIL)) {
-                    result = result.substring(0, result.lastIndexOf(FEATURE_TAIL));
-                }
-                enabledFeatures.add(result);
-            });
-        }
-        PendoLoginProperties loginEvent = new PendoLoginProperties();
-        loginEvent.setStudioVersion(VersionUtils.getInternalMajorVersion());
-        loginEvent.setStudioPatch(studioPatch);
-        loginEvent.setEnabledFeatures(enabledFeatures);
-
-        PendoEventEntity entity = new PendoEventEntity();
-        entity.setType("track");
-        entity.setEvent("Project Login");
-        entity.setVisitorId(visitorId);
-        entity.setAccountId(accountId);
-        entity.setTimestamp(date.getTime());
-        entity.setProperties(loginEvent);
-
-        ObjectMapper mapper = new ObjectMapper();
-        String content = mapper.writeValueAsString(entity);
-        return content;
-    }
-
     private String getPendoInfo() throws Exception {
-        return getPendoInfo(getBaseUrl(), getToken());
+        if (StringUtils.isBlank(pendoInfo)) {
+            pendoInfo = getPendoInfo(getBaseUrl(), getToken());
+        }
+        return pendoInfo;
     }
 
     private String getPendoInfo(String baseUrl, String token) throws Exception {
