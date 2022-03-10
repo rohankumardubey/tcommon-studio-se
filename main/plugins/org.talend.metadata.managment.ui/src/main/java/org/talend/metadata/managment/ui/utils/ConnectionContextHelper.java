@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.Dialog;
@@ -94,6 +95,7 @@ import org.talend.core.ui.context.model.table.ConectionAdaptContextVariableModel
 import org.talend.core.ui.process.IGEFProcess;
 import org.talend.core.ui.services.IDesignerCoreUIService;
 import org.talend.core.utils.TalendQuoteUtils;
+import org.talend.metadata.managment.ui.dialog.PromptDialog;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
@@ -2154,4 +2156,37 @@ public final class ConnectionContextHelper {
         return null;
     }
 
+    public static boolean promptConfirmLauch(Shell shell, IContext context) {
+        boolean continueLaunch = true;
+
+        int nbValues = 0;
+        Assert.isNotNull(context);
+        // Prompt for context values ?
+        for (IContextParameter parameter : context.getContextParameterList()) {
+            if (parameter.isPromptNeeded()) {
+                nbValues++;
+            }
+        }
+        if (nbValues > 0) {
+            IContext contextCopy = context.clone();
+            PromptDialog promptDialog = new PromptDialog(shell, contextCopy);
+            if (promptDialog.open() == PromptDialog.OK) {
+                for (IContextParameter param : context.getContextParameterList()) {
+                    boolean found = false;
+                    IContextParameter paramCopy = null;
+                    for (int i = 0; i < contextCopy.getContextParameterList().size() & !found; i++) {
+                        paramCopy = contextCopy.getContextParameterList().get(i);
+                        if (param.getName().equals(paramCopy.getName())) {
+                            // param.setValueList(paramCopy.getValueList());
+                            param.setInternalValue(paramCopy.getValue());
+                            found = true;
+                        }
+                    }
+                }
+            } else {
+                continueLaunch = false;
+            }
+        }
+        return continueLaunch;
+    }
 }
