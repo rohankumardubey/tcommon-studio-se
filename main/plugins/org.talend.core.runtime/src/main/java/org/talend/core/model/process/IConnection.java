@@ -58,6 +58,8 @@ public interface IConnection extends IElement {
      * @return
      */
     public String getName();
+    
+    public String getOriginalName();
 
     public String getUniqueName();
 
@@ -128,6 +130,8 @@ public interface IConnection extends IElement {
     void updateName();
 
     void setName(String newName);
+    
+    void setOriginalName(String originalName);
 
     void reconnect();
 

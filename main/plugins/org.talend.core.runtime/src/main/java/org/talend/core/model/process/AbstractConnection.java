@@ -34,6 +34,8 @@ public abstract class AbstractConnection implements IConnection, IAdditionalInfo
     private IMetadataTable metadataTable;
 
     private String name;
+    
+    private String originalName;
 
     private INode source;
 
@@ -105,6 +107,16 @@ public abstract class AbstractConnection implements IConnection, IAdditionalInfo
         if (uniqueName == null) {
             uniqueName = name;
         }
+    }
+    
+    @Override
+    public String getOriginalName() {
+        return originalName;
+    }
+    
+    @Override
+    public void setOriginalName(String orignalName) {
+        this.originalName = orignalName;
     }
 
     @Override
