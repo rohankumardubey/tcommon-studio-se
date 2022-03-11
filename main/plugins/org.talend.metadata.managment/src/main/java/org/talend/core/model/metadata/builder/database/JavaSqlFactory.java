@@ -324,6 +324,101 @@ public final class JavaSqlFactory {
                 setPromptContextAdditionalParams(dbConn);
                 setPromptContextUiSchema(dbConn);
             }
+
+            DelimitedFileConnection fileConn = SwitchHelpers.DELIMITEDFILECONNECTION_SWITCH.doSwitch(conn);
+            if (fileConn != null) {
+                setPromptContextFilePath(fileConn);
+                setPromptContextFileEncoding(fileConn);
+                setPromptContextFileRowSeparator(fileConn);
+                setPromptContextFileFieldSeparator(fileConn);
+                setPromptContextFileHeader(fileConn);
+                setPromptContextFileFooter(fileConn);
+                setPromptContextFileLimitValue(fileConn);
+            }
+        }
+    }
+
+    /**
+     * DOC msjian Comment method "setPromptContextFileLimitValue".
+     * 
+     * @param fileConn
+     */
+    private static void setPromptContextFileLimitValue(DelimitedFileConnection fileConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(fileConn, fileConn.getLimitValue());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            fileConn.setLimitValue(promptConVarsMapKey);
+        }
+    }
+
+    /**
+     * DOC msjian Comment method "setPromptContextFileFooter".
+     * 
+     * @param fileConn
+     */
+    private static void setPromptContextFileFooter(DelimitedFileConnection fileConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(fileConn, fileConn.getFooterValue());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            fileConn.setFooterValue(promptContextVars.get(promptConVarsMapKey));
+        }
+    }
+
+    /**
+     * DOC msjian Comment method "setPromptContextFileHeader".
+     * 
+     * @param fileConn
+     */
+    private static void setPromptContextFileHeader(DelimitedFileConnection fileConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(fileConn, fileConn.getHeaderValue());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            fileConn.setHeaderValue(promptContextVars.get(promptConVarsMapKey));
+        }
+    }
+
+    /**
+     * DOC msjian Comment method "setPromptContextFieldSeparator".
+     * 
+     * @param fileConn
+     */
+    private static void setPromptContextFileFieldSeparator(DelimitedFileConnection fileConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(fileConn, fileConn.getFieldSeparatorValue());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            fileConn.setFieldSeparatorValue(promptContextVars.get(promptConVarsMapKey));
+        }
+    }
+
+    /**
+     * DOC msjian Comment method "setPromptContextFileRowSeparator".
+     * 
+     * @param fileConn
+     */
+    private static void setPromptContextFileRowSeparator(DelimitedFileConnection fileConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(fileConn, fileConn.getRowSeparatorValue());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            fileConn.setRowSeparatorValue(promptContextVars.get(promptConVarsMapKey));
+        }
+    }
+
+    /**
+     * DOC msjian Comment method "setPromptContextFileEncoding".
+     * 
+     * @param fileConn
+     */
+    private static void setPromptContextFileEncoding(DelimitedFileConnection fileConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(fileConn, fileConn.getEncoding());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            fileConn.setEncoding(promptContextVars.get(promptConVarsMapKey));
+        }
+    }
+
+    /**
+     * DOC msjian Comment method "setPromptContextFilePath".
+     * 
+     * @param fileConn
+     */
+    private static void setPromptContextFilePath(DelimitedFileConnection fileConn) {
+        String promptConVarsMapKey = getPromptConVarsMapKey(fileConn, fileConn.getFilePath());
+        if (promptContextVars.containsKey(promptConVarsMapKey)) {
+            fileConn.setFilePath(promptContextVars.get(promptConVarsMapKey));
         }
     }
 
