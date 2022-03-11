@@ -158,6 +158,7 @@
           <groupId>com.burgstaller</groupId>
           <artifactId>okhttp-digest</artifactId>
         </exclusion>
+        </exclusions>
 		</dependency>
         <dependency>
             <groupId>org.talend.components</groupId>
