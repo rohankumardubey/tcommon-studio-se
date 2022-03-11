@@ -38,6 +38,11 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+    <groupId>com.burgstaller</groupId>
+    <artifactId>okhttp-digest</artifactId>
+    <version>1.16</version>
+</dependency>
+            <dependency>
                 <groupId>com.sun.mail</groupId>
                 <artifactId>javax.mail</artifactId>
                 <version>1.6.0</version>
@@ -148,6 +153,11 @@
 			<groupId>org.talend.components</groupId>
 			<artifactId>components-marklogic-runtime</artifactId>
 			<version>${components.version}</version>
+             <exclusions>
+        <exclusion>  <!-- declare the exclusion here -->
+          <groupId>com.burgstaller</groupId>
+          <artifactId>okhttp-digest</artifactId>
+        </exclusion>
 		</dependency>
         <dependency>
             <groupId>org.talend.components</groupId>
