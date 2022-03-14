@@ -138,6 +138,20 @@ The default value is &lt;b&gt;normal&lt;/b&gt;
                </restriction>
             </simpleType>
          </attribute>
+         <attribute name="famliy" type="string">
+            <annotation>
+               <documentation>
+                  famliy name
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="isHiddenComponent" type="boolean">
+            <annotation>
+               <documentation>
+                  Set this compoent whether hidder component or not
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
