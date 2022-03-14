@@ -39,6 +39,7 @@ public class ExtendedNodeConnectionContextUtils {
         ConnectionString,
         Keyspace,
         Database,
+        Datacenter,
         Databasepath,
         UserName,
         Password,
