@@ -337,7 +337,6 @@ public class ContextTreeTable {
 
     private void attachCheckColumnTip(NatTable nt) {
         DefaultToolTip toolTip = new ContextNatTableToolTip(nt);
-        toolTip.setBackgroundColor(natTable.getDisplay().getSystemColor(7));
         toolTip.setPopupDelay(500);
         toolTip.activate();
         toolTip.setShift(new Point(10, 10));
