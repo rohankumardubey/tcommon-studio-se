@@ -59,6 +59,8 @@ import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
 import org.talend.core.model.metadata.builder.database.JavaSqlFactory;
 import org.talend.core.model.metadata.builder.database.PluginConstant;
 import org.talend.core.model.metadata.builder.database.TableInfoParameters;
+import org.talend.core.model.metadata.builder.database.jdbc.ExtractorFactory;
+import org.talend.core.model.metadata.builder.database.jdbc.IUrlDbNameExtractor;
 import org.talend.core.model.metadata.builder.database.manager.ExtractManager;
 import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.metadata.types.PerlTypesManager;
@@ -206,6 +208,15 @@ public class DBConnectionFillerImpl extends MetadataFillerImpl<DatabaseConnectio
                     String identifierQuote = dbMetadata.getIdentifierQuoteString();
                     ConnectionHelper.setIdentifierQuoteString(identifierQuote == null ? "" : identifierQuote, dbconn); //$NON-NLS-1$
                 }
+                // judege database type by dbMetadata if no result use mapping id instead of it
+                IUrlDbNameExtractor extractorInstance = ExtractorFactory.getExtractorInstance(dbMetadata, metadataBean);
+                if (extractorInstance != null) {
+                    extractorInstance.initUiSchemaOrSID();
+                }
+                // extract sid by different url try to create class structor to handle default case and special case
+                // DatabaseConnStrUtil.analyseURL
+
+                // setting sid or uischema by different databaseType
             }
         } catch (SQLException e) {
             log.error(e, e);
