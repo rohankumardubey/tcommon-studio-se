@@ -1710,6 +1710,14 @@ public class ProcessorUtilities {
                     needChildrenModules = false;
                 }
             }
+            
+            Object buildType = jobInfo.getProcessor().getProperty().getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
+            boolean isOSGI = "OSGI".equals(buildType) || "ROUTE".equals(buildType);
+            boolean isRoute = ERepositoryObjectType.getType(jobInfo.getProcessor().getProperty()).equals(ERepositoryObjectType.PROCESS_ROUTE);
+
+            if (isOSGI && isRoute) {
+            	needChildrenModules = false;
+            }
 
             if (needChildrenModules) {
                 addSubjobModuleNeededToParentJob(jobInfo, subJobInfo);
