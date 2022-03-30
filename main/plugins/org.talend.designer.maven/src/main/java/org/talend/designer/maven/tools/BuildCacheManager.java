@@ -289,7 +289,8 @@ public class BuildCacheManager {
         Parent parent = new Parent();      
         parent.setGroupId(PomIdsHelper.getProjectGroupId());
         parent.setArtifactId(PomIdsHelper.getProjectArtifactId());
-        parent.setVersion(PomIdsHelper.getProjectVersion());        
+        parent.setVersion(PomIdsHelper.getProjectVersion());
+        parent.setRelativePath(".");
         model.setParent(parent);
         PomUtil.savePom(null, model, pomFile);
     }
