@@ -14,6 +14,7 @@ package org.talend.designer.maven.tools;
 
 import static org.talend.designer.maven.model.TalendJavaProjectConstants.*;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -33,6 +35,7 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.model.Activation;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
+import org.apache.maven.model.Plugin;
 import org.apache.maven.model.Profile;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -54,6 +57,7 @@ import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.swt.widgets.Display;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.utils.MojoType;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IESBService;
 import org.talend.core.ILibraryManagerService;
@@ -75,6 +79,7 @@ import org.talend.core.model.routines.CodesJarInfo;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ItemResourceUtil;
 import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
@@ -142,8 +147,7 @@ public class AggregatorPomsHelper {
     public void installRootPom(boolean force) throws Exception {
         IFile pomFile = getProjectRootPom();
         if (pomFile.exists()) {
-            Model model = MavenPlugin.getMaven().readModel(pomFile.getLocation().toFile());
-            if (force || !isPomInstalled(model.getGroupId(), model.getArtifactId(), model.getVersion())) {
+            if (force || needInstallRootPom(pomFile)) {
                 MavenPomCommandLauncher launcher =
                         new MavenPomCommandLauncher(pomFile, TalendMavenConstants.GOAL_INSTALL);
                 Map<String, Object> argumentsMap = new HashMap<>();
@@ -155,9 +159,40 @@ public class AggregatorPomsHelper {
         }
     }
 
-    public boolean isPomInstalled(String groupId, String artifactId, String version) {
-        String mvnUrl = MavenUrlHelper.generateMvnUrl(groupId, artifactId, version, MavenConstants.PACKAGING_POM, null);
-        return PomUtil.isAvailable(mvnUrl);
+    public boolean needInstallRootPom(IFile pomFile) {
+        try {
+            Model model = MavenPlugin.getMaven().readModel(pomFile.getLocation().toFile());
+            String mvnUrl = MavenUrlHelper.generateMvnUrl(model.getGroupId(), model.getArtifactId(), model.getVersion(),
+                    MavenConstants.PACKAGING_POM, null);
+            MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(mvnUrl);
+            if (artifact != null) {
+                String artifactPath = PomUtil.getAbsArtifactPath(artifact);
+                if (artifactPath == null) {
+                    return true;
+                }
+                Model installedModel = MavenPlugin.getMaven().readModel(new File(artifactPath));
+                // check ci-builder
+                String currentCIBuilderVersion = model.getBuild().getPlugins().stream()
+                        .filter(p -> p.getArtifactId().equals(MojoType.CI_BUILDER.getArtifactId())).findFirst().get()
+                        .getVersion();
+                String installedCIBuilderVersion = installedModel.getBuild().getPlugins().stream()
+                        .filter(p -> p.getArtifactId().equals(MojoType.CI_BUILDER.getArtifactId())).findFirst().get()
+                        .getVersion();
+                if (!currentCIBuilderVersion.equals(installedCIBuilderVersion)) {
+                    return true;
+                }
+                // check signer
+                String currentSignerVersion = model.getProperties().getProperty(MojoType.SIGNER.getVersionKey());
+                String installedSignerVersion = installedModel.getProperties().getProperty(MojoType.SIGNER.getVersionKey());
+                if (!currentSignerVersion.equals(installedSignerVersion)) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+            return true;
+        }
+        return false;
     }
 
     public IFolder getProjectPomsFolder() {
