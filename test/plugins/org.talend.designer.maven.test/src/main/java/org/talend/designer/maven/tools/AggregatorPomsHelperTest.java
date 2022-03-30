@@ -13,6 +13,7 @@
 package org.talend.designer.maven.tools;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.maven.model.Model;
+import org.apache.maven.model.Plugin;
 import org.apache.maven.model.Profile;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -34,6 +36,7 @@ import org.eclipse.m2e.core.MavenPlugin;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.talend.commons.utils.MojoType;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.ProjectReference;
@@ -43,6 +46,7 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.nexus.TalendMavenResolver;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
@@ -52,6 +56,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
 import org.talend.designer.maven.DesignerMavenPlugin;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.utils.PomIdsHelper;
+import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -96,6 +101,44 @@ public class AggregatorPomsHelperTest {
         defaultProjectGroupId = PomIdsHelper.getProjectGroupId();
         defaultProjectVersion = PomIdsHelper.getProjectVersion();
         defaultUseSnapshot = false;
+    }
+    
+    @Test
+    public void testNeedInstallRootPom() throws Exception {
+        Model modelBak = null;
+        File installedPomFile = null;
+        try {
+            IFile pomFile = helper.getProjectRootPom();
+            assertFalse(helper.needInstallRootPom(pomFile));
+            Model model = MavenPlugin.getMaven().readModel(pomFile.getLocation().toFile());
+            String mvnUrl = MavenUrlHelper.generateMvnUrl(model.getGroupId(), model.getArtifactId(), model.getVersion(),
+                    MavenConstants.PACKAGING_POM, null);
+            MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(mvnUrl);
+            String artifactPath = PomUtil.getAbsArtifactPath(artifact);
+
+            installedPomFile = new File(artifactPath);
+            modelBak = MavenPlugin.getMaven().readModel(installedPomFile);
+            Model installedModel = MavenPlugin.getMaven().readModel(installedPomFile);
+
+            // test ci-builder
+            Plugin mojo = installedModel.getBuild().getPlugins().stream()
+                    .filter(p -> p.getArtifactId().equals(MojoType.CI_BUILDER.getArtifactId())).findFirst().get();
+            String versionBak = mojo.getVersion();
+            mojo.setVersion("1.1.1");
+            PomUtil.savePom(null, installedModel, installedPomFile);
+            assertTrue(helper.needInstallRootPom(pomFile));
+
+            // test signer
+            mojo.setVersion(versionBak);
+            installedModel.getProperties().setProperty(MojoType.SIGNER.getVersionKey(), "1.1.1");
+            PomUtil.savePom(null, installedModel, installedPomFile);
+            assertTrue(helper.needInstallRootPom(pomFile));
+        } finally {
+            // restore m2 project pom file
+            if (modelBak != null && installedPomFile != null) {
+                PomUtil.savePom(null, modelBak, installedPomFile);
+            }
+        }
     }
 
     @Test
