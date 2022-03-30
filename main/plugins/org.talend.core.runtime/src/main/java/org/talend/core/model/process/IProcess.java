@@ -58,6 +58,11 @@ public interface IProcess extends IElement {
 
     public static final String SCREEN_OFFSET_Y = "SCREEN_OFFSET_Y"; //$NON-NLS-1$
 
+    public static final String PROP_ERR_ON_COMPONENT_MISSING = "error.on.component.missing";
+
+    public static final boolean ERR_ON_COMPONENT_MISSING = Boolean
+            .valueOf(System.getProperty(PROP_ERR_ON_COMPONENT_MISSING, Boolean.TRUE.toString()));
+
     public String getName();
 
     public String getId();
