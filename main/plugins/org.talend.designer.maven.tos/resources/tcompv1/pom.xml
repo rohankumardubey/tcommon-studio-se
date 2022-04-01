@@ -13,6 +13,7 @@
     <properties>
         <tcomp.version>1.43.1</tcomp.version>
         <slf4j.version>1.7.32</slf4j.version>
+        <reload4j.version>1.2.19</reload4j.version>
     </properties>
     
     <repositories>
@@ -100,6 +101,17 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>${slf4j.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.reload4j</groupId>
+            <artifactId>reload4j</artifactId>
+            <version>${reload4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
