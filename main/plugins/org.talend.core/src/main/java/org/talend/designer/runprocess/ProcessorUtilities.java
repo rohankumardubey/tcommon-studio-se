@@ -693,7 +693,6 @@ public class ProcessorUtilities {
 
         processor.setArguments(argumentsMap);
 
-        handelDQComponents(selectedProcessItem, currentProcess);
         // generate the code of the father after the childrens
         // so the code won't have any error during the check, and it will help to check
         // if the generation is really needed.
@@ -708,6 +707,8 @@ public class ProcessorUtilities {
          * libraries.
          */
         generateBuildInfo(jobInfo, progressMonitor, isMainJob, currentProcess, currentJobName, processor, option);
+
+        handelDQComponents(selectedProcessItem, currentProcess);
 
         copyDependenciedResources(currentProcess);
 
@@ -1237,8 +1238,6 @@ public class ProcessorUtilities {
 
             processor.setArguments(argumentsMap);
 
-            handelDQComponents(selectedProcessItem, currentProcess);
-
             generateContextInfo(jobInfo, selectedContextName, statistics, trace, needContext, progressMonitor,
                     currentProcess, currentJobName, processor, isMainJob, codeGenerationNeeded);
 
@@ -1253,6 +1252,8 @@ public class ProcessorUtilities {
              */
             generateBuildInfo(jobInfo, progressMonitor, isMainJob, currentProcess, currentJobName, processor, option);
             TimeMeasure.step(idTimer, "generateBuildInfo");
+
+            handelDQComponents(selectedProcessItem, currentProcess);
 
             copyDependenciedResources(currentProcess);
 
