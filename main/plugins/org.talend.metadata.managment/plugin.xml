@@ -36,14 +36,7 @@
               context="plugin:org.talend.libraries.jdbc.teradata"
               language="java"
               message="Needed for Teradata jdbc plugin"
-              name="terajdbc4-16.20.00.02.jar" mvn_uri="mvn:com.teradata/terajdbc4/16.20.00.02" 
-              required="true">
-        </libraryNeeded>
-        <libraryNeeded
-              context="plugin:org.talend.libraries.jdbc.teradata"
-              language="java"
-              message="Needed for Teradata jdbc plugin"
-              name="tdgssconfig-16.20.00.02.jar" mvn_uri="mvn:com.teradata/tdgssconfig/16.20.00.02" 
+              name="terajdbc4-17.10.00.27.jar" mvn_uri="mvn:com.teradata/terajdbc4/17.10.00.27" 
               required="true">
         </libraryNeeded>
          <libraryNeeded
