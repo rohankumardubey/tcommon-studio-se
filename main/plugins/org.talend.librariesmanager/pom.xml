@@ -24,6 +24,7 @@
 	</repositories>
 
 	<properties>
+		<studioIndexVersion>${project.version}</studioIndexVersion>
 		<talend.nexus.host>https://artifacts-oss.talend.com</talend.nexus.host>
         <talend.nexus.host.oss>https://artifacts-oss.talend.com</talend.nexus.host.oss>
     </properties>
@@ -116,7 +117,7 @@
 								<artifactItem>
 									<groupId>${project.groupId}</groupId>
 									<artifactId>studioIndex</artifactId>
-									<version>8.0.1-SNAPSHOT</version>
+									<version>${studioIndexVersion}</version>
 									<type>zip</type>
 									<classifier />
 									<overWrite>true</overWrite>
