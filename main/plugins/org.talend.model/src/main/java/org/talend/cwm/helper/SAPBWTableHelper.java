@@ -36,6 +36,8 @@ public class SAPBWTableHelper {
 
     public static final String SAP_DATASOURCE_SOURCESYSNAME = "SOURCE_SYSNAME";  //$NON-NLS-1$
     
+    public static final String ADSO_OUTPUT = "Output"; //$NON-NLS-1$
+
     private static final List<String> INFOOBJECT_INNERTYPE = new ArrayList<String>();
     
     static {

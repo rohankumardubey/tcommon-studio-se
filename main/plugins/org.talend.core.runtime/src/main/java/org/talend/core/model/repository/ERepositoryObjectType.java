@@ -571,8 +571,11 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
      */
     public final static ERepositoryObjectType PROCESS_SPARKSTREAMING = ERepositoryObjectType.valueOf("PROCESS_SPARKSTREAMING");
 
-    public final static ERepositoryObjectType METADATA_SAP_BW_ADVANCEDDATASTOREOBJECT = ERepositoryObjectType
-            .valueOf("METADATA_SAP_BW_ADVANCEDDATASTOREOBJECT"); //$NON-NLS-1$
+    public final static ERepositoryObjectType METADATA_SAP_BW_ADVANCEDDATASTOREOBJECT_INPUT = ERepositoryObjectType
+            .valueOf("METADATA_SAP_BW_ADVANCEDDATASTOREOBJECT_INPUT"); //$NON-NLS-1$
+
+    public final static ERepositoryObjectType METADATA_SAP_BW_ADVANCEDDATASTOREOBJECT_OUTPUT = ERepositoryObjectType
+            .valueOf("METADATA_SAP_BW_ADVANCEDDATASTOREOBJECT_OUTPUT"); //$NON-NLS-1$
 
     public final static ERepositoryObjectType METADATA_SAP_BW_DATASOURCE = ERepositoryObjectType
             .valueOf("METADATA_SAP_BW_DATASOURCE"); //$NON-NLS-1$
@@ -919,7 +922,7 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
         } else if (type.getType().equals("TEST_CONTAINER")) {
             return "test case";
         } else if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
-            ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault()
+            ICamelDesignerCoreService camelService = GlobalServiceRegister.getDefault()
                     .getService(ICamelDesignerCoreService.class);
             String deleteFolderName = camelService.getDeleteFolderName(type);
             if (deleteFolderName != null) {
@@ -1465,7 +1468,7 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
             allTypes.add(ERepositoryObjectType.SPARK_STREAMING_JOBLET);
         }
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
-            IESBService esbService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+            IESBService esbService = GlobalServiceRegister.getDefault().getService(IESBService.class);
             ERepositoryObjectType serviceType = esbService.getServicesType();
             if (serviceType != null) {
                 allTypes.add(serviceType);
