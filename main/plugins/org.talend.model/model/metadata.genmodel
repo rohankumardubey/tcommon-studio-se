@@ -568,6 +568,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute metadata.ecore#//SAPBWTable/sourceSystemName"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute metadata.ecore#//SAPBWTable/infoAreaName"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute metadata.ecore#//SAPBWTable/innerIOType"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute metadata.ecore#//SAPBWTable/category"/>
     </genClasses>
     <genClasses ecoreClass="metadata.ecore#//SAPBWTableField">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute metadata.ecore#//SAPBWTableField/logicalName"/>

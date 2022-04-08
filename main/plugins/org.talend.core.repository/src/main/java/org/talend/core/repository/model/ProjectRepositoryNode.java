@@ -74,6 +74,7 @@ import org.talend.core.model.properties.ValidationRulesConnectionItem;
 import org.talend.core.model.repository.DynaEnum;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.Folder;
+import org.talend.core.model.repository.GITConstant;
 import org.talend.core.model.repository.IRepositoryContentHandler;
 import org.talend.core.model.repository.IRepositoryObject;
 import org.talend.core.model.repository.IRepositoryPrefConstants;
@@ -82,7 +83,6 @@ import org.talend.core.model.repository.RepositoryContentManager;
 import org.talend.core.model.repository.RepositoryManager;
 import org.talend.core.model.repository.RepositoryNodeProviderRegistryReader;
 import org.talend.core.model.repository.RepositoryViewObject;
-import org.talend.core.model.repository.GITConstant;
 import org.talend.core.repository.i18n.Messages;
 import org.talend.core.repository.model.repositoryObject.MetadataColumnRepositoryObject;
 import org.talend.core.repository.model.repositoryObject.MetadataTableRepositoryObject;
@@ -368,8 +368,8 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
             }
             String[] contentRight = contentType.getUserRight();
             if (contentRight != null && contentRight.length > 0 && userRights != null && userRights.length > 0) {
-                for (int i = 0; i < contentRight.length; i++) {
-                    if (!ArrayUtils.contains(userRights, contentRight[i])) {
+                for (String element : contentRight) {
+                    if (!ArrayUtils.contains(userRights, element)) {
                         removeNode(this, node);
                     }
                 }
@@ -1731,22 +1731,25 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
             node.getChildren().add(iDocNode);
             createSAPIDocNodes(repObj, metadataConnection, iDocNode);
 
-            // 4. BW AdvancedDataStoreObject:
-            createSAPBWAdvancedDataStoreObjectNodes(repObj, metadataConnection, node, validationRules);
+            // 4. BW AdvancedDataStoreObject Input:
+            createSAPBWAdvancedDataStoreObjectInputNodes(repObj, metadataConnection, node, validationRules);
 
-            // 5. BW DataSource:
+            // 5. BW AdvancedDataStoreObject Output:
+            createSAPBWAdvancedDataStoreObjectOutputNodes(repObj, metadataConnection, node, validationRules);
+
+            // 6. BW DataSource:
             createSAPBWDataSourceNodes(repObj, metadataConnection, node, validationRules);
 
-            // 6. BW DataStoreObject:
+            // 7. BW DataStoreObject:
             createSAPBWDataStoreObjectNodes(repObj, metadataConnection, node, validationRules);
 
-            // 7. BW InfoCube:
+            // 8. BW InfoCube:
             createSAPBWInfoCubeNodes(repObj, metadataConnection, node, validationRules);
 
-            // 8. BW InfoObject:
+            // 9. BW InfoObject:
             createSAPBWInfoObjectNodes(repObj, metadataConnection, node, validationRules);
 
-            // 8. BW Business Content Extractor:
+            // 10. BW Business Content Extractor:
             createSAPContentExtractorNodes(repObj, metadataConnection, node, validationRules);
         } else if (metadataConnection instanceof SalesforceSchemaConnection) {
             createSalesforceModuleNodes(repObj, metadataConnection, node, validationRules);
@@ -1789,12 +1792,12 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
 
     }
 
-    private void createSAPBWAdvancedDataStoreObjectNodes(IRepositoryViewObject repObj, Connection metadataConnection,
+    private void createSAPBWAdvancedDataStoreObjectInputNodes(IRepositoryViewObject repObj, Connection metadataConnection,
             RepositoryNode node, List<IRepositoryViewObject> validationRules) {
         StableRepositoryNode container = new StableRepositoryNode(node,
-                Messages.getString("ProjectRepositoryNode.sapBWAdvancedDataStoreObject"), ECoreImage.FOLDER_CLOSE_ICON); //$NON-NLS-1$
+                Messages.getString("ProjectRepositoryNode.sapBWAdvancedDataStoreObject.input"), ECoreImage.FOLDER_CLOSE_ICON); //$NON-NLS-1$
         container.setChildrenObjectType(ERepositoryObjectType.METADATA_CON_TABLE);
-        container.setProperties(EProperties.CONTENT_TYPE, ERepositoryObjectType.METADATA_SAP_BW_ADVANCEDDATASTOREOBJECT);
+        container.setProperties(EProperties.CONTENT_TYPE, ERepositoryObjectType.METADATA_SAP_BW_ADVANCEDDATASTOREOBJECT_INPUT);
 
         IRepositoryNode cacheNode = nodeCache.getCache(container);
         if (cacheNode != null && cacheNode instanceof StableRepositoryNode) {
@@ -1806,8 +1809,38 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
         node.getChildren().add(container);
 
         EList<SAPBWTable> advancedDataStoreObjects = ((SAPConnection) metadataConnection).getBWAdvancedDataStoreObjects();
-        EList tables = new BasicEList();
-        tables.addAll(advancedDataStoreObjects);
+        EList<SAPBWTable> tables = new BasicEList<SAPBWTable>();
+        for (SAPBWTable bwTable : advancedDataStoreObjects) {
+            if (!SAPBWTableHelper.ADSO_OUTPUT.equals(bwTable.getCategory())) {
+                tables.add(bwTable);
+            }
+        }
+        createTables(container, repObj, tables, ERepositoryObjectType.METADATA_CON_TABLE, validationRules);
+    }
+
+    private void createSAPBWAdvancedDataStoreObjectOutputNodes(IRepositoryViewObject repObj, Connection metadataConnection,
+            RepositoryNode node, List<IRepositoryViewObject> validationRules) {
+        StableRepositoryNode container = new StableRepositoryNode(node,
+                Messages.getString("ProjectRepositoryNode.sapBWAdvancedDataStoreObject.output"), ECoreImage.FOLDER_CLOSE_ICON); //$NON-NLS-1$
+        container.setChildrenObjectType(ERepositoryObjectType.METADATA_CON_TABLE);
+        container.setProperties(EProperties.CONTENT_TYPE, ERepositoryObjectType.METADATA_SAP_BW_ADVANCEDDATASTOREOBJECT_OUTPUT);
+
+        IRepositoryNode cacheNode = nodeCache.getCache(container);
+        if (cacheNode != null && cacheNode instanceof StableRepositoryNode) {
+            container = (StableRepositoryNode) cacheNode;
+            container.getChildren().clear();
+        } else {
+            nodeCache.addCache(container, true);
+        }
+        node.getChildren().add(container);
+
+        EList<SAPBWTable> advancedDataStoreObjects = ((SAPConnection) metadataConnection).getBWAdvancedDataStoreObjects();
+        EList<SAPBWTable> tables = new BasicEList<SAPBWTable>();
+        for (SAPBWTable bwTable : advancedDataStoreObjects) {
+            if (SAPBWTableHelper.ADSO_OUTPUT.equals(bwTable.getCategory())) {
+                tables.add(bwTable);
+            }
+        }
         createTables(container, repObj, tables, ERepositoryObjectType.METADATA_CON_TABLE, validationRules);
     }
 
@@ -1937,8 +1970,8 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
     private void createSalesforceModuleNodes(IRepositoryViewObject rebObj, Connection metadataConnection,
             RepositoryNode connectionNode, List<IRepositoryViewObject> validationRules) {
         EList modules = ((SalesforceSchemaConnection) metadataConnection).getModules();
-        for (int i = 0; i < modules.size(); i++) {
-            SalesforceModuleUnit unit = (SalesforceModuleUnit) modules.get(i);
+        for (Object module : modules) {
+            SalesforceModuleUnit unit = (SalesforceModuleUnit) module;
             RepositoryNode tableNode = createSalesforceNode(rebObj, connectionNode, unit);
 
             createTables(tableNode, rebObj, unit.getTables(), ERepositoryObjectType.METADATA_CON_TABLE, validationRules);
@@ -1961,8 +1994,8 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
         if (functions == null || functions.isEmpty()) {
             return;
         }
-        for (int i = 0; i < functions.size(); i++) {
-            SAPFunctionUnit unit = (SAPFunctionUnit) functions.get(i);
+        for (Object function : functions) {
+            SAPFunctionUnit unit = (SAPFunctionUnit) function;
             RepositoryNode tableNode = createSAPNode(rebObj, functionNode, unit);
 
             // create input and output container
@@ -2002,8 +2035,8 @@ public class ProjectRepositoryNode extends RepositoryNode implements IProjectRep
         if (iDocs == null || iDocs.isEmpty()) {
             return;
         }
-        for (int i = 0; i < iDocs.size(); i++) {
-            SAPIDocUnit unit = (SAPIDocUnit) iDocs.get(i);
+        for (Object iDoc : iDocs) {
+            SAPIDocUnit unit = (SAPIDocUnit) iDoc;
             RepositoryNode tableNode = createSAPNode(rebObj, iDocNode, unit);
             if (SubItemHelper.isDeleted(unit)) {
                 // recBin.getChildren().add(tableNode);

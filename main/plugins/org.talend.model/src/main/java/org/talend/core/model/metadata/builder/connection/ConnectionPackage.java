@@ -20014,13 +20014,22 @@ public interface ConnectionPackage extends EPackage {
     int SAPBW_TABLE__INNER_IO_TYPE = SAP_TABLE_FEATURE_COUNT + 4;
 
     /**
+     * The feature id for the '<em><b>Category</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int SAPBW_TABLE__CATEGORY = SAP_TABLE_FEATURE_COUNT + 5;
+
+    /**
      * The number of structural features of the '<em>SAPBW Table</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int SAPBW_TABLE_FEATURE_COUNT = SAP_TABLE_FEATURE_COUNT + 5;
+    int SAPBW_TABLE_FEATURE_COUNT = SAP_TABLE_FEATURE_COUNT + 6;
 
     /**
      * The meta object id for the '{@link org.talend.core.model.metadata.builder.connection.impl.SAPBWTableFieldImpl <em>SAPBW Table Field</em>}' class.
@@ -25189,6 +25198,17 @@ public interface ConnectionPackage extends EPackage {
     EAttribute getSAPBWTable_InnerIOType();
 
     /**
+     * Returns the meta object for the attribute '{@link org.talend.core.model.metadata.builder.connection.SAPBWTable#getCategory <em>Category</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Category</em>'.
+     * @see org.talend.core.model.metadata.builder.connection.SAPBWTable#getCategory()
+     * @see #getSAPBWTable()
+     * @generated
+     */
+    EAttribute getSAPBWTable_Category();
+
+    /**
      * Returns the meta object for class '{@link org.talend.core.model.metadata.builder.connection.SAPBWTableField <em>SAPBW Table Field</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -28986,6 +29006,14 @@ public interface ConnectionPackage extends EPackage {
          * @generated
          */
         EAttribute SAPBW_TABLE__INNER_IO_TYPE = eINSTANCE.getSAPBWTable_InnerIOType();
+
+        /**
+         * The meta object literal for the '<em><b>Category</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute SAPBW_TABLE__CATEGORY = eINSTANCE.getSAPBWTable_Category();
 
         /**
          * The meta object literal for the '{@link org.talend.core.model.metadata.builder.connection.impl.SAPBWTableFieldImpl <em>SAPBW Table Field</em>}' class.
