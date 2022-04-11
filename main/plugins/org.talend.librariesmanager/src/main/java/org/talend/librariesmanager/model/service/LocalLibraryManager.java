@@ -1035,6 +1035,9 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
         if (localMavenUri == null) {
             localMavenUri = mvnUriStatusKey.replace("mvn:", "mvn:" + MavenConstants.LOCAL_RESOLUTION_URL + "!"); //$NON-NLS-1$ //$NON-NLS-2$
         }
+        if (!isResolveAllowed(localMavenUri)) {
+            return null;
+        }
         try {
             File resolvedJar = TalendMavenResolver.resolve(localMavenUri);
             if (resolvedJar != null) {
