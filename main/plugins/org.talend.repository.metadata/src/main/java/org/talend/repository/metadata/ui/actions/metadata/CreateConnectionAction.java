@@ -195,6 +195,7 @@ public class CreateConnectionAction extends AbstractCreateAction {
         }
 
         // Open the Wizard
+//        TalendWizardDialog wizardDialog = new TalendWizardDialog(Display.getCurrent().getActiveShell(), databaseWizard);
         WizardDialog wizardDialog = new WizardDialog(Display.getCurrent().getActiveShell(), databaseWizard);
         wizardDialog.setPageSize(780, 540);
         wizardDialog.create();
