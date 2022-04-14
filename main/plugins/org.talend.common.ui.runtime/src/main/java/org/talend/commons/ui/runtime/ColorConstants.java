@@ -28,11 +28,21 @@ public interface ColorConstants {
 
     static final Color YELLOW_COLOR = new Color(null, 255, 173, 37);// 254, 182, 84
 
-    static final Color RED_COLOR = new Color(null, new RGB(204,87,89));// 255
+    static final Color RED_COLOR = new Color(null, new RGB(204, 87, 89));// 255
 
     static final Color VERTICAL_SEPERATOR_LINE_COLOR = new Color(null, 162, 179, 195);
 
     static final Color LOCHMARA_COLOR = new Color(null, 6, 117, 193);
 
     static final Color WATHET_COLOR = new Color(null, 135, 206, 235);
+
+    static final Color INFO_COLOR = new Color(null, 205, 227, 242);
+//    static final Color INFO_COLOR = YELLOW_GREEN_COLOR;
+
+    static final Color WARN_COLOR = new Color(null, 252, 230, 217);
+
+    static final Color ERR_COLOR = new Color(null, 255, 235, 235);
+
+    static final Color SUCCEED_COLOR = new Color(null, 221, 242, 217);
+
 }
