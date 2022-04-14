@@ -369,5 +369,13 @@ public class ConnParameterKeys {
     
     public static final String CONN_PARA_KEY_KNOX_DIRECTORY="CONN_PARA_KEY_KNOX_DIRECTORY";
 
+    /**
+     * Redshift
+     */
+    public static final String CONN_PARA_KEY_REDSHIFT_DRIVER = "CONN_PARA_KEY_REDSHIFT_DRIVER";
+
+    public static final String CONN_PARA_KEY_REDSHIFT_STRINGPARA = "CONN_PARA_KEY_REDSHIFT_STRINGPARA";
+
+    public static final String CONN_PARA_KEY_REDSHIFT_PARATABLE = "CONN_PARA_KEY_REDSHIFT_PARATABLE";
 
 }

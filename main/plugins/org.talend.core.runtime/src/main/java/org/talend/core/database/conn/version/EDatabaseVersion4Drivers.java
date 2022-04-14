@@ -13,10 +13,12 @@
 package org.talend.core.database.conn.version;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.talend.core.database.EDatabaseTypeName;
+import org.talend.core.database.ERedshiftDriver;
 import org.talend.core.database.conn.DatabaseConnConstants;
 
 /**
@@ -293,6 +295,9 @@ public enum EDatabaseVersion4Drivers {
                     if (version.equalsIgnoreCase(v4d.getVersionValue())) {
                         drivers.addAll(v4d.getProviderDrivers());
                     }
+                    if (drivers.isEmpty()) {
+                        drivers.addAll(getDriversByDriverVersion(v4d, version));
+                    }
                 }
             } else {
                 // only check the version value
@@ -300,6 +305,14 @@ public enum EDatabaseVersion4Drivers {
                     drivers.addAll(v4d.getProviderDrivers());
                 }
             }
+        }
+        return drivers;
+    }
+
+    private static Set<String> getDriversByDriverVersion(EDatabaseVersion4Drivers v4d, String version) {
+        Set<String> drivers = new HashSet<String>();
+        if (REDSHIFT == v4d) {
+            drivers = ERedshiftDriver.getDriversByVersion(version);
         }
         return drivers;
     }
