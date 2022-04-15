@@ -7217,7 +7217,7 @@ public class DatabaseForm extends AbstractForm {
     private void collectHiveContextParams() {
         // recollect context params for hive
         if (isHiveDBConnSelected()) {
-            getConetxtParams().clear();
+            getContextParams().clear();
             addContextParams(EDBParamName.Database, true);
             boolean isHiveDataproc = doSupportHiveDataproc();
             if (isHiveDataproc) {
@@ -7262,7 +7262,7 @@ public class DatabaseForm extends AbstractForm {
     private void collectHBaseContextParams() {
         // recollect context params for Hbase
         if (isHBaseDBConnSelected()) {
-            getConetxtParams().clear();
+            getContextParams().clear();
             addContextParams(EDBParamName.Server, true);
             addContextParams(EDBParamName.Port, true);
             addContextParams(EDBParamName.Schema, true);
@@ -7284,7 +7284,7 @@ public class DatabaseForm extends AbstractForm {
     private void collectMaprdbContextParams() {
         // recollect context params for maprdb
         if (isMapRDBConnSelected()) {
-            getConetxtParams().clear();
+            getContextParams().clear();
             addContextParams(EDBParamName.Server, true);
             addContextParams(EDBParamName.Port, true);
             addContextParams(EDBParamName.Schema, true);
@@ -7306,7 +7306,7 @@ public class DatabaseForm extends AbstractForm {
     private void collectImpalaContextParams() {
         // recollect context params for impala
         if (isImpalaDBConnSelected()) {
-            getConetxtParams().clear();
+            getContextParams().clear();
             addContextParams(EDBParamName.Login, true);
             addContextParams(EDBParamName.Server, true);
             addContextParams(EDBParamName.Port, true);
@@ -7328,7 +7328,7 @@ public class DatabaseForm extends AbstractForm {
     private void collectOracleCustomContextParams() {
         // recollect context params for Oracle Custom
         if (isOracleCustomDBConnSelected()) {
-            getConetxtParams().clear();
+            getContextParams().clear();
             addContextParams(EDBParamName.Server, true);
             addContextParams(EDBParamName.Password, true);
             addContextParams(EDBParamName.Login, true);
@@ -9516,7 +9516,7 @@ public class DatabaseForm extends AbstractForm {
             labelText = sidOrDatabaseText.getLabelText();
             needConfirmDialog = true;
         }
-        Set<IConnParamName> conetxtParams = getConetxtParams();
+        Set<IConnParamName> conetxtParams = getContextParams();
         boolean contains = conetxtParams.contains(EDBParamName.Schema);
         if ((contains || EDatabaseConnTemplate.isSchemaNeeded(getConnection().getDatabaseType()))
                 && StringUtils.isBlank(schemaText.getText())) {

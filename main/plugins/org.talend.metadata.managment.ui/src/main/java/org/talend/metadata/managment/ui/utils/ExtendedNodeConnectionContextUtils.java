@@ -164,7 +164,15 @@ public class ExtendedNodeConnectionContextUtils {
         KnoxUrl,
         KnoxUsername,
         KnoxPassword,
-        KnoxDirectory
+        KnoxDirectory,
+        
+        //Cde
+        CdeApiEndPoint,
+        CdeAutoGenerateToken,
+        CdeToken,
+        CdeTokenEndpoint,
+        CdeWorkloadUser,
+        CdeWorkloadPassword
     }
 
     static List<IContextParameter> getContextVariables(final String prefixName, Connection conn, Set<IConnParamName> paramSet) {
