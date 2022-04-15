@@ -369,6 +369,14 @@ public class ConnParameterKeys {
     
     public static final String CONN_PARA_KEY_KNOX_DIRECTORY="CONN_PARA_KEY_KNOX_DIRECTORY";
 
+    // CDE
+    public static final String CONN_PARA_KEY_CDE_API_ENDPOINT="CONN_PARA_KEY_CDE_API_ENDPOINT";
+    public static final String CONN_PARA_KEY_CDE_TOKEN="CONN_PARA_KEY_CDE_TOKEN";
+    public static final String CONN_PARA_KEY_CDE_AUTO_GENERATE_TOKEN="CONN_PARA_KEY_CDE_AUTO_GENERATE_TOKEN";
+    public static final String CONN_PARA_KEY_CDE_TOKEN_ENDPOINT="CONN_PARA_KEY_CDE_TOKEN_ENDPOINT";
+    public static final String CONN_PARA_KEY_CDE_WORKLOAD_USER="CONN_PARA_KEY_CDE_WORKLOAD_USER";
+    public static final String CONN_PARA_KEY_CDE_WORKLOAD_PASSWORD = "CONN_PARA_KEY_CDE_WORKLOAD_PASSWORD";
+    
     /**
      * Redshift
      */
