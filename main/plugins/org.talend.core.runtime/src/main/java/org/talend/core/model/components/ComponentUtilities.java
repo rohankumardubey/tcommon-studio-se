@@ -54,6 +54,12 @@ public final class ComponentUtilities {
         }
     }
 
+    public static boolean getNodePropertyValueAsBoolean(NodeType node, String property) {
+    	return Optional.ofNullable(getNodeProperty(node, property))
+    					.map(ElementParameterType::getValue)
+    					.map(Boolean::valueOf) .orElse(false); 
+    }
+    
     public static ElementParameterType getNodeProperty(NodeType node, String property) {
         for (Object o : node.getElementParameter()) {
             ElementParameterType t = (ElementParameterType) o;
