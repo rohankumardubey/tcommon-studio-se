@@ -37,6 +37,7 @@
 		<studioIndexVersion>${project.version}</studioIndexVersion>
 		<talend.nexus.host>https://artifacts-oss.talend.com</talend.nexus.host>
         <talend.nexus.host.oss>https://artifacts-oss.talend.com</talend.nexus.host.oss>
+        <tycho.buildtimestamp.format>${timestamp}</tycho.buildtimestamp.format>
     </properties>
         
 	<build>
