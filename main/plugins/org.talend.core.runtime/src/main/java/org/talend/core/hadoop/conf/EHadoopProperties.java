@@ -83,6 +83,12 @@ public enum EHadoopProperties {
     GOOGLE_REGION,
 
     GOOGLE_JARS_BUCKET,
+    
+    AUTH_MODE,
+    
+    PATH_TO_GOOGLE_CREDENTIALS,
+    
+    OAUTH_ACCESS_TOKEN,
 
     HD_WEBHCAT_HOSTNAME,
 
