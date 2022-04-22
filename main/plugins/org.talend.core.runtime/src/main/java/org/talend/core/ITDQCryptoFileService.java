@@ -38,5 +38,11 @@ public interface ITDQCryptoFileService extends IService {
      * Generate Encrypty file
      */
     public void generateCryptoFile(String passwordM1, String cryptoMethod, String cryptoFilePath);
+    
+    /**
+     * Generate Encrypty file
+     */
+    public void generateCryptoFile(String passwordM1, String cryptoMethod, String cryptoFilePath, int algoVersion);
+
 
 }
