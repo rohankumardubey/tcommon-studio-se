@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.core.services;
+package org.talend.core.service;
 
 import java.io.File;
 import java.text.ParseException;
@@ -76,7 +76,17 @@ public interface IDetectCVEService extends IService {
      */
     ImpactedItem detect(Item item, Set<CVEData> datas, boolean includeNotFixed);
 
+    /**
+     * Persist final cve report
+     * @param impactedItems impacted items
+     * @param reportFile - report file path
+     */
     void writeReport(List<ImpactedItem> impactedItems, File reportFile);
+    
+    /**
+     * Clear CVE cache
+     */
+    void clearCache();
 
     public static String mavenUri2GAV(String uri) {
         if (MavenUrlHelper.isMvnUrl(uri)) {
