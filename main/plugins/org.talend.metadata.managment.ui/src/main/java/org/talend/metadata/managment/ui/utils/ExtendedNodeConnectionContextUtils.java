@@ -144,7 +144,10 @@ public class ExtendedNodeConnectionContextUtils {
         GoogleClusterId,
         GoogleRegion,
         GoogleJarsBucket,
+        useGoogleCredentials,
+        GoogleAuthMode,
         PathToGoogleCredentials,
+        GoogleOauthToken,
 
         // Override hadoop configuration
         setHadoopConf,
