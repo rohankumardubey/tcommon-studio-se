@@ -13,10 +13,12 @@
 package org.talend.core.database.conn.version;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.talend.core.database.EDatabaseTypeName;
+import org.talend.core.database.ERedshiftDriver;
 import org.talend.core.database.conn.DatabaseConnConstants;
 
 /**
@@ -61,7 +63,7 @@ public enum EDatabaseVersion4Drivers {
     SQLITE(new DbVersion4Drivers(EDatabaseTypeName.SQLITE, "sqlitejdbc-v056.jar")), //$NON-NLS-1$
     FIREBIRD(new DbVersion4Drivers(EDatabaseTypeName.FIREBIRD, "jaybird-full-2.1.1.jar")), //$NON-NLS-1$
     TERADATA(new DbVersion4Drivers(EDatabaseTypeName.TERADATA,
-            new String[] { "terajdbc4-16.20.00.02.jar", "tdgssconfig-16.20.00.02.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
+            new String[] { "terajdbc4-17.10.00.27.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
     JAVADB_DERBYCLIENT(new DbVersion4Drivers(EDatabaseTypeName.JAVADB_DERBYCLIENT, "derbyclient.jar")), //$NON-NLS-1$
     NETEZZA(new DbVersion4Drivers(EDatabaseTypeName.NETEZZA, "nzjdbc.jar")), //$NON-NLS-1$
     INFORMIX(new DbVersion4Drivers(EDatabaseTypeName.INFORMIX, "ifxjdbc.jar")), //$NON-NLS-1$
@@ -81,10 +83,11 @@ public enum EDatabaseVersion4Drivers {
             "Microsoft SQL Server 2012", "Microsoft SQL Server 2012", "jtds-1.3.1-patch-20190523.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     MSSQL_PROP(new DbVersion4Drivers(EDatabaseTypeName.MSSQL,
             "Microsoft", "MSSQL_PROP", //$NON-NLS-1$ //$NON-NLS-2$
-            new String[] { "mssql-jdbc.jar", "slf4j-api-1.7.29.jar", "slf4j-log4j12-1.7.29.jar", "adal4j-1.6.7.jar", //$NON-NLS-1$
-                    "commons-lang3-3.10.jar", "commons-codec-1.14.jar", "gson-2.8.6.jar", "oauth2-oidc-sdk-9.7.jar",
-                    "json-smart-2.4.7.jar", "nimbus-jose-jwt-8.11.jar", "javax.mail-1.6.2.jar", "log4j-1.2.17.jar",
-                    "accessors-smart-2.4.7.jar", "asm-9.1.jar","content-type-2.1.jar" })),
+            new String[] { "mssql-jdbc.jar", "slf4j-api-1.7.29.jar", "slf4j-log4j12-1.7.29.jar", "msal4j-1.11.0.jar", //$NON-NLS-1$
+                    "oauth2-oidc-sdk-9.7.jar", "log4j-1.2.17.jar", "jackson-core-2.13.2.jar",
+                    "jackson-databind-2.13.2.2.jar", "jackson-annotations-2.13.2.jar", "jcip-annotations-1.0-1.jar",
+                    "json-smart-2.4.7.jar", "nimbus-jose-jwt-9.9.3.jar", "accessors-smart-2.4.7.jar", "asm-9.1.jar",
+                    "content-type-2.1.jar", "lang-tag-1.5.jar" })),
 
     VERTICA_9(new DbVersion4Drivers(EDatabaseTypeName.VERTICA, "VERTICA 9.X", "VERTICA_9_0", "vertica-jdbc-9.3.1-0.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
@@ -148,9 +151,9 @@ public enum EDatabaseVersion4Drivers {
     MAPRDB(new DbVersion4Drivers(EDatabaseTypeName.MAPRDB, new String[] {})),
 
     REDSHIFT(new DbVersion4Drivers(EDatabaseTypeName.REDSHIFT, "redshift", "REDSHIFT", //$NON-NLS-1$ //$NON-NLS-2$
-            "redshift-jdbc42-no-awssdk-1.2.37.1061.jar")), //$NON-NLS-1$
+            new String[]{ "redshift-jdbc42-no-awssdk-1.2.55.1083.jar", "antlr4-runtime-4.8-1.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
     REDSHIFT_SSO(new DbVersion4Drivers(EDatabaseTypeName.REDSHIFT_SSO, "redshift sso", "REDSHIFT_SSO", //$NON-NLS-1$ //$NON-NLS-2$
-            new String[] { "redshift-jdbc42-no-awssdk-1.2.37.1061.jar", "aws-java-sdk-1.11.848.jar", "jackson-core-2.11.4.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            new String[] { "redshift-jdbc42-no-awssdk-1.2.55.1083.jar", "antlr4-runtime-4.8-1.jar", "aws-java-sdk-1.11.848.jar", "jackson-core-2.11.4.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                     "jackson-databind-2.11.4.jar", "jackson-annotations-2.11.4.jar", "httpcore-4.4.13.jar", "httpclient-4.5.13.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$
                     "joda-time-2.8.1.jar", "commons-logging-1.2.jar", "commons-codec-1.14.jar" })), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
@@ -292,6 +295,9 @@ public enum EDatabaseVersion4Drivers {
                     if (version.equalsIgnoreCase(v4d.getVersionValue())) {
                         drivers.addAll(v4d.getProviderDrivers());
                     }
+                    if (drivers.isEmpty()) {
+                        drivers.addAll(getDriversByDriverVersion(v4d, version));
+                    }
                 }
             } else {
                 // only check the version value
@@ -299,6 +305,14 @@ public enum EDatabaseVersion4Drivers {
                     drivers.addAll(v4d.getProviderDrivers());
                 }
             }
+        }
+        return drivers;
+    }
+
+    private static Set<String> getDriversByDriverVersion(EDatabaseVersion4Drivers v4d, String version) {
+        Set<String> drivers = new HashSet<String>();
+        if (REDSHIFT == v4d) {
+            drivers = ERedshiftDriver.getDriversByVersion(version);
         }
         return drivers;
     }

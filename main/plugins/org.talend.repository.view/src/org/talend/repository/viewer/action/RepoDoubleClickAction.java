@@ -390,7 +390,8 @@ public class RepoDoubleClickAction extends Action {
             return false;
         }
         if (ERepositoryObjectType.METADATA_SAP_BW_DATASOURCE != null) {
-            if (nodeType == ERepositoryObjectType.METADATA_SAP_BW_ADVANCEDDATASTOREOBJECT
+            if (nodeType == ERepositoryObjectType.METADATA_SAP_BW_ADVANCEDDATASTOREOBJECT_INPUT
+                    || nodeType == ERepositoryObjectType.METADATA_SAP_BW_ADVANCEDDATASTOREOBJECT_OUTPUT
                     || nodeType == ERepositoryObjectType.METADATA_SAP_BW_DATASOURCE
                     || nodeType == ERepositoryObjectType.METADATA_SAP_BW_DATASTOREOBJECT
                     || nodeType == ERepositoryObjectType.METADATA_SAP_BW_INFOCUBE
