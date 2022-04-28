@@ -142,6 +142,7 @@ import org.talend.core.runtime.util.ItemDateParser;
 import org.talend.core.runtime.util.SharedStudioUtils;
 import org.talend.core.service.ICoreUIService;
 import org.talend.core.service.IUpdateService;
+import org.talend.core.service.IDetectCVEService;
 import org.talend.core.utils.CodesJarResourceCache;
 import org.talend.cwm.helper.SubItemHelper;
 import org.talend.cwm.helper.TableHelper;
@@ -2467,6 +2468,15 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
         if (runProcessService != null) {
             runProcessService.clearProjectRelatedSettings();
         }
+
+        // clear detect CVE cache
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IDetectCVEService.class)) {
+            IDetectCVEService detectCVESvc = GlobalServiceRegister.getDefault().getService(IDetectCVEService.class);
+            if (detectCVESvc != null) {
+                detectCVESvc.clearCache();
+            }
+        }
+
         ReferenceProjectProvider.clearTacReferenceList();
         ReferenceProjectProblemManager.getInstance().clearAll();
         fullLogonFinished = false;
