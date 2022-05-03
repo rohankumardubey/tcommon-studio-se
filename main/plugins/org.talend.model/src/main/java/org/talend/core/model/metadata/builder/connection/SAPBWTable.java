@@ -18,6 +18,7 @@ import java.util.Date;
  *   <li>{@link org.talend.core.model.metadata.builder.connection.SAPBWTable#getSourceSystemName <em>Source System Name</em>}</li>
  *   <li>{@link org.talend.core.model.metadata.builder.connection.SAPBWTable#getInfoAreaName <em>Info Area Name</em>}</li>
  *   <li>{@link org.talend.core.model.metadata.builder.connection.SAPBWTable#getInnerIOType <em>Inner IO Type</em>}</li>
+ *   <li>{@link org.talend.core.model.metadata.builder.connection.SAPBWTable#getCategory <em>Category</em>}</li>
  * </ul>
  *
  * @see org.talend.core.model.metadata.builder.connection.ConnectionPackage#getSAPBWTable()
@@ -155,5 +156,27 @@ public interface SAPBWTable extends SAPTable {
      * @generated
      */
     void setInnerIOType(String value);
+
+    /**
+     * Returns the value of the '<em><b>Category</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Category</em>' attribute.
+     * @see #setCategory(String)
+     * @see org.talend.core.model.metadata.builder.connection.ConnectionPackage#getSAPBWTable_Category()
+     * @model
+     * @generated
+     */
+    String getCategory();
+
+    /**
+     * Sets the value of the '{@link org.talend.core.model.metadata.builder.connection.SAPBWTable#getCategory <em>Category</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Category</em>' attribute.
+     * @see #getCategory()
+     * @generated
+     */
+    void setCategory(String value);
 
 } // SAPBWTable

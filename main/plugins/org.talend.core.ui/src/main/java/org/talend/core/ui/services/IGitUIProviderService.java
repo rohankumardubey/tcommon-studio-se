@@ -2,6 +2,7 @@ package org.talend.core.ui.services;
 
 import java.io.Serializable;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
@@ -25,6 +26,8 @@ public interface IGitUIProviderService extends IService {
     boolean checkPendingChanges();
 
     public void openPushFailedDialog(Object pushResult);
+
+    boolean migrateOption(IProgressMonitor monitor, String newVersion, boolean hasUpdate) throws Exception;
 
     public static IGitUIProviderService get() {
         GlobalServiceRegister register = GlobalServiceRegister.getDefault();

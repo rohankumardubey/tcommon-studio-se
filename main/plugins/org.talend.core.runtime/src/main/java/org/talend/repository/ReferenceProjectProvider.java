@@ -65,10 +65,12 @@ public class ReferenceProjectProvider implements IReferenceProjectProvider {
         loadFromContent = true;
     }
 
+    @Override
     public void initSettings() throws BusinessException, PersistenceException {
         loadSettings();
     }
 
+    @Override
     public void loadSettings() throws PersistenceException {
         referenceProjectList = null;
         TypeReference<ReferenceProjectConfiguration> typeReference = new TypeReference<ReferenceProjectConfiguration>() {
@@ -151,11 +153,7 @@ public class ReferenceProjectProvider implements IReferenceProjectProvider {
     public void saveSettings() throws PersistenceException, IOException {
         IProject iProject = ResourceUtils.getProject(project.getTechnicalLabel());
         IFile file = iProject.getFolder(CONFIGURATION_FOLDER_NAME).getFile(CONFIGURATION_FILE_NAME);
-        if (referenceProjectConfig == null) {
-            referenceProjectConfig = new ReferenceProjectConfiguration();
-        }
-        ObjectMapper objectMapper = new ObjectMapper();
-        String content = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(referenceProjectConfig);
+        String content = toFileContents();
         ByteArrayInputStream source = new ByteArrayInputStream(content.getBytes());
         try {
             if (!file.exists()) {
@@ -168,6 +166,15 @@ public class ReferenceProjectProvider implements IReferenceProjectProvider {
         }
     }
 
+    public String toFileContents() throws IOException {
+        if (referenceProjectConfig == null) {
+            referenceProjectConfig = new ReferenceProjectConfiguration();
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(referenceProjectConfig);
+    }
+
+    @Override
     public boolean isHasConfigurationFile() {
         return hasConfigurationFile;
     }

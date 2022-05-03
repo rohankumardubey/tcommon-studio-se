@@ -82,6 +82,8 @@ import org.talend.commons.ui.swt.formtools.LabelledDirectoryField;
 import org.talend.commons.ui.swt.formtools.LabelledFileField;
 import org.talend.commons.ui.swt.formtools.LabelledText;
 import org.talend.commons.ui.swt.formtools.UtilsButton;
+import org.talend.commons.ui.swt.tableviewer.IModifiedBeanListener;
+import org.talend.commons.ui.swt.tableviewer.ModifiedBeanEvent;
 import org.talend.commons.ui.utils.PathUtils;
 import org.talend.commons.ui.utils.loader.MyURLClassLoader;
 import org.talend.core.GlobalServiceRegister;
@@ -89,6 +91,7 @@ import org.talend.core.ILibraryManagerService;
 import org.talend.core.ILibraryManagerUIService;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.database.EImpalaDriver;
+import org.talend.core.database.ERedshiftDriver;
 import org.talend.core.database.conn.ConnParameterKeys;
 import org.talend.core.database.conn.DatabaseConnStrUtil;
 import org.talend.core.database.conn.EDatabaseConnVar;
@@ -131,6 +134,7 @@ import org.talend.core.runtime.hd.hive.HiveMetadataHelper;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.branding.IBrandingService;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
@@ -219,6 +223,8 @@ public class DatabaseForm extends AbstractForm {
 
     private LabelledCombo impalaDriverCombo;
 
+    private LabelledCombo redshiftDriverCombo;
+
     private LabelledText serverText;
 
     private LabelledText portText;
@@ -242,6 +248,10 @@ public class DatabaseForm extends AbstractForm {
     private LabelledFileField fileField;
 
     private LabelledDirectoryField directoryField;
+
+    private Button useStringAdditionParam;
+
+    private LabelledParameterTable additionParamTable;
 
     private LabelledText additionParamText;
 
@@ -655,6 +665,8 @@ public class DatabaseForm extends AbstractForm {
             } else if (isDBTypeSelected(EDatabaseConnTemplate.IMPALA)) {
                 initImpalaSettings();
                 initImpalaInfo();
+            } else if (isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT)) {
+                initRedshiftAdditionalParamSetting();
             } else if (isHiveDBConnSelected()) {
                 // Changed by Marvin Wang on Oct. 15, 2012 for but TDI-23235.
                 doRemoveHiveSetup();
@@ -1005,7 +1017,7 @@ public class DatabaseForm extends AbstractForm {
 
         createHiveServerVersionField(typeDbCompositeParent);
         createImpalaDriverField(typeDbCompositeParent);
-
+        createRedshiftDriverField(typeDbCompositeParent);
         setHideVersionInfoWidgets(true);
 
         createHiveDataprocField(typeDbCompositeParent);
@@ -1031,6 +1043,7 @@ public class DatabaseForm extends AbstractForm {
         } else {
             datasourceText = new LabelledText(typeDbCompositeParent, Messages.getString("DatabaseForm.dataSource"), 2); //$NON-NLS-1$
         }
+        createRedshiftAdditionalParamSetting(typeDbCompositeParent);
         additionParamText = new LabelledText(typeDbCompositeParent, Messages.getString("DatabaseForm.AddParams"), 2); //$NON-NLS-1$
         additionalJDBCSettingsText = new LabelledText(typeDbCompositeParent,
                 Messages.getString("DatabaseForm.hive.additionalJDBCSettings"), 2); //$NON-NLS-1$
@@ -4085,6 +4098,111 @@ public class DatabaseForm extends AbstractForm {
         impalaDriverCombo.setHideWidgets(true);
     }
 
+    private void createRedshiftDriverField(Composite parent) {
+        redshiftDriverCombo = new LabelledCombo(parent, Messages.getString("DatabaseForm.redshift.driverVersion"), //$NON-NLS-1$
+                Messages.getString("DatabaseForm.redshift.driverVersion.tip"), //$NON-NLS-1$
+                new String[] {}, 2, true);
+        redshiftDriverCombo.getCombo().setItems(ERedshiftDriver.getRedshiftDriverDisplayNames());
+        redshiftDriverCombo.setHideWidgets(true);
+        redshiftDriverCombo.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(ModifyEvent e) {
+                if (ERedshiftDriver.DRIVER_V2.getDisplayName().equals(redshiftDriverCombo.getText())) {
+                    hideControl(useStringAdditionParam, false);
+                } else {
+                    hideControl(useStringAdditionParam, true);
+                    additionParamText.setHideWidgets(false);
+                    additionParamText.setEditable(true);
+                    additionParamTable.getPropertiesTableModel().setProperties(new ArrayList<Map<String, Object>>());
+                    handleAdditionParaTableModify();
+                    additionParamTable.setHideWidgets(true);
+                }
+                handleUseStringAdditionParamSelection();
+                getConnection().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_DRIVER,
+                        ERedshiftDriver.getEnameByDisplayName(redshiftDriverCombo.getText()));
+            }
+        });
+    }
+
+    private void createRedshiftAdditionalParamSetting(Composite parent) {
+        useStringAdditionParam = new Button(parent, SWT.CHECK);
+        useStringAdditionParam.setText(Messages.getString("DatabaseForm.redshift.useStringAdditionParam"));
+        GridData gridData = new GridData();
+        gridData.verticalSpan = 1;
+        gridData.horizontalSpan = 3;
+        useStringAdditionParam.setLayoutData(gridData);
+        useStringAdditionParam.setVisible(false);
+        gridData.exclude = true;
+        useStringAdditionParam.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                handleUseStringAdditionParamSelection();
+            }
+
+        });
+
+        List<Map<String, Object>> tableProperties = new ArrayList<Map<String, Object>>();
+        String paraTableInfos = getConnection().getParameters().get(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_PARATABLE);
+        if (StringUtils.isNotBlank(paraTableInfos)) {
+            tableProperties = ConvertionHelper.getEntryProperties(paraTableInfos);
+        }
+        additionParamTable = new LabelledParameterTable(parent, Messages.getString("DatabaseForm.AddParams"),
+                tableProperties, 2);
+        additionParamTable.setHideWidgets(true);
+        additionParamTable.getPropertiesTableModel().addModifiedBeanListener(new IModifiedBeanListener<Map<String, Object>>() {
+
+            @Override
+            public void handleEvent(ModifiedBeanEvent<Map<String, Object>> event) {
+                handleAdditionParaTableModify();
+            }
+        });
+    }
+
+    private void handleAdditionParaTableModify() {
+        List<Map<String, Object>> beansList = additionParamTable.getPropertiesTableModel().getBeansList();
+        getConnection().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_PARATABLE,
+                ConvertionHelper.getEntryPropertiesString(beansList));
+    }
+
+    private void handleUseStringAdditionParamSelection() {
+        boolean stringParaInUse = ERedshiftDriver.DRIVER_V1.getDisplayName().equals(redshiftDriverCombo.getText());
+        boolean selected = stringParaInUse || useStringAdditionParam.getSelection();
+        additionParamText.setHideWidgets(!selected);
+        additionParamTable.setHideWidgets(selected);
+        if (selected) {
+            additionParamText.setEditable(true);
+            additionParamTable.getPropertiesTableModel().setProperties(new ArrayList<Map<String, Object>>());
+            handleAdditionParaTableModify();
+        } else {
+            additionParamText.setText("");
+        }
+        getConnection().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_STRINGPARA, String.valueOf(selected));
+    }
+
+    private void setupDefaultRedshiftAdditionalParamSetting() {
+        boolean isRedshiftSelected = isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT);
+        if (isRedshiftSelected) {
+            redshiftDriverCombo.setText(ERedshiftDriver.DRIVER_V2.getDisplayName());
+        }
+        redshiftDriverCombo.setHideWidgets(!isRedshiftSelected);
+    }
+
+    private void initRedshiftAdditionalParamSetting() {
+        EMap<String, String> parameters = getConnection().getParameters();
+        String redshiftDriver = parameters.get(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_DRIVER);
+        if (StringUtils.isBlank(redshiftDriver)) {
+            redshiftDriver = ERedshiftDriver.DRIVER_V1.getDisplayName();
+        } else {
+            redshiftDriver = ERedshiftDriver.getDisplayNameByEName(redshiftDriver);
+        }
+        String useString = parameters.get(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_STRINGPARA);
+        useStringAdditionParam.setSelection(Boolean.valueOf(useString));
+        redshiftDriverCombo.setText(redshiftDriver);
+        handleUseStringAdditionParamSelection();
+    }
+
     /**
      * Added by Marvin Wang on Oct. 15, 2012.
      *
@@ -4494,6 +4612,25 @@ public class DatabaseForm extends AbstractForm {
                 }
             }
 
+            String dbVersionString = enableDbVersion() ? versionStr : null;
+            if (isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT)) {
+                if (ERedshiftDriver.DRIVER_V2.getDisplayName().equals(redshiftDriverCombo.getText())
+                        && !useStringAdditionParam.getSelection()) {
+                    Properties info = new Properties();
+                    List<Map<String, Object>> entryProperties = additionParamTable.getPropertiesTableModel().getBeansList();
+                    for (Map<String, Object> entryMap : entryProperties) {
+                        String key = TalendQuoteUtils.removeQuotes(String.valueOf(entryMap.get("KEY")));
+                        if (StringUtils.isNotBlank(key)) {
+                            String value = TalendQuoteUtils.removeQuotes(String.valueOf(entryMap.get("VALUE")));
+                            ConvertionHelper.updateAdditionParam(sgb, info, key, value);
+                        }
+                    }
+                }
+                String driverVName = ERedshiftDriver.getEnameByDisplayName(redshiftDriverCombo.getText());
+                if (StringUtils.isNotBlank(driverVName)) {
+                    dbVersionString = driverVName;
+                }
+            }
             // TODO If the current DB type is Hive, then to identify if Hive mode is EMBEDDED, if so, then setup some
             // system
             // properties.
@@ -4506,7 +4643,7 @@ public class DatabaseForm extends AbstractForm {
                     isGeneralJDBC() ? jDBCschemaText.getText() : schemaText.getText(),
                     additionParamText.getText() + sgb.toString(),
                     generalJdbcClassNameText.getText(), generalJdbcDriverjarText.getText(),
-                    enableDbVersion() ? versionStr : null, metadataconnection.getOtherParameters());
+                    dbVersionString, metadataconnection.getOtherParameters());
 
             managerConnection.setDbRootPath(directoryField.getText());
 
@@ -5447,6 +5584,7 @@ public class DatabaseForm extends AbstractForm {
             } else {
                 doImpalaNotSelected();
             }
+            setupDefaultRedshiftAdditionalParamSetting();
         }
 
         // Added by Marvin Wang on Oct. 22, 2012 just for show the scrolled bar when a hive DB type is selected.
@@ -6662,6 +6800,7 @@ public class DatabaseForm extends AbstractForm {
         boolean isMsSQL = visible && asMsSQLVersionEnable();
         boolean isSybase = visible && asSybaseVersionEnable();
         boolean isGreenplum = visible && asGreenplumVersionEnable();
+        boolean isRedshift = visible && redshiftVersionEnable();
 
         dbVersionCombo
                 .setEnabled(!isReadOnly()
@@ -6948,6 +7087,8 @@ public class DatabaseForm extends AbstractForm {
                     // usernameText.hide();
                     // passwordText.hide();
                     impalaDriverCombo.setHideWidgets(false);
+                } else if (isRedshift) {
+                    redshiftDriverCombo.setHideWidgets(false);
                 } else if (isHiveDBConnSelected()) {
                     if (isHiveEmbeddedMode()) {
                         // Need to revert if required, changed by Marvin Wang on Nov. 22, 2012.
@@ -7007,11 +7148,22 @@ public class DatabaseForm extends AbstractForm {
             }
             if (EDatabaseConnTemplate.isAddtionParamsNeeded(getConnection().getDatabaseType())
                     && !EDatabaseConnTemplate.GENERAL_JDBC.getDBTypeName().equals(getConnectionDBType()) && visible) {
-                additionParamText.show();
+                boolean isRedshiftV2 = isRedshift
+                        && ERedshiftDriver.DRIVER_V2.getDisplayName().equals(redshiftDriverCombo.getText());
+                hideControl(useStringAdditionParam, !isRedshiftV2);
+                if (isRedshiftV2 && !useStringAdditionParam.getSelection()) {
+                    additionParamTable.setHideWidgets(false);
+                    additionParamText.hide();
+                } else {
+                    additionParamText.show();
+                    additionParamTable.setHideWidgets(true);
+                }
                 additionParamText.setEditable(true);
                 addContextParams(EDBParamName.AdditionalParams, true);
             } else {
                 if (!EDatabaseConnTemplate.isAddtionParamsNeeded(getConnection().getDatabaseType())) {
+                    hideControl(useStringAdditionParam, true);
+                    additionParamTable.setHideWidgets(true);
                     additionParamText.hide();
                     addContextParams(EDBParamName.AdditionalParams, false);
                 }
@@ -7065,7 +7217,7 @@ public class DatabaseForm extends AbstractForm {
     private void collectHiveContextParams() {
         // recollect context params for hive
         if (isHiveDBConnSelected()) {
-            getConetxtParams().clear();
+            getContextParams().clear();
             addContextParams(EDBParamName.Database, true);
             boolean isHiveDataproc = doSupportHiveDataproc();
             if (isHiveDataproc) {
@@ -7110,7 +7262,7 @@ public class DatabaseForm extends AbstractForm {
     private void collectHBaseContextParams() {
         // recollect context params for Hbase
         if (isHBaseDBConnSelected()) {
-            getConetxtParams().clear();
+            getContextParams().clear();
             addContextParams(EDBParamName.Server, true);
             addContextParams(EDBParamName.Port, true);
             addContextParams(EDBParamName.Schema, true);
@@ -7132,7 +7284,7 @@ public class DatabaseForm extends AbstractForm {
     private void collectMaprdbContextParams() {
         // recollect context params for maprdb
         if (isMapRDBConnSelected()) {
-            getConetxtParams().clear();
+            getContextParams().clear();
             addContextParams(EDBParamName.Server, true);
             addContextParams(EDBParamName.Port, true);
             addContextParams(EDBParamName.Schema, true);
@@ -7154,7 +7306,7 @@ public class DatabaseForm extends AbstractForm {
     private void collectImpalaContextParams() {
         // recollect context params for impala
         if (isImpalaDBConnSelected()) {
-            getConetxtParams().clear();
+            getContextParams().clear();
             addContextParams(EDBParamName.Login, true);
             addContextParams(EDBParamName.Server, true);
             addContextParams(EDBParamName.Port, true);
@@ -7176,7 +7328,7 @@ public class DatabaseForm extends AbstractForm {
     private void collectOracleCustomContextParams() {
         // recollect context params for Oracle Custom
         if (isOracleCustomDBConnSelected()) {
-            getConetxtParams().clear();
+            getContextParams().clear();
             addContextParams(EDBParamName.Server, true);
             addContextParams(EDBParamName.Password, true);
             addContextParams(EDBParamName.Login, true);
@@ -7242,6 +7394,14 @@ public class DatabaseForm extends AbstractForm {
         }
         EDatabaseConnTemplate template = EDatabaseConnTemplate.indexOfTemplate(getConnectionDBType());
         return template != null && (template == EDatabaseConnTemplate.HIVE);
+    }
+
+    private boolean redshiftVersionEnable() {
+        if (getConnectionDBType().length() <= 0) {
+            return false;
+        }
+        EDatabaseConnTemplate template = EDatabaseConnTemplate.indexOfTemplate(getConnectionDBType());
+        return template != null && template == EDatabaseConnTemplate.REDSHIFT;
     }
 
     /**
@@ -9356,7 +9516,7 @@ public class DatabaseForm extends AbstractForm {
             labelText = sidOrDatabaseText.getLabelText();
             needConfirmDialog = true;
         }
-        Set<IConnParamName> conetxtParams = getConetxtParams();
+        Set<IConnParamName> conetxtParams = getContextParams();
         boolean contains = conetxtParams.contains(EDBParamName.Schema);
         if ((contains || EDatabaseConnTemplate.isSchemaNeeded(getConnection().getDatabaseType()))
                 && StringUtils.isBlank(schemaText.getText())) {

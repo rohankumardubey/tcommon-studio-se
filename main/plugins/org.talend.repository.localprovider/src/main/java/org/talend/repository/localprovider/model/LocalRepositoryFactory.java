@@ -3406,10 +3406,9 @@ public class LocalRepositoryFactory extends AbstractEMFRepositoryFactory impleme
             if (p2Service != null) {
                 String profKey = p2Service.getProfileIdForProject(project.getTechnicalLabel(), false);
                 p2Service.setProfileKey(profKey);
-                IProgressMonitor subMonitor = SubMonitor.convert(monitor);
                 Project localProject = getRepositoryContext().getProject();
-                boolean doUpgrade = p2Service.checkProjectCompatibility(subMonitor, localProject);
-                int adaptResult = p2Service.adaptFeaturesForProject(subMonitor, project);
+                boolean doUpgrade = p2Service.checkProjectCompatibility(monitor, localProject);
+                int adaptResult = p2Service.adaptFeaturesForProject(monitor, project);
                 if (IStudioLiteP2Service.RESULT_DONE == adaptResult) {
                     // when switch product,need to set --disableLoginDialog to avoid pop up logindialog
                     EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand(

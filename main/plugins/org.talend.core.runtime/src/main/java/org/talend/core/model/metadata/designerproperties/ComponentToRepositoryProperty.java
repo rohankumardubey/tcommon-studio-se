@@ -664,6 +664,26 @@ public class ComponentToRepositoryProperty {
                 connection.setAdditionalParams(value);
             }
         }
+        if ("USE_STRING_PROPERTIES".equals(param.getRepositoryValue())) {
+            String value = getParameterValue(connection, node, param);
+            if (value != null) {
+                connection.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_STRINGPARA, value);
+            }
+        }
+        if ("DRIVER_VERSION".equals(param.getRepositoryValue())) {
+            String value = getParameterValue(connection, node, param);
+            if (value != null) {
+                connection.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_DRIVER, value);
+            }
+        }
+        if ("ENTRY_PROPERTIES".equals(param.getRepositoryValue())) {
+            Object value = param.getValue();
+            if (value instanceof List) {
+                List<Map<String, Object>> entryProperties = (List<Map<String, Object>>) value;
+                connection.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_PARATABLE,
+                        ConvertionHelper.getEntryPropertiesString(entryProperties));
+            }
+        }
         if ("FILE".equals(param.getRepositoryValue())) { //$NON-NLS-1$
             String value = getParameterValue(connection, node, param);
             if (value != null) {

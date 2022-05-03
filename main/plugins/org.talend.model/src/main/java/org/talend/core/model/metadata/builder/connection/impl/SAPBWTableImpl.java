@@ -26,6 +26,7 @@ import org.talend.core.model.metadata.builder.connection.SAPBWTable;
  *   <li>{@link org.talend.core.model.metadata.builder.connection.impl.SAPBWTableImpl#getSourceSystemName <em>Source System Name</em>}</li>
  *   <li>{@link org.talend.core.model.metadata.builder.connection.impl.SAPBWTableImpl#getInfoAreaName <em>Info Area Name</em>}</li>
  *   <li>{@link org.talend.core.model.metadata.builder.connection.impl.SAPBWTableImpl#getInnerIOType <em>Inner IO Type</em>}</li>
+ *   <li>{@link org.talend.core.model.metadata.builder.connection.impl.SAPBWTableImpl#getCategory <em>Category</em>}</li>
  * </ul>
  *
  * @generated
@@ -131,6 +132,26 @@ public class SAPBWTableImpl extends SAPTableImpl implements SAPBWTable {
      * @ordered
      */
     protected String innerIOType = INNER_IO_TYPE_EDEFAULT;
+
+    /**
+     * The default value of the '{@link #getCategory() <em>Category</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getCategory()
+     * @generated
+     * @ordered
+     */
+    protected static final String CATEGORY_EDEFAULT = null;
+
+    /**
+     * The cached value of the '{@link #getCategory() <em>Category</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getCategory()
+     * @generated
+     * @ordered
+     */
+    protected String category = CATEGORY_EDEFAULT;
 
     /**
      * <!-- begin-user-doc -->
@@ -265,6 +286,28 @@ public class SAPBWTableImpl extends SAPTableImpl implements SAPBWTable {
      * <!-- end-user-doc -->
      * @generated
      */
+    public String getCategory() {
+        return category;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public void setCategory(String newCategory) {
+        String oldCategory = category;
+        category = newCategory;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, ConnectionPackage.SAPBW_TABLE__CATEGORY, oldCategory,
+                    category));
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     @Override
     public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
@@ -278,6 +321,8 @@ public class SAPBWTableImpl extends SAPTableImpl implements SAPBWTable {
             return getInfoAreaName();
         case ConnectionPackage.SAPBW_TABLE__INNER_IO_TYPE:
             return getInnerIOType();
+        case ConnectionPackage.SAPBW_TABLE__CATEGORY:
+            return getCategory();
         }
         return super.eGet(featureID, resolve, coreType);
     }
@@ -304,6 +349,9 @@ public class SAPBWTableImpl extends SAPTableImpl implements SAPBWTable {
             return;
         case ConnectionPackage.SAPBW_TABLE__INNER_IO_TYPE:
             setInnerIOType((String) newValue);
+            return;
+        case ConnectionPackage.SAPBW_TABLE__CATEGORY:
+            setCategory((String) newValue);
             return;
         }
         super.eSet(featureID, newValue);
@@ -332,6 +380,9 @@ public class SAPBWTableImpl extends SAPTableImpl implements SAPBWTable {
         case ConnectionPackage.SAPBW_TABLE__INNER_IO_TYPE:
             setInnerIOType(INNER_IO_TYPE_EDEFAULT);
             return;
+        case ConnectionPackage.SAPBW_TABLE__CATEGORY:
+            setCategory(CATEGORY_EDEFAULT);
+            return;
         }
         super.eUnset(featureID);
     }
@@ -355,6 +406,8 @@ public class SAPBWTableImpl extends SAPTableImpl implements SAPBWTable {
             return INFO_AREA_NAME_EDEFAULT == null ? infoAreaName != null : !INFO_AREA_NAME_EDEFAULT.equals(infoAreaName);
         case ConnectionPackage.SAPBW_TABLE__INNER_IO_TYPE:
             return INNER_IO_TYPE_EDEFAULT == null ? innerIOType != null : !INNER_IO_TYPE_EDEFAULT.equals(innerIOType);
+        case ConnectionPackage.SAPBW_TABLE__CATEGORY:
+            return CATEGORY_EDEFAULT == null ? category != null : !CATEGORY_EDEFAULT.equals(category);
         }
         return super.eIsSet(featureID);
     }
@@ -380,6 +433,8 @@ public class SAPBWTableImpl extends SAPTableImpl implements SAPBWTable {
         result.append(infoAreaName);
         result.append(", innerIOType: ");
         result.append(innerIOType);
+        result.append(", category: ");
+        result.append(category);
         result.append(')');
         return result.toString();
     }
