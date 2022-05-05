@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.configurator.common.connections.TokenMode;
 import org.talend.core.pendo.PendoTrackSender;
 import org.talend.core.runtime.i18n.Messages;
 import org.talend.repository.model.RepositoryConstants;
@@ -63,6 +64,8 @@ public class ConnectionBean implements Cloneable {
     private static final String STORECREDENTIALS = "storeCredentials"; //$NON-NLS-1$
 
     private String credentials = ""; //$NON-NLS-1$
+    
+    private TokenMode connectionToken;
 
     /**
      * DOC smallet ConnectionBean constructor comment.
@@ -453,4 +456,16 @@ public class ConnectionBean implements Cloneable {
     public void setCredentials(String credentials) {
         this.credentials = credentials;
     }
+
+    
+    public TokenMode getConnectionToken() {
+        return connectionToken;
+    }
+
+    
+    public void setConnectionToken(TokenMode connectionToken) {
+        this.connectionToken = connectionToken;
+    }
+    
+    
 }
