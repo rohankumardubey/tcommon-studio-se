@@ -1,9 +1,21 @@
 package org.talend.core.utils;
 
+import java.util.List;
+import java.util.Map;
+
 import org.talend.commons.utils.Version;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.process.IProcess;
+import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.repository.model.ProjectRepositoryNode;
+import org.talend.core.repository.services.IGitInfoService;
+import org.talend.core.services.IGITProviderService;
 import org.talend.core.ui.branding.IBrandingService;
+import org.talend.repository.model.IProxyRepositoryFactory;
+import org.talend.repository.model.IRepositoryNode;
+import org.talend.repository.model.IRepositoryService;
 
 //============================================================================
 //
@@ -49,5 +61,35 @@ public class TrackerUtil {
 	
 	public static String getRedshiftTracker() {
 		return "--Talend -v " + getVersion();
+	}
+	
+	private static void addRepositoryInfo(IProcess process) throws Exception {
+		GlobalServiceRegister serviceRegister = GlobalServiceRegister.getDefault();
+		
+        IRepositoryNode node = ProjectRepositoryNode.getInstance().getRootRepositoryNode(
+                ERepositoryObjectType.GIT_ROOT);
+        System.out.println("node:"+node);
+        
+        
+        process.getPropertyValue(getAWSTracker());
+		IRepositoryService service = (IRepositoryService) GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
+        IProxyRepositoryFactory factory = service.getProxyRepositoryFactory();
+        List<IRepositoryViewObject> list = factory.getAll(ERepositoryObjectType.GIT_ROOT, false, true);
+        System.out.println("IRepositoryViewObject list:");
+        list.forEach(System.out::println);
+        
+        
+        
+		System.out.println("serviceRegister:"+serviceRegister);
+        IGITProviderService gitProviderService = null;
+        if (serviceRegister.isServiceRegistered(IGITProviderService.class)) {
+            gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault().getService(IGITProviderService.class);
+            System.out.println("gitProviderService:"+gitProviderService);
+        }
+        IGitInfoService gitInfoService = serviceRegister.getService(IGitInfoService.class);
+        Map<String, String> gitInfo = gitInfoService.getGitInfo(node.getObject().getProperty());
+        
+        
+        
 	}
 }

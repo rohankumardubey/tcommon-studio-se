@@ -137,3 +137,6 @@ Bundle-ClassPath: .,
  lib/delight-rhino-sandbox-0.0.15.jar,
  lib/rhino-1.7.13.jar
 Eclipse-RegisterBuddy: org.talend.testutils
+Import-Package: org.talend.core.repository.model,
+ org.talend.core.repository.services,
+ org.talend.core.services
