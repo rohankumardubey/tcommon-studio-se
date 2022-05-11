@@ -665,7 +665,7 @@ public class DatabaseForm extends AbstractForm {
             } else if (isDBTypeSelected(EDatabaseConnTemplate.IMPALA)) {
                 initImpalaSettings();
                 initImpalaInfo();
-            } else if (isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT)) {
+            } else if (isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT) || isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT_SSO)) {
                 initRedshiftAdditionalParamSetting();
             } else if (isHiveDBConnSelected()) {
                 // Changed by Marvin Wang on Oct. 15, 2012 for but TDI-23235.
@@ -4182,7 +4182,8 @@ public class DatabaseForm extends AbstractForm {
     }
 
     private void setupDefaultRedshiftAdditionalParamSetting() {
-        boolean isRedshiftSelected = isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT);
+        boolean isRedshiftSelected = isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT)
+                || isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT_SSO);
         if (isRedshiftSelected) {
             redshiftDriverCombo.setText(ERedshiftDriver.DRIVER_V2.getDisplayName());
         }
@@ -4558,6 +4559,25 @@ public class DatabaseForm extends AbstractForm {
                 }
             }
             urlConnectionStringText.setText(urlStr);
+            if (isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT) || isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT_SSO)) {
+                if (ERedshiftDriver.DRIVER_V2.getDisplayName().equals(redshiftDriverCombo.getText())
+                        && !useStringAdditionParam.getSelection()) {
+                    Properties info = new Properties();
+                    List<Map<String, Object>> entryProperties = additionParamTable.getPropertiesTableModel().getBeansList();
+                    for (Map<String, Object> entryMap : entryProperties) {
+                        String key = TalendQuoteUtils.removeQuotes(String.valueOf(entryMap.get("KEY")));
+                        if (StringUtils.isNotBlank(key)) {
+                            String value = TalendQuoteUtils.removeQuotes(String.valueOf(entryMap.get("VALUE")));
+                            ConvertionHelper.updateAdditionParam(sgb, info, key, value);
+                        }
+                    }
+                    managerConnection.setAdditionalParams(sgb.toString());
+                }
+                String driverVName = ERedshiftDriver.getEnameByDisplayName(redshiftDriverCombo.getText());
+                if (StringUtils.isNotBlank(driverVName)) {
+                    managerConnection.setDbVersionString(driverVName);
+                }
+            }
         } else {
             String versionStr = dbVersionCombo.getText();
             if (isHiveDBConnSelected()) {
@@ -4613,7 +4633,7 @@ public class DatabaseForm extends AbstractForm {
             }
 
             String dbVersionString = enableDbVersion() ? versionStr : null;
-            if (isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT)) {
+            if (isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT) || isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT_SSO)) {
                 if (ERedshiftDriver.DRIVER_V2.getDisplayName().equals(redshiftDriverCombo.getText())
                         && !useStringAdditionParam.getSelection()) {
                     Properties info = new Properties();
@@ -7401,7 +7421,7 @@ public class DatabaseForm extends AbstractForm {
             return false;
         }
         EDatabaseConnTemplate template = EDatabaseConnTemplate.indexOfTemplate(getConnectionDBType());
-        return template != null && template == EDatabaseConnTemplate.REDSHIFT;
+        return template != null && (template == EDatabaseConnTemplate.REDSHIFT || template == EDatabaseConnTemplate.REDSHIFT_SSO);
     }
 
     /**

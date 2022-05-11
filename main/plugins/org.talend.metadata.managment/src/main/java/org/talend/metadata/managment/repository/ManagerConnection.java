@@ -466,6 +466,10 @@ public class ManagerConnection {
         this.dbVersionString = dbVersion;
     }
 
+    public void setAdditionalParams(String additionalParams) {
+        this.additionalParams = additionalParams;
+    }
+
     /**
      * Sets the isValide.
      *
