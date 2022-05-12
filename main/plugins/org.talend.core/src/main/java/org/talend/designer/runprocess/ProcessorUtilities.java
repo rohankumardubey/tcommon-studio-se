@@ -829,7 +829,7 @@ public class ProcessorUtilities {
             // TDI-36930, just after compile, need check the compile errors first.
             // only check current build
             if (isMainJob) {
-                CorePlugin.getDefault().getRunProcessService().checkLastGenerationHasCompilationError(true);
+                //CorePlugin.getDefault().getRunProcessService().checkLastGenerationHasCompilationError(true);
             }
         }
 

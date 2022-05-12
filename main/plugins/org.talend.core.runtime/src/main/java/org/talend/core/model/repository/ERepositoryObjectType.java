@@ -554,6 +554,11 @@ public class ERepositoryObjectType extends DynaEnum<ERepositoryObjectType> {
     public final static ERepositoryObjectType PROCESS_ROUTELET = ERepositoryObjectType.valueOf("ROUTELET"); //$NON-NLS-1$
 
     /**
+     * <font color="red">This value may be <b>null</b> in some licenses, <b>should add NPE check</b></font>
+     */
+    public final static ERepositoryObjectType PROCESS_ROUTE_CAMELK = ERepositoryObjectType.valueOf("ROUTE_CAMELK"); //$NON-NLS-1$
+
+    /**
      * <b>Attention!!!</b><br/>
      * 1. This enum is <b>always null</b> since it is never configure the extention point
      * "org.talend.core.repository.repository_node_provider" in the plugin.xml used in
