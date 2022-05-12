@@ -1045,8 +1045,13 @@ public class RepositoryToComponentProperty {
             return Boolean.valueOf(connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_STRINGPARA));
         }
         if (value.equals("ENTRY_PROPERTIES")) {
-            return ConvertionHelper
-                    .getEntryProperties(connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_PARATABLE));
+            List<Map<String, Object>> tableProperties = new ArrayList<Map<String, Object>>();
+            String propertiesInfo = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_PARATABLE);
+            if (org.apache.commons.lang.StringUtils.isNotBlank(propertiesInfo)) {
+                tableProperties = ConvertionHelper
+                        .getEntryProperties(connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_PARATABLE));
+            }
+            return tableProperties;
         }
         if (value.equals("DRIVER_VERSION")) {
             String driverVersion = connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_DRIVER);

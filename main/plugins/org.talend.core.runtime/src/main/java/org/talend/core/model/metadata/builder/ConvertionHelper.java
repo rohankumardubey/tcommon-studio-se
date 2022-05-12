@@ -273,7 +273,8 @@ public final class ConvertionHelper {
 
     private static String getDriverVersionString(DatabaseConnection dbConn) {
         String dbVersionString = dbConn.getDbVersionString();
-        if (EDatabaseTypeName.REDSHIFT.getDisplayName().equals(dbConn.getDatabaseType())) {
+        if (EDatabaseTypeName.REDSHIFT.getDisplayName().equals(dbConn.getDatabaseType())
+                || EDatabaseTypeName.REDSHIFT_SSO.getDisplayName().equals(dbConn.getDatabaseType())) {
             EMap<String, String> parameters = dbConn.getParameters();
             if (parameters != null) {
                 String driverString = parameters.get(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_DRIVER);
@@ -727,7 +728,8 @@ public final class ConvertionHelper {
                             origValueConn.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_SSL_KEY_STORE_PASSWORD), false));
                 }
             }
-        } else if (EDatabaseTypeName.REDSHIFT.getDisplayName().equals(origValueConn.getDatabaseType())) {
+        } else if (EDatabaseTypeName.REDSHIFT.getDisplayName().equals(origValueConn.getDatabaseType())
+                || EDatabaseTypeName.REDSHIFT_SSO.getDisplayName().equals(origValueConn.getDatabaseType())) {
             Properties info = new Properties();
             EMap<String, String> parameters = origValueConn.getParameters();
             if (parameters != null
