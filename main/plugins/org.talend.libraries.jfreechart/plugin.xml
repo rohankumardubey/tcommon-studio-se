@@ -6,14 +6,14 @@
               context="plugin:org.talend.libraries.jfreechart"
               language="java"
               message="Needed for jfreechart plugin"
-              name="jcommon-1.0.15.jar" mvn_uri="mvn:jfree/jcommon/1.0.15" 
+              name="jcommon-1.0.15.jar" mvn_uri="mvn:org.talend.libraries/jcommon-1.0.15/6.0.0" 
               required="true">
         </libraryNeeded>
         <libraryNeeded
               context="plugin:org.talend.libraries.jfreechart"
               language="java"
               message="Needed for jfreechart plugin"
-              name="jfreechart-1.0.12.jar" mvn_uri="mvn:jfree/jfreechart/1.0.12" 
+              name="jfreechart-1.0.12.jar" mvn_uri="mvn:org.talend.libraries/jfreechart-1.0.12/6.0.0" 
               required="true">
         </libraryNeeded>
         <libraryNeeded
