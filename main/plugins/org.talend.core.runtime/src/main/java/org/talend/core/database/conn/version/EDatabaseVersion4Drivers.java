@@ -71,9 +71,10 @@ public enum EDatabaseVersion4Drivers {
     INFORMIX(new DbVersion4Drivers(EDatabaseTypeName.INFORMIX, "ifxjdbc.jar")), //$NON-NLS-1$
 
     SAS_9_1(new DbVersion4Drivers(EDatabaseTypeName.SAS, "SAS 9.1", "SAS_9.1", new String[] { "sas.core.jar", //$NON-NLS-1$
-            "sas.intrnet.javatools.jar", "sas.svc.connection.jar", "org.apache.log4j_1.2.15.v201012070815.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
+            "sas.intrnet.javatools.jar", "sas.svc.connection.jar", "reload4j-1.2.19.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
     SAS_9_2(new DbVersion4Drivers(EDatabaseTypeName.SAS,
-            "SAS 9.2", "SAS_9.2", new String[] { "sas.core.jar", "sas.security.sspi.jar", "sas.svc.connection.jar", "org.apache.log4j_1.2.15.v201012070815.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
+            "SAS 9.2", "SAS_9.2", //$NON-NLS-1$ //$NON-NLS-2$
+            new String[] { "sas.core.jar", "sas.security.sspi.jar", "sas.svc.connection.jar", "reload4j-1.2.19jar" })),
     SAPHana(new DbVersion4Drivers(EDatabaseTypeName.SAPHana, "HDB 1.0", "HDB_1_0", "ngdbc.jar")), //$NON-NLS-1$
     // MYSQL, add for 9594
     MYSQL_8(new DbVersion4Drivers(EDatabaseTypeName.MYSQL, "MySQL 8", "MYSQL_8", "mysql-connector-java-8.0.18.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
