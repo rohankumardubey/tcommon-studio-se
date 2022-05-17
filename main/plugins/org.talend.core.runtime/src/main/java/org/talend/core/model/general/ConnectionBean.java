@@ -18,10 +18,10 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.configurator.common.connections.TokenMode;
 import org.talend.core.pendo.PendoTrackSender;
 import org.talend.core.runtime.i18n.Messages;
 import org.talend.repository.model.RepositoryConstants;
+import org.talend.signon.util.TokenMode;
 import org.talend.utils.json.JSONException;
 import org.talend.utils.json.JSONObject;
 
