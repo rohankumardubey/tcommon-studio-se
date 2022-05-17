@@ -46,7 +46,7 @@ public interface ITaCoKitService {
 
     boolean isTaCoKitType(Object repoType);
 
-    Map<String, String> getParameterSuggestionValues(Object parameter, int rowNumber);
+    boolean isValueSelectionParameter(Object parameter);
 
     public static ITaCoKitService getInstance() {
         BundleContext bc = FrameworkUtil.getBundle(ITaCoKitService.class).getBundleContext();
