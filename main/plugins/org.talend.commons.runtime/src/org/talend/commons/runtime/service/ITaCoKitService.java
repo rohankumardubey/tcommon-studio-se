@@ -46,6 +46,8 @@ public interface ITaCoKitService {
 
     boolean isTaCoKitType(Object repoType);
 
+    boolean isValueSelectionParameter(Object parameter);
+
     public static ITaCoKitService getInstance() {
         BundleContext bc = FrameworkUtil.getBundle(ITaCoKitService.class).getBundleContext();
         Collection<ServiceReference<ITaCoKitService>> tacokitServices = Collections.emptyList();
