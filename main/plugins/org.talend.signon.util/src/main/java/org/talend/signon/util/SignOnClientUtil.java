@@ -83,7 +83,7 @@ public class SignOnClientUtil {
         return signClientFolder;
     }
 
-    public void startSignOnClient(SignOnEventListener listener) throws Exception {
+    private void startSignOnClient(SignOnEventListener listener) throws Exception {
         if (signonClientInvoker != null) {
             signonClientInvoker.stop();
         }

@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.pendo.PendoTrackSender;
 import org.talend.core.runtime.i18n.Messages;
@@ -64,9 +66,10 @@ public class ConnectionBean implements Cloneable {
     private static final String STORECREDENTIALS = "storeCredentials"; //$NON-NLS-1$
 
     private String credentials = ""; //$NON-NLS-1$
-    
-    private TokenMode connectionToken;
 
+    public static final String CLOUD_TOKEN_ID ="cloud_token"; //$NON-NLS-1$
+    
+    public static final String REPOSITORY_CLOUD_CUSTOM_ID = "cloud_custom"; //$NON-NLS-1$
     /**
      * DOC smallet ConnectionBean constructor comment.
      */
@@ -91,6 +94,28 @@ public class ConnectionBean implements Cloneable {
         newConnection.setRepositoryId(RepositoryConstants.REPOSITORY_REMOTE_ID);
         newConnection.setPassword(""); //$NON-NLS-1$
         return newConnection;
+    }
+    
+    public static ConnectionBean getDefaultCloudConnectionBean(TokenMode token) {
+        ConnectionBean newConnection = new ConnectionBean();
+        newConnection.setName(Messages.getString("ConnectionBean.Cloud.name")); //$NON-NLS-1$
+        newConnection.setDescription(Messages.getString("ConnectionBean.CloudConnection.description")); //$NON-NLS-1$
+        newConnection.setRepositoryId(REPOSITORY_CLOUD_CUSTOM_ID);// TODO --KK
+        newConnection.setConnectionToken(token);
+        newConnection.setUser(token.getTokenUser());
+        newConnection.setToken(true);
+        newConnection.setStoreCredentials(true);
+        newConnection.setComplete(true);
+        newConnection.setWorkSpace(getRecentWorkSpace());
+        Map<String, String> connFields = new HashMap<String, String>();
+        connFields.put(RepositoryConstants.REPOSITORY_URL, token.getAdminURL());
+        newConnection.setDynamicFields(connFields);
+        return newConnection;
+    }
+    
+    protected static String getRecentWorkSpace() {
+        String filePath = new Path(Platform.getInstanceLocation().getURL().getPath()).toFile().getPath();
+        return filePath;
     }
 
     /**
@@ -187,11 +212,16 @@ public class ConnectionBean implements Cloneable {
      */
     public String getPassword() {
         try {
+            
             if (conDetails.has(PASSWORD)) {
                 if (isStoreCredentials() && credentials != null) {
                     return this.credentials;
                 }
                 return conDetails.getString(PASSWORD);
+            }  else if (conDetails.has(CLOUD_TOKEN_ID)){ 
+                JSONObject object = conDetails.getJSONObject(CLOUD_TOKEN_ID);
+                TokenMode token = TokenMode.parseFromJson(object.toString());
+                return token.getAccessToken();
             }
         } catch (JSONException e) {
             ExceptionHandler.process(e);
@@ -219,6 +249,12 @@ public class ConnectionBean implements Cloneable {
      */
     public String getUser() {
         try {
+            if (conDetails.has(CLOUD_TOKEN_ID)){ 
+                JSONObject object = conDetails.getJSONObject(CLOUD_TOKEN_ID);
+                TokenMode token = TokenMode.parseFromJson(object.toString());
+                return token.getTokenUser();
+            }
+            
             if (conDetails.has(USER)) {
                 String user = conDetails.getString(USER);
                 if (isToken()) {
@@ -229,7 +265,7 @@ public class ConnectionBean implements Cloneable {
                     }
                 }
                 return user;
-            }
+            } 
         } catch (JSONException e) {
             ExceptionHandler.process(e);
         }
@@ -459,13 +495,24 @@ public class ConnectionBean implements Cloneable {
 
     
     public TokenMode getConnectionToken() {
-        return connectionToken;
+        try {
+            if (conDetails.has(CLOUD_TOKEN_ID)) {
+                JSONObject object = conDetails.getJSONObject(CLOUD_TOKEN_ID);
+                return TokenMode.parseFromJson(object.toString());
+            }
+        } catch (JSONException e) {
+            //
+        }
+        return null;
     }
 
     
     public void setConnectionToken(TokenMode connectionToken) {
-        this.connectionToken = connectionToken;
+        try {
+            conDetails.put(CLOUD_TOKEN_ID, TokenMode.writeToJson(connectionToken));
+        } catch (JSONException e) {
+            // do nothing
+        }
     }
-    
     
 }
