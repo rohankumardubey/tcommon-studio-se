@@ -92,6 +92,12 @@ public class PromptDialog extends SelectionDialog {
 
     private Composite child;
 
+    public PromptDialog(Shell parentShell, IContext context) {
+        super(parentShell);
+        initDialog(context, canCancel, Messages.getString("ContextSetsSelectionDialog.Messages")); //$NON-NLS-1$
+        initSets();
+    }
+
     public PromptDialog(Shell parentShell, ContextItem contextItem) {
         super(parentShell);
         initDialog(contextItem, canCancel, Messages.getString("ContextSetsSelectionDialog.Messages")); //$NON-NLS-1$
@@ -140,6 +146,8 @@ public class PromptDialog extends SelectionDialog {
                     }
                     contextSetsList.add(name);
                 }
+            } else if (source instanceof IContext) {
+                currentContext = (IContext) source;
             }
         }
     }
@@ -200,21 +208,21 @@ public class PromptDialog extends SelectionDialog {
         }
     }
 
-    private Control createSelectionArea(Composite parent) {
-        Composite inner = new Composite(parent, SWT.NONE);
-        GridLayout gridLayout = new GridLayout();
-        gridLayout.marginHeight = 0;
-        inner.setLayout(gridLayout);
-        GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-        gridData.minimumWidth = 220;
-        gridData.minimumHeight = 100;
-        inner.setLayoutData(gridData);
+    private void createSelectionArea(Composite parent) {
+        if (source != null && (source instanceof ContextItem || source instanceof List)) {
+            Composite inner = new Composite(parent, SWT.NONE);
+            GridLayout gridLayout = new GridLayout();
+            gridLayout.marginHeight = 0;
+            inner.setLayout(gridLayout);
+            GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+            gridData.minimumWidth = 220;
+            gridData.minimumHeight = 100;
+            inner.setLayoutData(gridData);
 
-        contextCombo = new LabelledCombo(inner, Messages.getString("PromptDialog.context.environments.name"), null, //$NON-NLS-1$
-                contextSetsList, true);
-        contextCombo.setText(defalutContext + DEFAULT_FLAG);
-
-        return inner;
+            contextCombo = new LabelledCombo(inner, Messages.getString("PromptDialog.context.environments.name"), null, //$NON-NLS-1$
+                    contextSetsList, true);
+            contextCombo.setText(defalutContext + DEFAULT_FLAG);
+        }
     }
 
     private void createContextArea(IContext currentContext, Composite parent) {
@@ -436,21 +444,23 @@ public class PromptDialog extends SelectionDialog {
     }
 
     protected void addFieldsListeners() {
-        contextCombo.addModifyListener(new ModifyListener() {
+        if (contextCombo != null) {
+            contextCombo.addModifyListener(new ModifyListener() {
 
-            @Override
-            public void modifyText(final ModifyEvent e) {
-                selectedContext = contextCombo.getItem(contextCombo.getSelectionIndex());
-                contextComp.dispose();
-                contextComp = new Composite(child, SWT.NONE);
-                contextComp.setLayout(new GridLayout(1, false));
-                contextComp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-                createContextArea(getCloneContext(), contextComp);
-                child.layout();
-                child.getParent().layout();
-                contextComp.layout();
-            }
-        });
+                @Override
+                public void modifyText(final ModifyEvent e) {
+                    selectedContext = contextCombo.getItem(contextCombo.getSelectionIndex());
+                    contextComp.dispose();
+                    contextComp = new Composite(child, SWT.NONE);
+                    contextComp.setLayout(new GridLayout(1, false));
+                    contextComp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+                    createContextArea(getCloneContext(), contextComp);
+                    child.layout();
+                    child.getParent().layout();
+                    contextComp.layout();
+                }
+            });
+        }
     }
 
     @Override
@@ -485,7 +495,11 @@ public class PromptDialog extends SelectionDialog {
         Point dialogSize = new Point(X_POSITION, Math.min((height * nbParams) + Y_POSITION, 400));
         setSize(newShell, dialogSize);
 
-        newShell.setText(Messages.getString("PromptDialog.choose.title")); //$NON-NLS-1$
+        if (source != null && source instanceof IContext) {
+            newShell.setText(Messages.getString("PromptDialog.title", currentContext.getName())); //$NON-NLS-1$
+        } else {
+            newShell.setText(Messages.getString("PromptDialog.choose.title")); //$NON-NLS-1$
+        }
     }
 
     public IContext getCloneContext() {
