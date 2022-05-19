@@ -146,13 +146,13 @@ public class SignOnMonitor implements Runnable {
 
     private void fireLoginStop() {
         for (SignOnEventListener l : listenerList) {
-            l.loginStop(clientID, code);
+            l.loginStop(code);
         }
     }
 
     private void fireLoginStart() {
         for (SignOnEventListener l : listenerList) {
-            l.loginStart(clientID);
+            l.loginStart();
         }
     }
 
