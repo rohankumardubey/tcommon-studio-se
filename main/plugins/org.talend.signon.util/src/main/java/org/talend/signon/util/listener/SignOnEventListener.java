@@ -14,8 +14,8 @@ package org.talend.signon.util.listener;
 
 
 public interface SignOnEventListener {
-    public void loginStart(String clientID);
-    public void loginStop(String clientID, String authCode);
+    public void loginStart();
+    public void loginStop(String authCode);
     public void loginFailed(Exception ex);
     public String getCodeChallenge();
 }
