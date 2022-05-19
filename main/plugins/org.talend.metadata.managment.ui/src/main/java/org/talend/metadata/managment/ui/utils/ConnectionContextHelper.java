@@ -2225,4 +2225,38 @@ public final class ConnectionContextHelper {
         }
         return continueLaunch;
     }
+
+    public static boolean promptConfirmLauch(Shell shell, IContext context) {
+        boolean continueLaunch = true;
+
+        int nbValues = 0;
+        Assert.isNotNull(context);
+        // Prompt for context values ?
+        for (IContextParameter parameter : context.getContextParameterList()) {
+            if (parameter.isPromptNeeded()) {
+                nbValues++;
+            }
+        }
+        if (nbValues > 0) {
+            IContext contextCopy = context.clone();
+            PromptDialog promptDialog = new PromptDialog(shell, contextCopy);
+            if (promptDialog.open() == PromptDialog.OK) {
+                for (IContextParameter param : context.getContextParameterList()) {
+                    boolean found = false;
+                    IContextParameter paramCopy = null;
+                    for (int i = 0; i < contextCopy.getContextParameterList().size() & !found; i++) {
+                        paramCopy = contextCopy.getContextParameterList().get(i);
+                        if (param.getName().equals(paramCopy.getName())) {
+                            // param.setValueList(paramCopy.getValueList());
+                            param.setInternalValue(paramCopy.getValue());
+                            found = true;
+                        }
+                    }
+                }
+            } else {
+                continueLaunch = false;
+            }
+        }
+        return continueLaunch;
+    }
 }
