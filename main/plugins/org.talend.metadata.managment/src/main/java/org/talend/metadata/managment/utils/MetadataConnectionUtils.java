@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
@@ -1420,6 +1421,10 @@ public class MetadataConnectionUtils {
     }
 
     public static Connection prepareConection(Connection connection) {
+        return prepareConection(connection, false);
+    }
+
+    public static Connection prepareConection(Connection connection, boolean isDefaultContext) {
         // TDQ-19889 msjian: check whether context confirmation needed popup,
         // Enabling the prompt to context variables
         if (!Platform.isRunning() || !connection.isContextMode()) {
@@ -1438,14 +1443,26 @@ public class MetadataConnectionUtils {
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IMetadataManagmentUiService.class)) {
                 IMetadataManagmentUiService mmUIService = GlobalServiceRegister.getDefault()
                         .getService(IMetadataManagmentUiService.class);
-                promptConfirmLauch = mmUIService.promptConfirmLauch(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
-                        copyConnection , contextItem);
+                Shell shell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
+                if (isDefaultContext) {
+                    promptConfirmLauch = mmUIService.promptConfirmLauch(shell, jobContext);
+                } else {
+                    promptConfirmLauch = mmUIService.promptConfirmLauch(shell, copyConnection, contextItem);
+                }
             }
             if (!promptConfirmLauch) {
                 return null;
+            } else {
+                if (isDefaultContext) {
+                    // save the input prompt context values to cache
+                    for (IContextParameter param : jobContext.getContextParameterList()) {
+                        JavaSqlFactory.savePromptConVars2Cache(connection, param);
+                    }
+                    // set the input values to connection
+                    JavaSqlFactory.setPromptContextValues(copyConnection);
+                }
             }
         }
-
         JavaSqlFactory.haveSetPromptContextVars = true;
         return copyConnection;
     }
