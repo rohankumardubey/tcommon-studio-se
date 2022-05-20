@@ -55,6 +55,9 @@ public class SignOnClientInvoker implements Runnable {
         executeWatchdog = new ExecuteWatchdog(600000);
         executor.setWatchdog(executeWatchdog);
         try {
+            if (!execFile.canExecute()) {
+                execFile.setExecutable(true);
+            }
             executor.setWorkingDirectory(execFile.getParentFile());
             int exitValue = executor.execute(cmdLine);
         } catch (Exception e) {

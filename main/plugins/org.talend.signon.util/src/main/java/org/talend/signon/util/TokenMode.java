@@ -46,7 +46,7 @@ public class TokenMode {
 
     private String refreshToken;
 
-    private String expiresIn;
+    private long expiresIn;
 
     private String idToken;
 
@@ -55,19 +55,6 @@ public class TokenMode {
     private String tokenType;
 
     private long lastRefreshTime = System.currentTimeMillis();
-
-    public TokenMode() {
-
-    }
-
-    public TokenMode(String accessToken, String expiresIn, String idToken, String refreshToken, String scope, String tokenType) {
-        this.accessToken = accessToken;
-        this.expiresIn = expiresIn;
-        this.idToken = idToken;
-        this.refreshToken = idToken;
-        this.scope = scope;
-        this.tokenType = tokenType;
-    }
 
     public String getClientId() {
         return clientId;
@@ -109,11 +96,11 @@ public class TokenMode {
         this.refreshToken = refreshToken;
     }
 
-    public String getExpiresIn() {
+    public long getExpiresIn() {
         return expiresIn;
     }
 
-    public void setExpiresIn(String expiresIn) {
+    public void setExpiresIn(long expiresIn) {
         this.expiresIn = expiresIn;
     }
 
@@ -163,12 +150,14 @@ public class TokenMode {
         JSONObject jsonObj = new JSONObject(jsonString);
         TokenMode token = new TokenMode();
         token.setAccessToken(jsonObj.getString(TokenMode.ACCESS_TOKEN_KEY));
-        token.setExpiresIn(jsonObj.getString(TokenMode.EXPIRES_IN_KEY));
+        token.setExpiresIn(jsonObj.getLong(TokenMode.EXPIRES_IN_KEY));
         token.setIdToken(jsonObj.getString(TokenMode.ID_TOKEN_KEY));
         token.setRefreshToken(jsonObj.getString(TokenMode.REFRESH_TOKEN_KEY));
         token.setScope(jsonObj.getString(TokenMode.SCOPE_KEY));
         token.setTokenType(jsonObj.getString(TokenMode.TOKEN_TYPE_KEY));
-        token.setLastRefreshTime(jsonObj.getLong(TokenMode.LAST_REFRESH_TIME_KEY));
+        if (jsonObj.has(TokenMode.LAST_REFRESH_TIME_KEY)) {
+            token.setLastRefreshTime(jsonObj.getLong(TokenMode.LAST_REFRESH_TIME_KEY));
+        }
         if (jsonObj.has(TokenMode.ADMIN_URL_KEY)) {
             token.setAdminURL(jsonObj.getString(TokenMode.ADMIN_URL_KEY));
         }
