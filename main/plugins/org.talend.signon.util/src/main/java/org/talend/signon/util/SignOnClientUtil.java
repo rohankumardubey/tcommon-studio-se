@@ -116,7 +116,20 @@ public class SignOnClientUtil {
     }
     
     public void signOnCloud(SignOnEventListener listener) throws Exception{
-        SignOnClientUtil.getInstance().startSignOnClient(listener);
+        SignOnClientUtil.getInstance().startSignOnClient(listener);     
+    }
+    
+    public String getLoginURL(SignOnEventListener listener) {
+        return TMC_LOGIN_URL;
+    }
+    
+    public String getSignOnURL(String loginURL, String clientID, String codeChallenge, String state) {
+        StringBuffer urlSB = new StringBuffer();
+        urlSB.append(loginURL).append("?");
+        urlSB.append("client_id=").append(clientID).append("&");
+        urlSB.append("state=").append(state).append("&");
+        urlSB.append("code_challenge=").append(codeChallenge);
+        return urlSB.toString();
     }
     
     public static File getConfigurationFolder() {

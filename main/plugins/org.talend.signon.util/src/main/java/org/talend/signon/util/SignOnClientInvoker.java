@@ -67,16 +67,14 @@ public class SignOnClientInvoker implements Runnable {
     }
 
     private String getInvokeParameter(String clientID, String loginURL, int callbackPort) {
-        StringBuffer urlSB = new StringBuffer();
-        urlSB.append(STUDIO_LOGIN_URL_KEY).append("=");
-        urlSB.append(loginURL).append("?");
-        urlSB.append("client_id=").append(clientID).append("&");
-        urlSB.append("code_challenge=").append(this.codeChallenge);
-        
         StringBuffer stateSB = new StringBuffer();
         stateSB.append("c=").append(clientID).append("&");
         stateSB.append("p=").append(callbackPort);
-        urlSB.append("&").append("state=").append(Base64.getEncoder().encodeToString(stateSB.toString().getBytes()));
+        
+        StringBuffer urlSB = new StringBuffer();
+        urlSB.append(STUDIO_LOGIN_URL_KEY).append("=");
+        urlSB.append(SignOnClientUtil.getInstance().getSignOnURL(loginURL, clientID, codeChallenge, Base64.getEncoder().encodeToString(stateSB.toString().getBytes())));
+        
         return STUDIO_CALL_PREFIX + Base64.getEncoder().encodeToString(urlSB.toString().getBytes());
     }
 
