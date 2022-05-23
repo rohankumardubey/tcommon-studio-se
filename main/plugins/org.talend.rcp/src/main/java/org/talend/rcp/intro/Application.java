@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.rcp.intro;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -112,6 +113,8 @@ public class Application implements IApplication {
                     Boolean.TRUE.toString(), false);
             return IApplication.EXIT_RELAUNCH;
         }
+        // Must init desktop first for Mac OS 
+        Desktop.getDesktop();
 
         try {
             String vmArgs = System.getProperty(EclipseCommandLine.PROP_VMARGS);
