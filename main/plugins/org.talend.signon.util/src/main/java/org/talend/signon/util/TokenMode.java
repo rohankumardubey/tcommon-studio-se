@@ -17,7 +17,6 @@ import org.talend.utils.json.JSONException;
 import org.talend.utils.json.JSONObject;
 
 public class TokenMode {
-
     private static final String ACCESS_TOKEN_KEY = "access_token";
 
     private static final String EXPIRES_IN_KEY = "expires_in";
@@ -40,7 +39,7 @@ public class TokenMode {
 
     private String adminURL;
 
-    private String tokenUser = "SSO User";
+    private String tokenUser;
 
     private String accessToken;
 
