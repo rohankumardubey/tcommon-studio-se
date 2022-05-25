@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.signon.util;
 
-import org.apache.commons.codec.binary.StringUtils;
 import org.talend.utils.json.JSONException;
 import org.talend.utils.json.JSONObject;
 
@@ -29,17 +28,9 @@ public class TokenMode {
 
     private static final String TOKEN_TYPE_KEY = "token_type";
 
-    private static final String ADMIN_URL_KEY = "admin_url";
-
-    private static final String TOKEN_USER_KEY = "token_user";
-
     private static final String LAST_REFRESH_TIME_KEY = "last_refresh_time";
 
     private String clientId;
-
-    private String adminURL;
-
-    private String tokenUser;
 
     private String accessToken;
 
@@ -61,22 +52,6 @@ public class TokenMode {
 
     public void setClientId(String clientId) {
         this.clientId = clientId;
-    }
-
-    public String getAdminURL() {
-        return adminURL;
-    }
-
-    public void setAdminURL(String adminURL) {
-        this.adminURL = adminURL;
-    }
-
-    public String getTokenUser() {
-        return tokenUser;
-    }
-
-    public void setTokenUser(String tokenUser) {
-        this.tokenUser = tokenUser;
     }
 
     public String getAccessToken() {
@@ -135,16 +110,6 @@ public class TokenMode {
         this.lastRefreshTime = lastRefreshTime;
     }
 
-    public boolean isSameToken(TokenMode token) {
-        if (!StringUtils.equals(adminURL, token.getAdminURL())) {
-            return false;
-        }
-        if (!StringUtils.equals(tokenUser, token.getTokenUser())) {
-            return false;
-        }
-        return true;
-    }
-
     public static TokenMode parseFromJson(String jsonString) throws JSONException {
         JSONObject jsonObj = new JSONObject(jsonString);
         TokenMode token = new TokenMode();
@@ -157,12 +122,6 @@ public class TokenMode {
         if (jsonObj.has(TokenMode.LAST_REFRESH_TIME_KEY)) {
             token.setLastRefreshTime(jsonObj.getLong(TokenMode.LAST_REFRESH_TIME_KEY));
         }
-        if (jsonObj.has(TokenMode.ADMIN_URL_KEY)) {
-            token.setAdminURL(jsonObj.getString(TokenMode.ADMIN_URL_KEY));
-        }
-        if (jsonObj.has(TokenMode.TOKEN_USER_KEY)) {
-            token.setTokenUser(jsonObj.getString(TokenMode.TOKEN_USER_KEY));
-        }
         return token;
     }
 
@@ -174,7 +133,6 @@ public class TokenMode {
         object.put(TokenMode.REFRESH_TOKEN_KEY, token.getRefreshToken());
         object.put(TokenMode.SCOPE_KEY, token.getScope());
         object.put(TokenMode.TOKEN_TYPE_KEY, token.getTokenType());
-        object.put(TokenMode.TOKEN_USER_KEY, token.getTokenUser());
         object.put(TokenMode.LAST_REFRESH_TIME_KEY, token.getLastRefreshTime());
         return object;
     }

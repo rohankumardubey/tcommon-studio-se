@@ -61,8 +61,6 @@ public class ConnectionBean implements Cloneable {
 
     private static final String TOKEN = "token"; //$NON-NLS-1$
 
-    private static final String URL = "url"; //$NON-NLS-1$
-
     private static final String STORECREDENTIALS = "storeCredentials"; //$NON-NLS-1$
 
     private String credentials = ""; //$NON-NLS-1$
@@ -96,20 +94,15 @@ public class ConnectionBean implements Cloneable {
         return newConnection;
     }
     
-    public static ConnectionBean getDefaultCloudConnectionBean(TokenMode token) {
+    public static ConnectionBean getDefaultCloudConnectionBean() {
         ConnectionBean newConnection = new ConnectionBean();
         newConnection.setName(Messages.getString("ConnectionBean.Cloud.name")); //$NON-NLS-1$
         newConnection.setDescription(Messages.getString("ConnectionBean.CloudConnection.description")); //$NON-NLS-1$
         newConnection.setRepositoryId(REPOSITORY_CLOUD_CUSTOM_ID);// TODO --KK
-        newConnection.setConnectionToken(token);
-        newConnection.setUser(token.getTokenUser());
         newConnection.setToken(true);
         newConnection.setStoreCredentials(true);
         newConnection.setComplete(true);
         newConnection.setWorkSpace(getRecentWorkSpace());
-        Map<String, String> connFields = new HashMap<String, String>();
-        connFields.put(RepositoryConstants.REPOSITORY_URL, token.getAdminURL());
-        newConnection.setDynamicFields(connFields);
         return newConnection;
     }
     
@@ -248,12 +241,7 @@ public class ConnectionBean implements Cloneable {
      * @return the user
      */
     public String getUser() {
-        try {
-            if (conDetails.has(CLOUD_TOKEN_ID)){ 
-                String object = conDetails.getString(CLOUD_TOKEN_ID);
-                TokenMode token = TokenMode.parseFromJson(object);
-                return token.getTokenUser();
-            }         
+        try {       
             if (conDetails.has(USER)) {
                 String user = conDetails.getString(USER);
                 if (isToken()) {
@@ -456,9 +444,18 @@ public class ConnectionBean implements Cloneable {
 
     public String getUrl() {
         try {
-            if (conDetails.has(URL)) {
-                return conDetails.getString(URL);
+            if (conDetails.has(RepositoryConstants.REPOSITORY_URL)) {
+                return conDetails.getString(RepositoryConstants.REPOSITORY_URL);
             }
+        } catch (JSONException e) {
+            ExceptionHandler.process(e);
+        }
+        return "";
+    }
+    
+    public String setUrl(String url) {
+        try {
+            conDetails.put(RepositoryConstants.REPOSITORY_URL, url);
         } catch (JSONException e) {
             ExceptionHandler.process(e);
         }

@@ -14,6 +14,7 @@ package org.talend.core.service;
 
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
+import org.talend.core.model.general.ConnectionBean;
 import org.talend.signon.util.TokenMode;
 import org.talend.signon.util.listener.SignOnEventListener;
 
@@ -21,15 +22,19 @@ public interface ICloudSignOnService extends IService {
 
     TokenMode getToken(String authCode, String codeVerifier) throws Exception;
 
-    TokenMode refreshToken(TokenMode token) throws Exception;
+    ConnectionBean refreshToken(ConnectionBean bean) throws Exception;
 
-    void startHeartBeat(TokenMode token);
+    void startHeartBeat() throws Exception;
+    
+    void stopHeartBeat();
 
     String generateCodeVerifier();
 
     String getCodeChallenge(String seed) throws Exception;
 
-    boolean isTokenValid();
+    boolean hasValidToken();
+    
+    boolean usingSSO();
 
     String getTokenUser(String url, TokenMode token) throws Exception;
 

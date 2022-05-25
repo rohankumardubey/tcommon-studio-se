@@ -12,6 +12,9 @@
 // ============================================================================
 package org.talend.signon.util;
 
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.Platform;
+
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
  *
@@ -41,5 +44,12 @@ public class EnvironmentUtils {
     public static String getEnvOs() {
         return System.getProperty("os.name"); //$NON-NLS-1$
     }
+    
+    public static boolean isX86_64() {
+        return StringUtils.equals(Platform.ARCH_X86_64, Platform.getOSArch());
+    }
 
+    public static boolean isAarch64() {
+        return StringUtils.equals(Platform.ARCH_AARCH64, Platform.getOSArch());
+    }
 }
