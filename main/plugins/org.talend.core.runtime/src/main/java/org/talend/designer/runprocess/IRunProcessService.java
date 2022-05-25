@@ -133,7 +133,7 @@ public interface IRunProcessService extends IService {
     public void updateLibraries(Set<ModuleNeeded> jobModuleList, IProcess process, Set<ModuleNeeded> alreadyRetrievedModules)
             throws ProcessorException;
 
-    public void updateLibraries(Item routineItem);
+    public boolean updateLibraries(Item routineItem);
 
     public void refreshView();
 

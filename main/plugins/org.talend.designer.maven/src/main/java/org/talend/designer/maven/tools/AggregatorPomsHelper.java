@@ -214,31 +214,36 @@ public class AggregatorPomsHelper {
 
             @Override
             protected void run() {
-                Project currentProject = ProjectManager.getInstance().getCurrentProject();
                 try {
                     for (ERepositoryObjectType codeType : ERepositoryObjectType.getAllTypesOfCodes()) {
-                        ITalendProcessJavaProject codeProject = getCodesProject(codeType);
-                        if (ERepositoryObjectType.ROUTINES == codeType) {
-                            PomUtil.checkExistingLog4j2Dependencies4RoutinePom(projectTechName, codeProject.getProjectPom());
-                        }
-                        if (ignoreM2Cache || CodeM2CacheManager.needUpdateCodeProject(currentProject, codeType)) {
-                            updateCodeProjectPom(monitor, codeType, codeProject.getProjectPom());
-                            MavenProjectUtils.updateMavenProject(monitor, codeProject.getProject());
-                            buildAndInstallCodesProject(monitor, codeType, true, forceBuild);
-                            CodeM2CacheManager.updateCodeProjectCache(currentProject, codeType);
-                        } else if (buildIfNoUpdate) {
-                            buildAndInstallCodesProject(monitor, codeType, false, true);
-                        }
+                        updateCodeProject(monitor, codeType, forceBuild, ignoreM2Cache, buildIfNoUpdate);
                     }
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }
             }
+
         };
         workUnit.setAvoidUnloadResources(true);
         ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(workUnit);
     }
-
+    
+    public void updateCodeProject(IProgressMonitor monitor, ERepositoryObjectType codeType, boolean forceBuild, boolean ignoreM2Cache,
+            boolean buildIfNoUpdate) throws Exception, CoreException {
+        Project currentProject = ProjectManager.getInstance().getCurrentProject();
+        ITalendProcessJavaProject codeProject = getCodesProject(codeType);
+        if (ERepositoryObjectType.ROUTINES == codeType) {
+            PomUtil.checkExistingLog4j2Dependencies4RoutinePom(projectTechName, codeProject.getProjectPom());
+        }
+        if (ignoreM2Cache || CodeM2CacheManager.needUpdateCodeProject(currentProject, codeType)) {
+            updateCodeProjectPom(monitor, codeType, codeProject.getProjectPom());
+            MavenProjectUtils.updateMavenProject(monitor, codeProject.getProject());
+            buildAndInstallCodesProject(monitor, codeType, true, forceBuild);
+            CodeM2CacheManager.updateCodeProjectCache(currentProject, codeType);
+        } else if (buildIfNoUpdate) {
+            buildAndInstallCodesProject(monitor, codeType, false, true);
+        }
+    }
     public void updateCodeProjectPom(IProgressMonitor monitor, ERepositoryObjectType type, IFile pomFile)
             throws Exception {
         if (type != null) {
