@@ -497,11 +497,11 @@ public class ConnectionBean implements Cloneable {
     public TokenMode getConnectionToken() {
         try {
             if (conDetails.has(CLOUD_TOKEN_ID)) {
-                JSONObject object = conDetails.getJSONObject(CLOUD_TOKEN_ID);
-                return TokenMode.parseFromJson(object.toString());
+                String object = conDetails.getString(CLOUD_TOKEN_ID);
+                return TokenMode.parseFromJson(object);
             }
         } catch (JSONException e) {
-            //
+            ExceptionHandler.process(e);
         }
         return null;
     }

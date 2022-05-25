@@ -24,29 +24,28 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.talend.signon.util.listener.SignOnEventListener;
 
-
-
 public class SignOnClientUtil {
+
     private static Logger LOGGER = Logger.getLogger(SignOnClientUtil.class);
-    
+
     private static final String STUDIO_CLIENT_ID = "0c51933d-c542-4918-9baf-86ef709af5d8";
 
     static final String TMC_LOGIN_URL = "http://10.67.8.153:8080/auth/auth.jsp";
 
     private static final String CLIENT_FILE_PATH_PROPERTY = "talend.studio.signon.client.path";
 
-    private static final String CLIENT_FILE_NAME_ON_WINDOWS = "SignTool.exe";
+    private static final String CLIENT_FILE_NAME_ON_WINDOWS = "Talend_Sign_On_Tool_win-x86_64.exe";
 
-    private static final String CLIENT_FILE_NAME_ON_MAC = "SignTool.app";
+    private static final String CLIENT_FILE_NAME_ON_LINUX_X86 = "Talend_Sign_On_Tool_linux_gtk_x86_64";
 
-    private static final String CLIENT_FILE_NAME_ON_LINUX = "SignTool";
+    private static final String CLIENT_FILE_NAME_ON_LINUX_AARCH64 = "Talend_Sign_On_Tool_linux_gtk_aarch64";
 
     private static final String CLIENT_FOLDER_NAME = "TalendSignTool";
 
     private static final SignOnClientUtil instance = new SignOnClientUtil();
 
     private SignOnClientInvoker signonClientInvoker;
-    
+
     private SignOnClientUtil() {
         if (SignClientInstallService.getInstance().isNeedInstall()) {
             try {
@@ -69,17 +68,18 @@ public class SignOnClientUtil {
         if (EnvironmentUtils.isWindowsSystem()) {
             return new File(folder, CLIENT_FILE_NAME_ON_WINDOWS);
         } else if (EnvironmentUtils.isLinuxUnixSystem()) {
-            return new File(folder, CLIENT_FILE_NAME_ON_LINUX);
-        } else if (EnvironmentUtils.isMacOsSytem()) {
-            return new File(folder, CLIENT_FILE_NAME_ON_MAC);
-        } else {
-            throw new Exception("Unsupported OS");
+            if (EnvironmentUtils.isX86_64()) {
+                return new File(folder, CLIENT_FILE_NAME_ON_LINUX_X86);
+            } else if (EnvironmentUtils.isAarch64()) {
+                return new File(folder, CLIENT_FILE_NAME_ON_LINUX_AARCH64);
+            }
         }
+        throw new Exception("Unsupported OS");
     }
 
     public static File getSignToolFolder() {
         File configFolder = getConfigurationFolder();
-        File signClientFolder = new File (configFolder, CLIENT_FOLDER_NAME);
+        File signClientFolder = new File(configFolder, CLIENT_FOLDER_NAME);
         return signClientFolder;
     }
 
@@ -114,15 +114,15 @@ public class SignOnClientUtil {
     public static SignOnClientUtil getInstance() {
         return instance;
     }
-    
-    public void signOnCloud(SignOnEventListener listener) throws Exception{
-        SignOnClientUtil.getInstance().startSignOnClient(listener);     
+
+    public void signOnCloud(SignOnEventListener listener) throws Exception {
+        SignOnClientUtil.getInstance().startSignOnClient(listener);
     }
-    
+
     public String getLoginURL(SignOnEventListener listener) {
         return TMC_LOGIN_URL;
     }
-    
+
     public String getSignOnURL(String loginURL, String clientID, String codeChallenge, String state) {
         StringBuffer urlSB = new StringBuffer();
         urlSB.append(loginURL).append("?");
@@ -131,7 +131,7 @@ public class SignOnClientUtil {
         urlSB.append("code_challenge=").append(codeChallenge);
         return urlSB.toString();
     }
-    
+
     public static File getConfigurationFolder() {
         BundleContext configuratorBundleContext = getCurrentBundleContext();
         final URL url = EquinoxUtils.getConfigLocation(configuratorBundleContext).getURL();
@@ -142,7 +142,7 @@ public class SignOnClientUtil {
         }
         return null;
     }
-    
+
     // always return a valid bundlesContext or throw a runtimeException
     public static BundleContext getCurrentBundleContext() {
         Bundle bundle = FrameworkUtil.getBundle(SignOnClientUtil.class);

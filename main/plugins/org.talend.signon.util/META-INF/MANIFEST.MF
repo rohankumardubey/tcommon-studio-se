@@ -15,4 +15,5 @@ Export-Package: org.talend.signon.util,
 Require-Bundle: org.talend.utils;bundle-version="8.0.1",
  org.apache.log4j;bundle-version="1.2.19",
  org.eclipse.osgi,
- org.eclipse.equinox.common
+ org.eclipse.equinox.common,
+ org.eclipse.core.runtime
