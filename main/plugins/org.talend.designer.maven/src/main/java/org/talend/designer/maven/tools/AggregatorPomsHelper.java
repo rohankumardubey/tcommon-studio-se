@@ -204,24 +204,29 @@ public class AggregatorPomsHelper {
     }
 
     public void updateCodeProjects(IProgressMonitor monitor, boolean forceBuild, boolean buildIfNoUpdate) {
-        Project currentProject = ProjectManager.getInstance().getCurrentProject();
         try {
             for (ERepositoryObjectType codeType : ERepositoryObjectType.getAllTypesOfCodes()) {
-                ITalendProcessJavaProject codeProject = getCodesProject(codeType);
-                if (ERepositoryObjectType.ROUTINES == codeType) {
-                    PomUtil.checkExistingLog4j2Dependencies4RoutinePom(projectTechName, codeProject.getProjectPom());
-                }
-                if (forceBuild || CodeM2CacheManager.needUpdateCodeProject(currentProject, codeType)) {
-                    updateCodeProjectPom(monitor, codeType, codeProject.getProjectPom());
-                    MavenProjectUtils.updateMavenProject(monitor, codeProject.getProject());
-                    build(codeType, true, monitor);
-                    CodeM2CacheManager.updateCacheStatus(currentProject.getTechnicalLabel(), codeType, true);
-                } else if (buildIfNoUpdate) {
-                    build(codeType, false, monitor);
-                }
+                updateCodeProject(monitor, codeType, forceBuild, buildIfNoUpdate);
             }
         } catch (Exception e) {
             ExceptionHandler.process(e);
+        }
+    }
+
+    public void updateCodeProject(IProgressMonitor monitor, ERepositoryObjectType codeType, boolean forceBuild,
+            boolean buildIfNoUpdate) throws Exception {
+        Project currentProject = ProjectManager.getInstance().getCurrentProject();
+        ITalendProcessJavaProject codeProject = getCodesProject(codeType);
+        if (ERepositoryObjectType.ROUTINES == codeType) {
+            PomUtil.checkExistingLog4j2Dependencies4RoutinePom(projectTechName, codeProject.getProjectPom());
+        }
+        if (forceBuild || CodeM2CacheManager.needUpdateCodeProject(currentProject, codeType)) {
+            updateCodeProjectPom(monitor, codeType, codeProject.getProjectPom());
+            MavenProjectUtils.updateMavenProject(monitor, codeProject.getProject());
+            build(codeType, true, monitor);
+            CodeM2CacheManager.updateCacheStatus(currentProject.getTechnicalLabel(), codeType, true);
+        } else if (buildIfNoUpdate) {
+            build(codeType, false, monitor);
         }
     }
 

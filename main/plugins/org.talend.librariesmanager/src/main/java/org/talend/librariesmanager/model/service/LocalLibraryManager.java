@@ -67,6 +67,7 @@ import org.talend.core.model.general.ILibrariesService.IChangedLibrariesListener
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.ModuleNeeded.ELibraryInstallStatus;
 import org.talend.core.model.general.ModuleStatusProvider;
+import org.talend.core.model.general.RetrieveResult;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.nexus.ArtifactRepositoryBean;
 import org.talend.core.nexus.NexusConstants;
@@ -717,8 +718,15 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
     @Override
     public boolean retrieve(ERepositoryObjectType codeType, Set<ModuleNeeded> modulesNeeded, String pathToStore,
             boolean showDialog, IProgressMonitor... monitorWrap) {
+        return retrieveModules(codeType, modulesNeeded, pathToStore, showDialog, monitorWrap).isAllResolved();
+    }
+
+    @Override
+    public RetrieveResult retrieveModules(ERepositoryObjectType codeType, Set<ModuleNeeded> modulesNeeded, String pathToStore,
+            boolean showDialog, IProgressMonitor... monitorWrap) {
+        RetrieveResult result = new RetrieveResult();
         if (modulesNeeded == null || modulesNeeded.size() == 0) {
-            return false;
+            return result;
         }
         
         // install local platform jars.
@@ -745,8 +753,10 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                     if (!retrieve(jar, pathToStore, false, false)) {
                         jarNotFound.add(jar);
                         allIsOK = false;
+                        result.getUnresolvedModules().add(jar);
                     } else {
                         needResetModulesNeeded = true;
+                        result.getResovledModules().add(jar);
                     }
                 }
                 if (needResetModulesNeeded) {
@@ -763,8 +773,8 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                 }
             }
         }
-
-        return allIsOK;
+        result.setAllResolved(allIsOK);
+        return result;
     }
 
     @Override
