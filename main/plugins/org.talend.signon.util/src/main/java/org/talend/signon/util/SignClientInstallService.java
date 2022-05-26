@@ -32,7 +32,7 @@ public class SignClientInstallService {
     private final String SIGN_CLIENT_BUNDLE_NAME = "org.talend.singlesignon.client";
     private final String installFileName = "TalendSignTool.zip";
     
-    private final String version = "8.0.1.202205101138";
+    private final String version = "8.0.1.202205261014";
 
     private static final SignClientInstallService instance = new SignClientInstallService();
 
