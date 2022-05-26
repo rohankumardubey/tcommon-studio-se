@@ -636,6 +636,7 @@ public class ContextNebulaGridComposite extends AbstractContextTabEditComposite 
             visibleItemCount = 20;
         }
         contextsCombo.setVisibleItemCount(visibleItemCount);
+        contextsCombo.getParent().getParent().pack();
     }
 
     private void checkContextGroupSource() {
