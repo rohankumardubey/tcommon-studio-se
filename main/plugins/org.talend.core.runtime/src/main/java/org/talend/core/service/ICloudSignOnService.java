@@ -25,15 +25,15 @@ public interface ICloudSignOnService extends IService {
     ConnectionBean refreshToken(ConnectionBean bean) throws Exception;
 
     void startHeartBeat() throws Exception;
-    
+
     void stopHeartBeat();
 
     String generateCodeVerifier();
 
     String getCodeChallenge(String seed) throws Exception;
 
-    boolean hasValidToken();
-    
+    boolean hasValidToken() throws Exception;
+
     boolean usingSSO();
 
     String getTokenUser(String url, TokenMode token) throws Exception;

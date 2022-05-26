@@ -244,7 +244,7 @@ public class ConnectionBean implements Cloneable {
         try {       
             if (conDetails.has(USER)) {
                 String user = conDetails.getString(USER);
-                if (isToken()) {
+                if (isToken() && StringUtils.isEmpty(user)) {
                     String url = getDynamicFields().get(RepositoryConstants.REPOSITORY_URL);
                     user = PendoTrackSender.getInstance().getTmcUser(url, getPassword());
                     if (StringUtils.isNotBlank(user)) {
@@ -444,6 +444,9 @@ public class ConnectionBean implements Cloneable {
 
     public String getUrl() {
         try {
+            if (dynamicFields.containsKey(RepositoryConstants.REPOSITORY_URL)) {
+                return dynamicFields.get(RepositoryConstants.REPOSITORY_URL);
+            }
             if (conDetails.has(RepositoryConstants.REPOSITORY_URL)) {
                 return conDetails.getString(RepositoryConstants.REPOSITORY_URL);
             }
@@ -453,13 +456,8 @@ public class ConnectionBean implements Cloneable {
         return "";
     }
     
-    public String setUrl(String url) {
-        try {
-            conDetails.put(RepositoryConstants.REPOSITORY_URL, url);
-        } catch (JSONException e) {
-            ExceptionHandler.process(e);
-        }
-        return "";
+    public void setUrl(String url) {
+        dynamicFields.put(RepositoryConstants.REPOSITORY_URL, url);
     }
 
     public boolean isStoreCredentials() {
