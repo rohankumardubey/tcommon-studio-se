@@ -6,7 +6,8 @@ Bundle-SymbolicName: org.talend.signon.util;singleton:=true
 Bundle-Version: 8.0.1.qualifier
 Eclipse-LazyStart: true
 Bundle-ClassPath: .,
- lib/commons-exec.jar
+ lib/commons-exec.jar,
+ lib/registge_util.jar
 Bundle-Vendor: .Talend SA.
 Import-Package: org.osgi.framework;version="1.10.0",
  org.talend.utils.json

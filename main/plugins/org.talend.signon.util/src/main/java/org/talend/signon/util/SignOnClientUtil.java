@@ -116,7 +116,25 @@ public class SignOnClientUtil {
     }
 
     public void signOnCloud(SignOnEventListener listener) throws Exception {
-        SignOnClientUtil.getInstance().startSignOnClient(listener);
+        if (EnvironmentUtils.isMacOsSytem()) {
+            registOpenURIHandler4Mac(listener);
+            java.net.URI uri = java.net.URI
+                    .create(SignOnClientUtil.getInstance().getSignOnURL(SignOnClientUtil.getInstance().getLoginURL(listener),
+                            SignOnClientUtil.getInstance().getClientID(), listener.getCodeChallenge(), "temp_state")); //TODO --KK
+            java.awt.Desktop dp = java.awt.Desktop.getDesktop();
+            if (dp.isSupported(java.awt.Desktop.Action.BROWSE)) {
+                dp.browse(uri);
+            }else {
+                throw new Exception ("Unsupport browse exception");
+            }
+        } else {
+            SignOnClientUtil.getInstance().startSignOnClient(listener);
+        }
+    }
+    
+    private void registOpenURIHandler4Mac(SignOnEventListener listener) {
+        OpenURIHandlerRegiste registe = new OpenURIHandlerRegiste();
+        registe.registOpenURIHandler4Mac(listener);
     }
 
     public String getLoginURL(SignOnEventListener listener) {

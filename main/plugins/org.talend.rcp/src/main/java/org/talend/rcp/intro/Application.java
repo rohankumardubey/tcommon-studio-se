@@ -83,6 +83,7 @@ import org.talend.registration.wizards.license.LicenseWizardDialog;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.ui.login.LoginHelper;
+import org.talend.singlesignon.client.util.SchemeRegistUtil;
 import org.talend.utils.StudioKeysFileCheck;
 
 /**
@@ -113,9 +114,7 @@ public class Application implements IApplication {
                     Boolean.TRUE.toString(), false);
             return IApplication.EXIT_RELAUNCH;
         }
-        // Must init desktop first for Mac OS 
-        Desktop.getDesktop();
-
+        SchemeRegistUtil.registStudioSchemeForMac();
         try {
             String vmArgs = System.getProperty(EclipseCommandLine.PROP_VMARGS);
             if (StringUtils.isNotBlank(vmArgs)) {
