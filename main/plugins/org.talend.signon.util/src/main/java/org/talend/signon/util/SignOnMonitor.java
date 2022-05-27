@@ -30,14 +30,14 @@ import org.apache.log4j.Logger;
 import org.talend.signon.util.listener.SignOnEventListener;
 
 public class SignOnMonitor implements Runnable {
-    
+
     private static Logger LOGGER = Logger.getLogger(SignOnMonitor.class);
-    
+
     String STUDIO_CLIENT_ID_KEY = "c";
 
     String STUDIO_AUTH_CODE_KEY = "code";
-    
-    String STUDIO_CALLBACK_PREFIX="studioCallback:";
+
+    String STUDIO_CALLBACK_PREFIX = "studioCallback:";
 
     private volatile boolean stopThread;
 
@@ -46,7 +46,7 @@ public class SignOnMonitor implements Runnable {
     private String clientID;
 
     private int port;
-    
+
     private SignOnClientInvoker invoker;
 
     private List<SignOnEventListener> listenerList = new ArrayList<SignOnEventListener>();
@@ -64,6 +64,7 @@ public class SignOnMonitor implements Runnable {
     public void run() {
         ServerSocket server;
         try {
+            fireLoginStart();
             server = new ServerSocket(port);
             ExecutorService threadPool = Executors.newFixedThreadPool(1);
             invoker.run();
@@ -82,21 +83,22 @@ public class SignOnMonitor implements Runnable {
                         inputStream.close();
                     } catch (Exception e) {
                         LOGGER.error(e);
+                        fireLoginFailed(e);
                     } finally {
                         try {
                             socket.close();
                         } catch (IOException e) {
                             LOGGER.error(e);
+                            fireLoginFailed(e);
                         }
                     }
                 };
                 threadPool.submit(runnable);
                 Thread.sleep(1000l);
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             LOGGER.error(ex);
-        } catch (InterruptedException e) {
-            LOGGER.error(e);
+            fireLoginFailed(ex);
         }
     }
 
@@ -108,7 +110,6 @@ public class SignOnMonitor implements Runnable {
         if (!StringUtils.equals(clientID, data.get(STUDIO_CLIENT_ID_KEY))) {
             LOGGER.error("Invalid clientID:" + clientID);
         }
-        
         this.clientID = data.get(STUDIO_CLIENT_ID_KEY);
         this.code = data.get(STUDIO_AUTH_CODE_KEY);
         if (code != null) {
@@ -161,11 +162,11 @@ public class SignOnMonitor implements Runnable {
             l.loginFailed(ex);
         }
     }
-    
+
     public void addLoginEventListener(SignOnEventListener listener) {
         listenerList.add(listener);
     }
-    
+
     public void removeLoginEventListener(SignOnEventListener listener) {
         listenerList.remove(listener);
     }

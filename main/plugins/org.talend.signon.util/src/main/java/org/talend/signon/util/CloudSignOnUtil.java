@@ -7,12 +7,6 @@ import org.talend.utils.json.JSONObject;
 
 public class CloudSignOnUtil{
 
-    public JSONObject getToken(String authCode, String codeVerifier) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-
     public static String generateCodeVerifier() {
         SecureRandom secureRandom = new SecureRandom();
         byte[] codeVerifier = new byte[32];
@@ -28,5 +22,7 @@ public class CloudSignOnUtil{
         byte[] digest = messageDigest.digest();
         return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
     }
+    
+    
 
 }

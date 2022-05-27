@@ -106,7 +106,7 @@ public class SignClientInstallService {
     }
     
     protected File getInstallFile() throws IOException {
-        BundleContext context = getCurrentBundleContext();
+        BundleContext context = EquinoxUtils.getCurrentBundleContext();
         Bundle[] bundles = context.getBundles();
         Bundle bundle = null;
         for (Bundle b : bundles) {
@@ -122,22 +122,5 @@ public class SignClientInstallService {
             return installFile;
         }
         return null;
-    }
-    
-    // always return a valid bundlesContext or throw a runtimeException
-    public static BundleContext getCurrentBundleContext() {
-        Bundle bundle = FrameworkUtil.getBundle(SignClientInstallService.class);
-        if (bundle != null) {
-            BundleContext bundleContext = bundle.getBundleContext();
-            if (bundleContext != null) {
-                return bundleContext;
-            } else {
-                throw new RuntimeException(
-                        "could not find current BundleContext, this should never happen, check that the bunlde is activated when this class is accessed");
-            }
-        } else {
-            throw new RuntimeException(
-                    "could not find current Bundle, this should never happen, check that the bunlde is activated when this class is accessed");
-        }
     }
 }

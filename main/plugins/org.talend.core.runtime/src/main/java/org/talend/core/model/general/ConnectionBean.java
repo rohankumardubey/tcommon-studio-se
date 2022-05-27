@@ -67,7 +67,7 @@ public class ConnectionBean implements Cloneable {
 
     public static final String CLOUD_TOKEN_ID ="cloud_token"; //$NON-NLS-1$
     
-    public static final String REPOSITORY_CLOUD_CUSTOM_ID = "cloud_custom"; //$NON-NLS-1$
+    public static final String REPOSITORY_CLOUD_SSO_ID = "cloud_sso"; //$NON-NLS-1$
     /**
      * DOC smallet ConnectionBean constructor comment.
      */
@@ -98,7 +98,7 @@ public class ConnectionBean implements Cloneable {
         ConnectionBean newConnection = new ConnectionBean();
         newConnection.setName(Messages.getString("ConnectionBean.Cloud.name")); //$NON-NLS-1$
         newConnection.setDescription(Messages.getString("ConnectionBean.CloudConnection.description")); //$NON-NLS-1$
-        newConnection.setRepositoryId(REPOSITORY_CLOUD_CUSTOM_ID);// TODO --KK
+        newConnection.setRepositoryId(REPOSITORY_CLOUD_SSO_ID);// TODO --KK
         newConnection.setToken(true);
         newConnection.setStoreCredentials(true);
         newConnection.setComplete(true);
@@ -505,7 +505,7 @@ public class ConnectionBean implements Cloneable {
         try {
             conDetails.put(CLOUD_TOKEN_ID, TokenMode.writeToJson(connectionToken));
         } catch (JSONException e) {
-            // do nothing
+            ExceptionHandler.process(e);
         }
     }
     

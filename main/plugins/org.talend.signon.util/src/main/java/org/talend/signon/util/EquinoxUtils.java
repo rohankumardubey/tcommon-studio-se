@@ -17,8 +17,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.eclipse.osgi.service.datalocation.Location;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -86,6 +88,21 @@ public class EquinoxUtils {
         }
         return null;
     }
-
-    
+  
+    // always return a valid bundlesContext or throw a runtimeException
+    public static BundleContext getCurrentBundleContext() {
+        Bundle bundle = FrameworkUtil.getBundle(SignClientInstallService.class);
+        if (bundle != null) {
+            BundleContext bundleContext = bundle.getBundleContext();
+            if (bundleContext != null) {
+                return bundleContext;
+            } else {
+                throw new RuntimeException(
+                        "could not find current BundleContext, this should never happen, check that the bunlde is activated when this class is accessed");
+            }
+        } else {
+            throw new RuntimeException(
+                    "could not find current Bundle, this should never happen, check that the bunlde is activated when this class is accessed");
+        }
+    }
 }
