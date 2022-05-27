@@ -23,6 +23,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.talend.signon.util.listener.SignOnEventListener;
+import org.talend.signon.util.registe.OpenURIHandlerRegiste;
 
 public class SignOnClientUtil {
 
