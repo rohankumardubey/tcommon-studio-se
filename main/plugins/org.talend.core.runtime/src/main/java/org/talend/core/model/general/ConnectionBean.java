@@ -67,7 +67,7 @@ public class ConnectionBean implements Cloneable {
 
     public static final String CLOUD_TOKEN_ID ="cloud_token"; //$NON-NLS-1$
     
-    public static final String REPOSITORY_CLOUD_SSO_ID = "cloud_sso"; //$NON-NLS-1$
+    public static final String REPOSITORY_CLOUD_SSO_ID = RepositoryConstants.REPOSITORY_CLOUD_CUSTOM_ID; //$NON-NLS-1$
     /**
      * DOC smallet ConnectionBean constructor comment.
      */
