@@ -8,8 +8,8 @@ Bundle-ClassPath: .,
  lib/apache-mime4j-0.6.jar,
  lib/castor-1.0.3.jar,
  lib/jakarta-oro-2.0.8.jar,
- lib/xmlbeans-2.3.0.jar,
- lib/xml-apis.jar
+ lib/xml-apis.jar,
+ lib/xmlbeans-3.1.0.jar
 Bundle-Vendor: .Talend SA.
 Require-Bundle: org.apache.log4j;resolution:=optional,
  org.talend.libraries.apache.common;visibility:=reexport,
@@ -63,9 +63,6 @@ Export-Package:
  org.apache.xmlbeans.impl.jam.provider,
  org.apache.xmlbeans.impl.jam.visitor,
  org.apache.xmlbeans.impl.jam.xml,
- org.apache.xmlbeans.impl.piccolo.io,
- org.apache.xmlbeans.impl.piccolo.util,
- org.apache.xmlbeans.impl.piccolo.xml,
  org.apache.xmlbeans.impl.regex,
  org.apache.xmlbeans.impl.richParser,
  org.apache.xmlbeans.impl.schema,

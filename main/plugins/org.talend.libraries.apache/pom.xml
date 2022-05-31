@@ -76,6 +76,11 @@
 			<artifactId>log4j-1.2-api</artifactId>
 			<version>${log4j2.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans</artifactId>
+			<version>3.1.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -94,7 +99,7 @@
 							<excludeTypes>pom</excludeTypes>
 							<excludeTransitive>true</excludeTransitive>
 							<outputDirectory>${project.basedir}/lib</outputDirectory>
-							<includeGroupIds>ch.qos.reload4j,org.slf4j,org.apache.logging.log4j</includeGroupIds>
+							<includeGroupIds>ch.qos.reload4j,org.slf4j,org.apache.xmlbeans,org.apache.logging.log4j</includeGroupIds>
 						</configuration>
 					</execution>
 				</executions>
