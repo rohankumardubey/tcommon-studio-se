@@ -15,6 +15,7 @@ package org.talend.core.service;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
@@ -25,7 +26,7 @@ import org.talend.core.model.general.Project;
 import org.talend.core.model.update.IStudioUpdateConfig;
 
 /**
- * DOC cmeng class global comment. Detailled comment
+ * DON'T remove/change existing API for patch!
  */
 public interface IStudioLiteP2Service extends IService {
 
@@ -122,6 +123,8 @@ public interface IStudioLiteP2Service extends IService {
     List<String> getCurrentProjectEnabledFeatures() throws Exception;
 
     boolean checkProjectCompatibility(IProgressMonitor monitor, Project proj) throws Exception;
+
+    boolean adaptNewProjectVersion(IProgressMonitor monitor, Map<String, String> props) throws Exception;
 
     void setupTmcUpdate(IProgressMonitor monitor, IStudioUpdateConfig updateConfig) throws Exception;
 
