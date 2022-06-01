@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -253,8 +255,9 @@ public class UpdateTools {
             dropList.addAll(list);
         });
         // collect from drop.bundle.info
-        dropBundles.forEach((b, v) -> plugins.stream().filter(f -> f.getName().contains(b + "_" + v))
-                .forEach(f -> dropList.add(f.getAbsolutePath())));
+        dropBundles.forEach((b,vs) -> {
+            Arrays.asList(vs.split("\\|")).forEach(v -> plugins.stream().filter(f -> f.getName().contains(b + "_"+v)).forEach(f -> dropList.add(f.getAbsolutePath())));
+        });
         File dropFile = new File(pluginFolderFile, "droplist");
         if (!dropFile.exists()) {
             dropFile.createNewFile();
@@ -291,5 +294,4 @@ public class UpdateTools {
         }
         return !file.delete();
     }
-
 }

@@ -56,7 +56,9 @@ public class UpdateToolsTest {
 
         String _3rdBundleNameA = "third.party.a";
         String _3rdBundleNameB = "third.party.b";
+        String _3rdBundleNameC = "third.party.c";
         String old3rdVersion = "7.3.1.20180101_0000";
+        String old3rdVersion2 = "7.3.1.20190101_0000";
         String new3rdVersion = "7.3.1.20190701_2222";
 
         Set<IInstallableUnit> validInstall = new HashSet<>();
@@ -68,17 +70,20 @@ public class UpdateToolsTest {
         // new third-party patch bundle
         validInstall.add(createIU(_3rdBundleNameA, Version.create(new3rdVersion), false));
         validInstall.add(createIU(_3rdBundleNameB, Version.create(new3rdVersion), false));
+        validInstall.add(createIU(_3rdBundleNameC, Version.create(new3rdVersion), false));
 
         // bundles defined in new_feature.index
         Map<String, String> extraBundles = new HashMap<>();
         extraBundles.put("org.talend.new.c", "");
         extraBundles.put("third.party.a", new3rdVersion);
         extraBundles.put("third.party.b", new3rdVersion);
+        extraBundles.put("third.party.c", new3rdVersion);
 
         // drop bundles defined in new_feature.index
         Map<String, String> dropBundleInfo = new HashMap<>();
         dropBundleInfo.put(_3rdBundleNameA, old3rdVersion);
         dropBundleInfo.put(_3rdBundleNameB, old3rdVersion);
+        dropBundleInfo.put(_3rdBundleNameC, old3rdVersion+"|"+old3rdVersion2);
 
         // create test plugins
         createFile(talendBundleNameA, oldTalendVersion, false);
@@ -87,6 +92,9 @@ public class UpdateToolsTest {
         createFile(_3rdBundleNameA, new3rdVersion, false);
         createFile(_3rdBundleNameB, old3rdVersion, false);
         createFile(_3rdBundleNameB, new3rdVersion, false);
+        createFile(_3rdBundleNameC, old3rdVersion, false);
+        createFile(_3rdBundleNameC, old3rdVersion2, false);
+        createFile(_3rdBundleNameC, new3rdVersion, false);
 
         File pluginFolder = UpdateTools.getProductRootFolder().toPath().resolve("plugins").toFile();
         File dropFile = new File(pluginFolder, "droplist");
@@ -96,6 +104,8 @@ public class UpdateToolsTest {
         pluginsToDrop.add(new File(pluginFolder, talendBundleNameB + "_" + oldTalendVersion));
         pluginsToDrop.add(new File(pluginFolder, _3rdBundleNameA + "_" + old3rdVersion + ".jar"));
         pluginsToDrop.add(new File(pluginFolder, _3rdBundleNameB + "_" + old3rdVersion + ".jar"));
+        pluginsToDrop.add(new File(pluginFolder, _3rdBundleNameC + "_" + old3rdVersion + ".jar"));
+        pluginsToDrop.add(new File(pluginFolder, _3rdBundleNameC + "_" + old3rdVersion2 + ".jar"));
 
         UpdateTools.collectDropBundles(validInstall, extraBundles, dropBundleInfo);
 
