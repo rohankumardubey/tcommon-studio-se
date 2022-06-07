@@ -114,7 +114,6 @@ public class Application implements IApplication {
                     Boolean.TRUE.toString(), false);
             return IApplication.EXIT_RELAUNCH;
         }
-        SchemeRegistUtil.registStudioSchemeForMac();
         try {
             String vmArgs = System.getProperty(EclipseCommandLine.PROP_VMARGS);
             if (StringUtils.isNotBlank(vmArgs)) {

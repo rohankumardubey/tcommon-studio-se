@@ -38,6 +38,9 @@ public class SignOnClientInvoker implements Runnable {
     private ExecuteWatchdog executeWatchdog;
 
     private Exception error;
+    
+    private boolean isDebugMode = false;
+
 
     public SignOnClientInvoker(File execFile, String clientId, int port, String codeChallenge) {
         this.execFile = execFile;
@@ -48,8 +51,14 @@ public class SignOnClientInvoker implements Runnable {
 
     @Override
     public void run() {
-        CommandLine cmdLine = new CommandLine(execFile.getAbsolutePath());
-        cmdLine.addArgument(getInvokeParameter(clientId, SignOnClientUtil.TMC_LOGIN_URL, port));
+        CommandLine cmdLine = null;
+        cmdLine = new CommandLine(execFile);
+        cmdLine.addArgument(getInvokeParameter(clientId, SignOnClientUtil.TMC_LOGIN_URL, port)); 
+        if (isDebugMode) {
+            cmdLine.addArgument("-vmargs");
+            cmdLine.addArgument("-Xdebug");
+            cmdLine.addArgument("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=*:1716");
+        }
         DefaultExecutor executor = new DefaultExecutor();
         executor.setExitValue(1);
         executeWatchdog = new ExecuteWatchdog(600000);
@@ -68,7 +77,6 @@ public class SignOnClientInvoker implements Runnable {
 
     private String getInvokeParameter(String clientID, String loginURL, int callbackPort) {
         StringBuffer stateSB = new StringBuffer();
-        stateSB.append("c=").append(clientID).append("&");
         stateSB.append("p=").append(callbackPort);
         
         StringBuffer urlSB = new StringBuffer();
@@ -82,5 +90,10 @@ public class SignOnClientInvoker implements Runnable {
         if (executeWatchdog != null && !executeWatchdog.killedProcess()) {
             executeWatchdog.destroyProcess();
         }
+    }
+
+    
+    public Exception getError() {
+        return error;
     }
 }

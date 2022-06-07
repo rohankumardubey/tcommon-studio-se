@@ -23,7 +23,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.talend.signon.util.listener.SignOnEventListener;
-import org.talend.signon.util.registe.OpenURIHandlerRegiste;
 
 public class SignOnClientUtil {
 
@@ -40,6 +39,10 @@ public class SignOnClientUtil {
     private static final String CLIENT_FILE_NAME_ON_LINUX_X86 = "Talend_Sign_On_Tool_linux_gtk_x86_64";
 
     private static final String CLIENT_FILE_NAME_ON_LINUX_AARCH64 = "Talend_Sign_On_Tool_linux_gtk_aarch64";
+
+    private static final String CLIENT_FILE_NAME_ON_MAC_X86 = "Talend_Sign_On_Tool.app";
+
+    private static final String CLIENT_FILE_NAME_ON_MAC_AARCH64 = "Talend_Sign_On_Tool_aarch64.app";
 
     private static final String CLIENT_FOLDER_NAME = "TalendSignTool";
 
@@ -73,6 +76,16 @@ public class SignOnClientUtil {
                 return new File(folder, CLIENT_FILE_NAME_ON_LINUX_X86);
             } else if (EnvironmentUtils.isAarch64()) {
                 return new File(folder, CLIENT_FILE_NAME_ON_LINUX_AARCH64);
+            }
+        } else if (EnvironmentUtils.isMacOsSytem()) {
+            File appFolder = null;
+            if (EnvironmentUtils.isX86_64()) {
+                appFolder = new File(folder, CLIENT_FILE_NAME_ON_MAC_X86);
+            } else if (EnvironmentUtils.isAarch64()) {
+                appFolder = new File(folder, CLIENT_FILE_NAME_ON_MAC_AARCH64);
+            }
+            if (appFolder != null) {
+                return new File (appFolder, "Contents/MacOS/Talend_Sign_On_Tool");
             }
         }
         throw new Exception("Unsupported OS");
@@ -117,25 +130,7 @@ public class SignOnClientUtil {
     }
 
     public void signOnCloud(SignOnEventListener listener) throws Exception {
-        if (EnvironmentUtils.isMacOsSytem()) {
-            registOpenURIHandler4Mac(listener);
-            java.net.URI uri = java.net.URI
-                    .create(SignOnClientUtil.getInstance().getSignOnURL(SignOnClientUtil.getInstance().getLoginURL(listener),
-                            SignOnClientUtil.getInstance().getClientID(), listener.getCodeChallenge(), "temp_state")); //TODO --KK
-            java.awt.Desktop dp = java.awt.Desktop.getDesktop();
-            if (dp.isSupported(java.awt.Desktop.Action.BROWSE)) {
-                dp.browse(uri);
-            }else {
-                throw new Exception ("Unsupport browse exception");
-            }
-        } else {
-            SignOnClientUtil.getInstance().startSignOnClient(listener);
-        }
-    }
-    
-    private void registOpenURIHandler4Mac(SignOnEventListener listener) {
-        OpenURIHandlerRegiste registe = new OpenURIHandlerRegiste();
-        registe.registOpenURIHandler4Mac(listener);
+        SignOnClientUtil.getInstance().startSignOnClient(listener);
     }
 
     public String getLoginURL(SignOnEventListener listener) {

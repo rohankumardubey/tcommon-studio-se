@@ -22,7 +22,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.FileLocator;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.talend.utils.io.FilesUtils;
 
 public class SignClientInstallService {
@@ -45,9 +44,6 @@ public class SignClientInstallService {
     }
 
     public boolean isNeedInstall() {
-        if (EnvironmentUtils.isMacOsSytem()) {
-            return false;
-        }
         String installedVersion = getInstalledVersion();
         if (installedVersion != null && installedVersion.compareTo(version) >= 0) {
             return false;
