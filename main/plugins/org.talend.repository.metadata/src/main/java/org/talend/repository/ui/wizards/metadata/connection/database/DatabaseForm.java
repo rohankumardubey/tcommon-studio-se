@@ -109,6 +109,7 @@ import org.talend.core.hadoop.version.custom.HadoopCustomVersionDefineDialog;
 import org.talend.core.hadoop.version.custom.HadoopVersionControlUtils;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
+import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.metadata.IMetadataConnection;
 import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.metadata.builder.ConvertionHelper;
@@ -121,6 +122,7 @@ import org.talend.core.model.metadata.builder.database.JavaSqlFactory;
 import org.talend.core.model.metadata.connection.hive.HiveModeInfo;
 import org.talend.core.model.metadata.connection.hive.HiveServerVersionInfo;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.ContextParameterUtils;
@@ -665,7 +667,7 @@ public class DatabaseForm extends AbstractForm {
             } else if (isDBTypeSelected(EDatabaseConnTemplate.IMPALA)) {
                 initImpalaSettings();
                 initImpalaInfo();
-            } else if (isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT)) {
+            } else if (isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT) || isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT_SSO)) {
                 initRedshiftAdditionalParamSetting();
             } else if (isHiveDBConnSelected()) {
                 // Changed by Marvin Wang on Oct. 15, 2012 for but TDI-23235.
@@ -4182,7 +4184,8 @@ public class DatabaseForm extends AbstractForm {
     }
 
     private void setupDefaultRedshiftAdditionalParamSetting() {
-        boolean isRedshiftSelected = isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT);
+        boolean isRedshiftSelected = isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT)
+                || isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT_SSO);
         if (isRedshiftSelected) {
             redshiftDriverCombo.setText(ERedshiftDriver.DRIVER_V2.getDisplayName());
         }
@@ -4513,16 +4516,26 @@ public class DatabaseForm extends AbstractForm {
         }
         final ManagerConnection managerConnection = new ManagerConnection();
         StringBuffer sgb = new StringBuffer();
+        Connection connection = connectionItem.getConnection();
+        Connection copyConnection = connection;
         if (isContextMode()) { // context mode
-            String connectionTypeName = connectionItem.getConnection().getConnectionTypeName();
+            String connectionTypeName = connection.getConnectionTypeName();
             if (connectionTypeName.equals(EDatabaseConnTemplate.HBASE.getDBDisplayName())
                     || connectionTypeName.equals(EDatabaseConnTemplate.HIVE.getDBDisplayName())) {
-                selectedContextType = ConnectionContextHelper.getContextTypeForContextMode(connectionItem.getConnection(), true);
+                selectedContextType = ConnectionContextHelper.getContextTypeForContextMode(connection, true);
             } else {
-                selectedContextType = ConnectionContextHelper.getContextTypeForContextMode(connectionItem.getConnection());
+                JavaSqlFactory.clearPromptContextCache();
+                copyConnection = MetadataConnectionUtils.prepareConection(connection);
+                if (copyConnection == null) {
+                    checkButton.setEnabled(true);
+                    return;
+                }
+                ContextItem contextItem = ContextUtils.getContextItemById2(copyConnection.getContextId());
+                selectedContextType = ContextUtils.getContextTypeByName(contextItem.getContext(), copyConnection.getContextName(),
+                        contextItem.getDefaultContext());
             }
             String urlStr = null;
-            urlStr = DBConnectionContextUtils.setManagerConnectionValues(managerConnection, connectionItem, selectedContextType,
+            urlStr = DBConnectionContextUtils.setManagerConnectionValues(managerConnection, copyConnection, selectedContextType,
                     getConnectionDBType());
             if (isImpalaDBConnSelected()) {
                 String contextName = getConnection().getContextName();
@@ -4558,6 +4571,25 @@ public class DatabaseForm extends AbstractForm {
                 }
             }
             urlConnectionStringText.setText(urlStr);
+            if (isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT) || isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT_SSO)) {
+                if (ERedshiftDriver.DRIVER_V2.getDisplayName().equals(redshiftDriverCombo.getText())
+                        && !useStringAdditionParam.getSelection()) {
+                    Properties info = new Properties();
+                    List<Map<String, Object>> entryProperties = additionParamTable.getPropertiesTableModel().getBeansList();
+                    for (Map<String, Object> entryMap : entryProperties) {
+                        String key = TalendQuoteUtils.removeQuotes(String.valueOf(entryMap.get("KEY")));
+                        if (StringUtils.isNotBlank(key)) {
+                            String value = TalendQuoteUtils.removeQuotes(String.valueOf(entryMap.get("VALUE")));
+                            ConvertionHelper.updateAdditionParam(sgb, info, key, value);
+                        }
+                    }
+                    managerConnection.setAdditionalParams(sgb.toString());
+                }
+                String driverVName = ERedshiftDriver.getEnameByDisplayName(redshiftDriverCombo.getText());
+                if (StringUtils.isNotBlank(driverVName)) {
+                    managerConnection.setDbVersionString(driverVName);
+                }
+            }
         } else {
             String versionStr = dbVersionCombo.getText();
             if (isHiveDBConnSelected()) {
@@ -4613,7 +4645,7 @@ public class DatabaseForm extends AbstractForm {
             }
 
             String dbVersionString = enableDbVersion() ? versionStr : null;
-            if (isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT)) {
+            if (isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT) || isDBTypeSelected(EDatabaseConnTemplate.REDSHIFT_SSO)) {
                 if (ERedshiftDriver.DRIVER_V2.getDisplayName().equals(redshiftDriverCombo.getText())
                         && !useStringAdditionParam.getSelection()) {
                     Properties info = new Properties();
@@ -4749,7 +4781,7 @@ public class DatabaseForm extends AbstractForm {
                     setPropertiesFormEditable(true);
                 }
             }
-            String msg = checkDBVersion();
+            String msg = checkDBVersion(copyConnection);
             if (msg != null) {
                 updateStatus(IStatus.WARNING, msg);
             }
@@ -7401,7 +7433,7 @@ public class DatabaseForm extends AbstractForm {
             return false;
         }
         EDatabaseConnTemplate template = EDatabaseConnTemplate.indexOfTemplate(getConnectionDBType());
-        return template != null && template == EDatabaseConnTemplate.REDSHIFT;
+        return template != null && (template == EDatabaseConnTemplate.REDSHIFT || template == EDatabaseConnTemplate.REDSHIFT_SSO);
     }
 
     /**
@@ -7648,11 +7680,11 @@ public class DatabaseForm extends AbstractForm {
         return getConnectionDBType().trim().length() == 0;
     }
 
-    private String checkDBVersion() {
+    private String checkDBVersion(Connection conn) {
         String msg = null;
         EDatabaseVersion4Drivers version = EDatabaseVersion4Drivers.indexOfByVersionDisplay(dbVersionCombo.getText());
         ExtractMetaDataUtils extractMeta = ExtractMetaDataUtils.getInstance();
-        DatabaseConnection connection = getConnection();
+        DatabaseConnection connection = (DatabaseConnection) conn;
         List<EDatabaseVersion4Drivers> dbTypeList = EDatabaseVersion4Drivers.indexOfByDbType(connection.getDatabaseType());
         if (version != null && dbTypeList.size() > 1) {
             EDatabaseTypeName dbType = EDatabaseTypeName.getTypeFromDbType(getConnection().getDatabaseType());

@@ -15,6 +15,7 @@ package org.talend.core.service;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
@@ -22,9 +23,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
 import org.talend.core.model.general.Project;
+import org.talend.core.model.update.IStudioUpdateConfig;
 
 /**
- * DOC cmeng class global comment. Detailled comment
+ * DON'T remove/change existing API for patch!
  */
 public interface IStudioLiteP2Service extends IService {
 
@@ -122,6 +124,10 @@ public interface IStudioLiteP2Service extends IService {
 
     boolean checkProjectCompatibility(IProgressMonitor monitor, Project proj) throws Exception;
 
+    boolean adaptNewProjectVersion(IProgressMonitor monitor, Map<String, String> props) throws Exception;
+
+    void setupTmcUpdate(IProgressMonitor monitor, IStudioUpdateConfig updateConfig) throws Exception;
+
     public static IStudioLiteP2Service get() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IStudioLiteP2Service.class)) {
             return GlobalServiceRegister.getDefault().getService(IStudioLiteP2Service.class);
@@ -131,7 +137,9 @@ public interface IStudioLiteP2Service extends IService {
 
     public static abstract class AbsCheckUpdateListener {
 
-        abstract public void beforeCheckUpdate(IProgressMonitor monitor) throws Exception;
+        public void beforeCheckUpdate(IProgressMonitor monitor) throws Exception {
+            IStudioLiteP2Service.get().unregistCheckUpdateListener(this);
+        }
 
     }
 
@@ -190,17 +198,41 @@ public interface IStudioLiteP2Service extends IService {
 
         boolean isReleaseEditable();
 
+        @Deprecated
         URI getRelease(IProgressMonitor monitor) throws Exception;
 
+        @Deprecated
         void setRelease(IProgressMonitor monitor, URI uri) throws Exception;
+
+        URI getLocalRelease(IProgressMonitor monitor) throws Exception;
+
+        void setLocalRelease(IProgressMonitor monitor, URI uri) throws Exception;
+
+        String getTmcRelease(IProgressMonitor monitor) throws Exception;
 
         boolean isUpdateEditable();
 
+        @Deprecated
         Collection<URI> getUpdates(IProgressMonitor monitor) throws Exception;
 
+        @Deprecated
         void setUpdates(IProgressMonitor monitor, Collection<URI> uris) throws Exception;
 
+        Collection<URI> getLocalUpdates(IProgressMonitor monitor) throws Exception;
+
+        void setLocalUpdates(IProgressMonitor monitor, Collection<URI> uris) throws Exception;
+
+        String getTmcUpdate(IProgressMonitor monitor) throws Exception;
+
         void resetToDefault(IProgressMonitor monitor) throws Exception;
+
+        boolean isEnableTmcUpdateSettings(IProgressMonitor monitor) throws Exception;
+
+        void enableTmcUpdateSettings(IProgressMonitor monitor, boolean enable) throws Exception;
+
+        boolean isOverwriteTmcUpdateSettings(IProgressMonitor monitor) throws Exception;
+
+        void overwriteTmcUpdateSettings(IProgressMonitor monitor, boolean overwrite) throws Exception;
 
     }
     

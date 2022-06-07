@@ -64,6 +64,8 @@ public class CommonsPlugin implements BundleActivator {
 
     private static ServiceTracker proxyTracker;
 
+    private static Boolean isDebugP2 = null;
+
     public static boolean isWorkbenchCreated() {
         return isWorkbenchCreated;
     }
@@ -121,6 +123,17 @@ public class CommonsPlugin implements BundleActivator {
                 isDevMode = Platform.getBundle(PluginChecker.RCP_BUNDLE_ID).getBundleContext().getProperty("osgi.dev") != null;
             }
             return isDevMode;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean isDebugP2() {
+        try {
+            if (isDebugP2 == null) {
+                isDebugP2 = Boolean.getBoolean("talend.studio.lite.p2.debug");
+            }
+            return isDebugP2;
         } catch (Exception e) {
             return false;
         }
