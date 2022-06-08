@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.rcp.intro;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -83,7 +82,6 @@ import org.talend.registration.wizards.license.LicenseWizardDialog;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.ui.login.LoginHelper;
-import org.talend.singlesignon.client.util.SchemeRegistUtil;
 import org.talend.utils.StudioKeysFileCheck;
 
 /**

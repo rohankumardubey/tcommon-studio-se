@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.log4j.Logger;
 import org.talend.signon.util.listener.SignOnEventListener;
 
@@ -42,6 +41,8 @@ public class SignOnMonitor implements Runnable {
     private volatile boolean stopThread;
 
     private String code;
+    
+    private String dateCenter;
 
     private String clientID;
 
@@ -107,10 +108,6 @@ public class SignOnMonitor implements Runnable {
             msg = msg.substring(STUDIO_CALLBACK_PREFIX.length());
         }
         Map<String, String> data = decodeMsg(msg);
-        if (!StringUtils.equals(clientID, data.get(STUDIO_CLIENT_ID_KEY))) {
-            LOGGER.error("Invalid clientID:" + clientID);
-        }
-        this.clientID = data.get(STUDIO_CLIENT_ID_KEY);
         this.code = data.get(STUDIO_AUTH_CODE_KEY);
         if (code != null) {
             LOGGER.error("Got code and stopped monitor.");
@@ -147,7 +144,7 @@ public class SignOnMonitor implements Runnable {
 
     private void fireLoginStop() {
         for (SignOnEventListener l : listenerList) {
-            l.loginStop(code);
+            l.loginStop(code, dateCenter);
         }
     }
 

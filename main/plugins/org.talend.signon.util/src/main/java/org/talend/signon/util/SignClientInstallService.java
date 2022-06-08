@@ -40,7 +40,6 @@ public class SignClientInstallService {
     }
 
     private SignClientInstallService() {
-
     }
 
     public boolean isNeedInstall() {
