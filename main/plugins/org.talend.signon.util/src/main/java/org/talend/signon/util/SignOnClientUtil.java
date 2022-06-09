@@ -113,7 +113,7 @@ public class SignOnClientUtil {
     }
 
     private Integer newPort() {
-        final Integer port = Integer.getInteger("stduio.signon.client.java.port", -1);
+        final Integer port = Integer.getInteger("stduio.signon.client.listen.port", -1);
         if (port <= 0) {
             try (ServerSocket socket = new ServerSocket(0)) {
                 socket.setReuseAddress(true);

@@ -98,7 +98,7 @@ public class ConnectionBean implements Cloneable {
         ConnectionBean newConnection = new ConnectionBean();
         newConnection.setName(Messages.getString("ConnectionBean.Cloud.name")); //$NON-NLS-1$
         newConnection.setDescription(Messages.getString("ConnectionBean.CloudConnection.description")); //$NON-NLS-1$
-        newConnection.setRepositoryId(REPOSITORY_CLOUD_SSO_ID);// TODO --KK
+        newConnection.setRepositoryId(REPOSITORY_CLOUD_SSO_ID);
         newConnection.setToken(true);
         newConnection.setStoreCredentials(true);
         newConnection.setComplete(true);
