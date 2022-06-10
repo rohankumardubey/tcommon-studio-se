@@ -706,6 +706,8 @@ public class ProcessorUtilities {
 
         processor.setArguments(argumentsMap);
 
+        handelDQComponents(selectedProcessItem, currentProcess);
+
         // generate the code of the father after the childrens
         // so the code won't have any error during the check, and it will help to check
         // if the generation is really needed.
@@ -721,7 +723,7 @@ public class ProcessorUtilities {
          */
         generateBuildInfo(jobInfo, progressMonitor, isMainJob, currentProcess, currentJobName, processor, option);
 
-        handelDQComponents(selectedProcessItem, currentProcess);
+        checkNeedExportItemsForDQ(currentProcess);
 
         copyDependenciedResources(currentProcess, progressMonitor);
 
@@ -1251,6 +1253,8 @@ public class ProcessorUtilities {
 
             processor.setArguments(argumentsMap);
 
+            handelDQComponents(selectedProcessItem, currentProcess);
+
             generateContextInfo(jobInfo, selectedContextName, statistics, trace, needContext, progressMonitor,
                     currentProcess, currentJobName, processor, isMainJob, codeGenerationNeeded);
 
@@ -1266,7 +1270,7 @@ public class ProcessorUtilities {
             generateBuildInfo(jobInfo, progressMonitor, isMainJob, currentProcess, currentJobName, processor, option);
             TimeMeasure.step(idTimer, "generateBuildInfo");
 
-            handelDQComponents(selectedProcessItem, currentProcess);
+            checkNeedExportItemsForDQ(currentProcess);
 
             copyDependenciedResources(currentProcess, progressMonitor);
 
@@ -1355,10 +1359,34 @@ public class ProcessorUtilities {
     }
 
     /**
-    *
-    * Specail operation for DQ components:
-    * - For tdqReportRun, set 'needExportItemsForDQ'to true so as the item folder can be exported
-    * - For tRuleSurvivorship, copy the current item's drools file from 'workspace/metadata/survivorship' to '.Java/src/resources'
+     * if the job includes tdqReportRun, set 'needExportItemsForDQ'to true so as the item folder can be exported
+     * 
+     * @param processItem
+     * @param currentProcess
+     */
+    private static void checkNeedExportItemsForDQ(IProcess currentProcess) {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQItemService.class)) {
+            ITDQItemService tdqItemService =
+                    GlobalServiceRegister.getDefault().getService(ITDQItemService.class);
+            // TDQ-19637 if it includes 'tDqReportRun',must export item folder
+            if (tdqItemService != null && !needExportItemsForDQ) {
+                for (INode node : currentProcess.getGeneratingNodes()) {
+                    String componentName = node.getComponent().getName();
+                    if ("tDqReportRun".equals(componentName)) {
+                        needExportItemsForDQ = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     * Specail operation for DQ components:
+     * - For tRuleSurvivorship, copy the current item's drools file from 'workspace/metadata/survivorship' to
+     * '.Java/src/resources'
+     *
      * @param processItem
      */
     private static void handelDQComponents(ProcessItem processItem,IProcess currentProcess) {
@@ -1373,17 +1401,7 @@ public class ProcessorUtilities {
                 return;
             }
             try {
-                // TDQ-19637 if it includes 'tDqReportRun',must export item folder
-                if (!needExportItemsForDQ) {
-                    for (INode node : currentProcess.getGeneratingNodes()) {
-                        String componentName = node.getComponent().getName();
-                        if ("tDqReportRun".equals(componentName)) {
-                            needExportItemsForDQ = true;
-                            break;
-                        }
-                    }
-                }
-                /* 1.TDQ-12474 copy the "metadata/survivorship/rulePackage" to ".Java/src/main/resources/". so that it will be
+            	/* 1.TDQ-12474 copy the "metadata/survivorship/rulePackage" to ".Java/src/main/resources/". so that it will be
                      used by maven command 'include-survivorship-rules' to export.
                    2.TDQ-14308 current drools file in 'src/resourcesmetadata/survivorship/' should be included to job jar.
                 */
