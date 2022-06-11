@@ -14,9 +14,9 @@ package org.talend.signon.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.osgi.framework.Bundle;
@@ -48,7 +48,7 @@ public class SignOnClientUtil {
 
     private static final SignOnClientUtil instance = new SignOnClientUtil();
 
-    private SignOnClientInvoker signonClientInvoker;
+    private SignOnClientExec signOnClientExec;
 
     private SignOnClientUtil() {
         if (SignClientInstallService.getInstance().isNeedInstall()) {
@@ -98,31 +98,24 @@ public class SignOnClientUtil {
     }
 
     private void startSignOnClient(SignOnEventListener listener) throws Exception {
-        if (signonClientInvoker != null) {
-            signonClientInvoker.stop();
+        if (signOnClientExec != null) {
+            signOnClientExec.stop();
         }
         String clientId = getClientID();
         File execFile = getSSOClientAppFile();
-        int port = newPort();
         String codeChallenge = listener.getCodeChallenge();
-        signonClientInvoker = new SignOnClientInvoker(execFile, clientId, port, codeChallenge);
-        SignOnMonitor monitor = new SignOnMonitor(clientId, port, signonClientInvoker);
-        monitor.addLoginEventListener(listener);
-        // Start monitor
-        new Thread(monitor).start();
-    }
-
-    private Integer newPort() {
-        final Integer port = Integer.getInteger("stduio.signon.client.listen.port", -1);
-        if (port <= 0) {
-            try (ServerSocket socket = new ServerSocket(0)) {
-                socket.setReuseAddress(true);
-                return socket.getLocalPort();
-            } catch (final IOException e) {
-                throw new IllegalStateException(e);
-            }
+        
+        SignOnClientListener signOnClientListener = SignOnClientListener.getInscance();
+        signOnClientListener.addLoginEventListener(listener);
+        new Thread(signOnClientListener).start();
+        while (!SignOnClientListener.isRunning()) {
+            TimeUnit.MILLISECONDS.sleep(100);
         }
-        return port;
+        if (signOnClientListener.getListenPort() < 0) {
+            throw new Exception("Sign on client listener start failed.");
+        }
+        signOnClientExec = new SignOnClientExec(execFile, clientId, codeChallenge, signOnClientListener.getListenPort());
+        new Thread(signOnClientExec).start();
     }
 
     public static SignOnClientUtil getInstance() {
@@ -141,8 +134,8 @@ public class SignOnClientUtil {
         StringBuffer urlSB = new StringBuffer();
         urlSB.append(loginURL).append("?");
         urlSB.append("client_id=").append(clientID).append("&");
-        urlSB.append("state=").append(state).append("&");
-        urlSB.append("code_challenge=").append(codeChallenge);
+        urlSB.append("code_challenge=").append(codeChallenge).append("&");
+        urlSB.append("state=").append(state);
         return urlSB.toString();
     }
 

@@ -13,7 +13,6 @@
 package org.talend.signon.util;
 
 import java.io.File;
-import java.util.Base64;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -21,38 +20,35 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.log4j.Logger;
 import org.eclipse.equinox.app.IApplication;
 
-public class SignOnClientInvoker implements Runnable {
-    private static Logger LOGGER = Logger.getLogger(SignOnClientInvoker.class);
+public class SignOnClientExec implements Runnable {
+    private static Logger LOGGER = Logger.getLogger(SignOnClientExec.class);
     
-    private static final String STUDIO_CALL_PREFIX = "studioCall:";
-
-    private static final String STUDIO_LOGIN_URL_KEY = "URL";
+    public static final String STUDIO_CALL_PREFIX = "studioCall:";
     
     private static final String STUDIO_SIGN_CLIENT_DEBUG_PORT="talend.studio.sign.client.debug.port";
 
     private File execFile;
-
-    private int port;
     
     private String codeChallenge;
 
     private String clientId;
+    
+    private int port;
 
     private ExecuteWatchdog executeWatchdog;
 
     private Exception error;
 
-    public SignOnClientInvoker(File execFile, String clientId, int port, String codeChallenge) {
+    public SignOnClientExec(File execFile, String clientId, String codeChallenge, int port) {
         this.execFile = execFile;
         this.clientId = clientId;
-        this.port = port;
         this.codeChallenge = codeChallenge;
+        this.port = port;
     }
 
     @Override
     public void run() {
-        CommandLine cmdLine = null;
-        cmdLine = new CommandLine(execFile);
+        CommandLine cmdLine = new CommandLine(execFile);
         cmdLine.addArgument(getInvokeParameter(clientId, SignOnClientUtil.TMC_LOGIN_URL, port)); 
         if (getClientDebugPort() != null) {
             cmdLine.addArgument("-vmargs");
@@ -92,13 +88,8 @@ public class SignOnClientInvoker implements Runnable {
 
     private String getInvokeParameter(String clientID, String loginURL, int callbackPort) {
         StringBuffer stateSB = new StringBuffer();
-        stateSB.append("p=").append(callbackPort);
-        
-        StringBuffer urlSB = new StringBuffer();
-        urlSB.append(STUDIO_LOGIN_URL_KEY).append("=");
-        urlSB.append(SignOnClientUtil.getInstance().getSignOnURL(loginURL, clientID, codeChallenge, Base64.getEncoder().encodeToString(stateSB.toString().getBytes())));
-        
-        return STUDIO_CALL_PREFIX + Base64.getEncoder().encodeToString(urlSB.toString().getBytes());
+        stateSB.append(callbackPort);
+        return STUDIO_CALL_PREFIX + SignOnClientUtil.getInstance().getSignOnURL(loginURL, clientID, codeChallenge, stateSB.toString());
     }
 
     public void stop() {
@@ -106,8 +97,7 @@ public class SignOnClientInvoker implements Runnable {
             executeWatchdog.destroyProcess();
         }
     }
-
-    
+ 
     public Exception getError() {
         return error;
     }
