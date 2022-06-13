@@ -34,7 +34,11 @@ import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -187,7 +191,7 @@ public class WSDLLoader {
 							if (!importedSchemas.containsKey(schemaNS)) {
 								Element schemaImported =
 									(Element)ownerSchemaNode.getOwnerDocument().importNode(
-											loadSchema(schemaURL, false), true);
+											loadSchema(schemaLocation, false), true);
 								ownerSchemaNode.getParentNode().insertBefore(schemaImported, ownerSchemaNode);
 
 								// add the schemas doc to the schemas imported map.
@@ -204,7 +208,7 @@ public class WSDLLoader {
 									for (int i = 0; i < nl.getLength(); ++i) {
 										Element schema = (Element) nl.item(i);
 										if (schemaNS.equals(schema.getAttribute(NAME_ATTRIBUTE_TARGET_NAMESPACE))) {
-											Element schemaElement = loadSchema(schemaURL, true);
+											Element schemaElement = loadSchema(schemaLocation, true);
 
 											loadSchemas(schema, schemaElement, schemaURL);
 
@@ -255,7 +259,7 @@ public class WSDLLoader {
 						URL schemaURL = getURL(ownerFile, schemaLocation);
 						final String schemaNamespace = ownerSchemaNode.getAttribute(NAME_ATTRIBUTE_TARGET_NAMESPACE);
 						if(importedSchemas.get(schemaNamespace).add(schemaURL)) {
-							Element schemaIncluded = loadSchema(schemaURL, true);
+							Element schemaIncluded = loadSchema(schemaLocation, true);
 							String includeNamespace = schemaIncluded.getAttribute(NAME_ATTRIBUTE_TARGET_NAMESPACE);
 							if((includeNamespace != null && includeNamespace.length() != 0) // skip chameleon schema check
 								&& !schemaNamespace.equals(includeNamespace)) {
@@ -408,11 +412,15 @@ public class WSDLLoader {
 		}
 	}
 
-	private static final Element loadSchema(URL schemaFile, boolean cleanup)
+	private static final Element loadSchema(String schemaLocation, boolean cleanup)
 			throws IOException, SAXException, ParserConfigurationException {
 		InputStream is = null;
 		try {
-			is = schemaFile.openStream();
+		        CloseableHttpClient client = HttpClients.createDefault();
+		        RequestBuilder reqbuilder = RequestBuilder.get(schemaLocation);
+		        HttpUriRequest request = reqbuilder.build();
+		        HttpResponse response = client.execute(request);
+		        is = response.getEntity().getContent();
 			Element schemaElement = getDocumentBuilder().parse(is).getDocumentElement();
 			if (cleanup) {
 				cleanupSchemaElement(schemaElement);
