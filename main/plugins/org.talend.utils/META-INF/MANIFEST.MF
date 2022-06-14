@@ -26,9 +26,8 @@ Require-Bundle: org.apache.commons.lang,
  org.talend.daikon;visibility:=reexport,
  org.talend.daikon.crypto.utils;visibility:=reexport,
  org.slf4j.api,
- org.talend.studio.studio-utils;visibility:=reexport
+ org.talend.studio.studio-utils;visibility:=reexport,
+ org.apache.httpcomponents.httpclient,
+ org.apache.httpcomponents.httpcore
 Eclipse-BuddyPolicy: registered
 Eclipse-RegisterBuddy: org.apache.log4j, org.talend.testutils
-Import-Package: org.apache.http,
- org.apache.http.client.methods,
- org.apache.http.impl.client
