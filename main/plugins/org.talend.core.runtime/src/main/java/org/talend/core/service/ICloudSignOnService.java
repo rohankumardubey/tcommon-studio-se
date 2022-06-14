@@ -22,8 +22,6 @@ public interface ICloudSignOnService extends IService {
 
     TokenMode getToken(String authCode, String codeVerifier) throws Exception;
 
-    ConnectionBean refreshToken(ConnectionBean bean) throws Exception;
-
     void startHeartBeat() throws Exception;
 
     void stopHeartBeat();
@@ -34,11 +32,13 @@ public interface ICloudSignOnService extends IService {
 
     boolean hasValidToken() throws Exception;
 
-    boolean usingSSO();
-
     String getTokenUser(String url, TokenMode token) throws Exception;
 
     void signonCloud(SignOnEventListener listener) throws Exception;
+    
+    TokenMode getLatestToken() throws Exception;
+    
+    void lastConnectionChanged(ConnectionBean bean);
 
     public static ICloudSignOnService get() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ICloudSignOnService.class)) {

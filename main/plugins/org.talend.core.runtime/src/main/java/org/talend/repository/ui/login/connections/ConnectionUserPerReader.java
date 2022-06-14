@@ -32,6 +32,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.general.ConnectionBean;
+import org.talend.core.service.ICloudSignOnService;
 import org.talend.utils.json.JSONArray;
 import org.talend.utils.json.JSONException;
 import org.talend.utils.json.JSONObject;
@@ -207,7 +208,7 @@ public class ConnectionUserPerReader {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        ICloudSignOnService.get().lastConnectionChanged(bean);
     }
 
     public void createPropertyFile() {
