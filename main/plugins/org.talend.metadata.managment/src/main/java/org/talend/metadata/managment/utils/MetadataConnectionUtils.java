@@ -1411,11 +1411,11 @@ public class MetadataConnectionUtils {
         return false;
     }
     
-    public static IContext promptConfirmLauch(List<IContext> contexts) {
+    public static IContext promptConfirmLauch(List<IContext> contexts, IContext defaultContext) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IMetadataManagmentUiService.class)) {
             IMetadataManagmentUiService mmUIService = GlobalServiceRegister.getDefault()
                     .getService(IMetadataManagmentUiService.class);
-            return mmUIService.promptConfirmLauch(PlatformUI.getWorkbench().getDisplay().getActiveShell(), contexts);
+            return mmUIService.promptConfirmLauch(PlatformUI.getWorkbench().getDisplay().getActiveShell(), contexts, defaultContext);
         }
         return null;
     }
