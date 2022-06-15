@@ -16,7 +16,7 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
 import org.talend.core.model.general.ConnectionBean;
 import org.talend.signon.util.TokenMode;
-import org.talend.signon.util.listener.SignOnEventListener;
+import org.talend.signon.util.listener.LoginEventListener;
 
 public interface ICloudSignOnService extends IService {
 
@@ -34,7 +34,7 @@ public interface ICloudSignOnService extends IService {
 
     String getTokenUser(String url, TokenMode token) throws Exception;
 
-    void signonCloud(SignOnEventListener listener) throws Exception;
+    void signonCloud(LoginEventListener listener) throws Exception;
     
     TokenMode getLatestToken() throws Exception;
     

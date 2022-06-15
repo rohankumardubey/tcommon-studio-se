@@ -17,21 +17,17 @@ import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.talend.signon.util.listener.SignOnEventListener;
+import org.talend.signon.util.listener.LoginEventListener;
 
-public class SignOnClientListener implements Runnable{
+public class SSOClientMonitor implements Runnable{
 
-    private static Logger LOGGER = Logger.getLogger(SignOnClientListener.class);
-
-    private static final String STUDIO_SSO_CLIENT_MAX_WAITING_KEY = "talend.sso.client.max.waiting";
+    private static Logger LOGGER = Logger.getLogger(SSOClientMonitor.class);
 
     private static final String STUDIO_AUTH_CODE_KEY = "code";
 
@@ -39,25 +35,19 @@ public class SignOnClientListener implements Runnable{
 
     private static final String STUDIO_CALLBACK_PREFIX = "studioCallback:";
 
-    private static final SignOnClientListener instance = new SignOnClientListener();
+    private static final SSOClientMonitor instance = new SSOClientMonitor();
 
     private static int listenPort = -1;
 
-    private static volatile long lastStartTime = -1l;
-
-    private static int maxWaitingTime = 3600 * 1000; // Max waiting time 60 minute
-
     private static volatile boolean isRunning = false;
-    
-    private static SignOnClientExec signOnClientExec;
 
-    private List<SignOnEventListener> listenerList = new ArrayList<SignOnEventListener>();
+    private Set<LoginEventListener> listenerSet = new HashSet<LoginEventListener>();
 
-    public static SignOnClientListener getInscance() {
+    public static SSOClientMonitor getInscance() {
         return instance;
     }
 
-    private SignOnClientListener() {
+    private SSOClientMonitor() {
 
     }
 
@@ -82,8 +72,8 @@ public class SignOnClientListener implements Runnable{
         if (data.startsWith(STUDIO_CALLBACK_PREFIX)) {
             data = data.substring(STUDIO_CALLBACK_PREFIX.length());
         }
-        if (data.startsWith(CloudSignOnUtil.STUDIO_REDIRECT_URL)) {
-            data = data.substring(CloudSignOnUtil.STUDIO_REDIRECT_URL.length());
+        if (data.startsWith(SSOUtil.STUDIO_REDIRECT_URL)) {
+            data = data.substring(SSOUtil.STUDIO_REDIRECT_URL.length());
         }
         if (data.startsWith("?")) {
             data = data.substring("?".length());
@@ -105,11 +95,10 @@ public class SignOnClientListener implements Runnable{
     public void stop() {
         isRunning = false;
         listenPort = -1;
-        lastStartTime = -1l;
     }
 
     private Integer newPort() {
-        final Integer port = Integer.getInteger("stduio.signon.client.listen.port", -1);
+        final Integer port = Integer.getInteger("stduio.login.client.monitor.port", -1);
         if (port <= 0) {
             try (ServerSocket socket = new ServerSocket(0)) {
                 socket.setReuseAddress(true);
@@ -122,7 +111,7 @@ public class SignOnClientListener implements Runnable{
     }
 
     private void fireLoginStop(String code, String dataCenter) {
-        for (SignOnEventListener l : listenerList) {
+        for (LoginEventListener l : listenerSet) {
             try {
                 l.loginStop(code, dataCenter);
             } catch (Exception ex) {
@@ -132,7 +121,7 @@ public class SignOnClientListener implements Runnable{
     }
 
     private void fireLoginStart() {
-        for (SignOnEventListener l : listenerList) {
+        for (LoginEventListener l : listenerSet) {
             try {
                 l.loginStart();
             } catch (Exception ex) {
@@ -142,7 +131,7 @@ public class SignOnClientListener implements Runnable{
     }
 
     private void fireLoginFailed(Exception ex) {
-        for (SignOnEventListener l : listenerList) {
+        for (LoginEventListener l : listenerSet) {
             try {
                 l.loginFailed(ex);
             } catch (Exception e) {
@@ -151,12 +140,14 @@ public class SignOnClientListener implements Runnable{
         }
     }
 
-    public void addLoginEventListener(SignOnEventListener listener) {
-        listenerList.add(listener);
+    public void addLoginEventListener(LoginEventListener listener) {
+        listenerSet.add(listener);
     }
 
-    public void removeLoginEventListener(SignOnEventListener listener) {
-        listenerList.remove(listener);
+    public void removeLoginEventListener(LoginEventListener listener) {
+        if (listenerSet.contains(listener)) {
+            listenerSet.remove(listener);
+        }
     }
 
     public int getListenPort() {
@@ -165,64 +156,43 @@ public class SignOnClientListener implements Runnable{
 
     @Override
     public void run() {
-        if (System.getProperty(STUDIO_SSO_CLIENT_MAX_WAITING_KEY) != null) {
-            String strValue = System.getProperty(STUDIO_SSO_CLIENT_MAX_WAITING_KEY);
-            try {
-                int value = Integer.parseInt(strValue);
-                if (value > 0) {
-                    maxWaitingTime = value * 60;
-                }
-            } catch (Exception ex) {
-                LOGGER.error("Update max waiting time failed", ex);
-            }
-        }
-
         if (isRunning) {
-            lastStartTime = System.currentTimeMillis();
+            LOGGER.info("Login client monitor started.");
             return;
         }
-        isRunning = true;
-        listenPort = newPort();
-
+        listenPort = newPort();       
         ServerSocket server;
         try {
-            lastStartTime = System.currentTimeMillis();
-            fireLoginStart();
             server = new ServerSocket(listenPort);
-            ExecutorService threadPool = Executors.newFixedThreadPool(1);
+            LOGGER.info("Start sso client monitor on " + listenPort);
+            isRunning = true;
+            fireLoginStart();
             while (isRunning) {
-                if (System.currentTimeMillis() - lastStartTime > maxWaitingTime) {
-                    stop();
-                    LOGGER.info("Stop Sign on client listener by timeout.");
-                }
                 Socket socket = server.accept();
-                Runnable runnable = () -> {
+                try {
+                    InputStream inputStream = socket.getInputStream();
+                    byte[] bytes = new byte[1024];
+                    int len;
+                    StringBuilder sb = new StringBuilder();
+                    while ((len = inputStream.read(bytes)) != -1) {
+                        sb.append(new String(bytes, 0, len, StandardCharsets.UTF_8));
+                    }
+                    inputStream.close();
+                    processData(sb.toString());
+                    stop();
+                    LOGGER.info("Stop sso client monitor");
+                    break;
+                } catch (Exception e) {
+                    LOGGER.error(e);
+                    fireLoginFailed(e);
+                } finally {
                     try {
-                        InputStream inputStream = socket.getInputStream();
-                        byte[] bytes = new byte[1024];
-                        int len;
-                        StringBuilder sb = new StringBuilder();
-                        while ((len = inputStream.read(bytes)) != -1) {
-                            sb.append(new String(bytes, 0, len, StandardCharsets.UTF_8));
-                        }
-                        inputStream.close();
-                        processData(sb.toString());
-                        stop();
-                        LOGGER.info("Stop Sign on client listener by return result.");
-                    } catch (Exception e) {
+                        socket.close();
+                    } catch (IOException e) {
                         LOGGER.error(e);
                         fireLoginFailed(e);
-                    } finally {
-                        try {
-                            socket.close();
-                        } catch (IOException e) {
-                            LOGGER.error(e);
-                            fireLoginFailed(e);
-                        }
                     }
-                };
-                threadPool.submit(runnable);
-                Thread.sleep(1000l);
+                }
             }
         } catch (Exception ex) {
             LOGGER.error(ex);
@@ -233,5 +203,4 @@ public class SignOnClientListener implements Runnable{
     public static boolean isRunning() {
         return isRunning;
     }
-
 }

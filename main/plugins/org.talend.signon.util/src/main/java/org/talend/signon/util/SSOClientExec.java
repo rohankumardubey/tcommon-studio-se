@@ -20,12 +20,12 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.log4j.Logger;
 import org.eclipse.equinox.app.IApplication;
 
-public class SignOnClientExec implements Runnable {
-    private static Logger LOGGER = Logger.getLogger(SignOnClientExec.class);
+public class SSOClientExec implements Runnable {
+    private static Logger LOGGER = Logger.getLogger(SSOClientExec.class);
     
     public static final String STUDIO_CALL_PREFIX = "studioCall:";
     
-    private static final String STUDIO_SIGN_CLIENT_DEBUG_PORT="talend.studio.sign.client.debug.port";
+    private static final String STUDIO_SSO_CLIENT_DEBUG_PORT="talend.studio.sso.client.debug.port";
 
     private File execFile;
     
@@ -39,7 +39,7 @@ public class SignOnClientExec implements Runnable {
 
     private Exception error;
 
-    public SignOnClientExec(File execFile, String clientId, String codeChallenge, int port) {
+    public SSOClientExec(File execFile, String clientId, String codeChallenge, int port) {
         this.execFile = execFile;
         this.clientId = clientId;
         this.codeChallenge = codeChallenge;
@@ -49,7 +49,7 @@ public class SignOnClientExec implements Runnable {
     @Override
     public void run() {
         CommandLine cmdLine = new CommandLine(execFile);
-        cmdLine.addArgument(getInvokeParameter(clientId, SignOnClientUtil.TMC_LOGIN_URL, port)); 
+        cmdLine.addArgument(getInvokeParameter(clientId, SSOClientUtil.TMC_LOGIN_URL, port)); 
         if (getClientDebugPort() != null) {
             cmdLine.addArgument("-vmargs");
             cmdLine.addArgument("-Xdebug");
@@ -83,13 +83,13 @@ public class SignOnClientExec implements Runnable {
     }
     
     private String getClientDebugPort() {
-        return System.getProperty(STUDIO_SIGN_CLIENT_DEBUG_PORT);
+        return System.getProperty(STUDIO_SSO_CLIENT_DEBUG_PORT);
     }
 
     private String getInvokeParameter(String clientID, String loginURL, int callbackPort) {
         StringBuffer stateSB = new StringBuffer();
         stateSB.append(callbackPort);
-        return STUDIO_CALL_PREFIX + SignOnClientUtil.getInstance().getSignOnURL(loginURL, clientID, codeChallenge, stateSB.toString());
+        return STUDIO_CALL_PREFIX + SSOClientUtil.getInstance().getSignOnURL(loginURL, clientID, codeChallenge, stateSB.toString());
     }
 
     public void stop() {

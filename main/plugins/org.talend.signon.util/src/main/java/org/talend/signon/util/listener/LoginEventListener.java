@@ -13,7 +13,7 @@
 package org.talend.signon.util.listener;
 
 
-public interface SignOnEventListener {
+public interface LoginEventListener {
     public void loginStart();
     public void loginStop(String authCode, String dataCenter);
     public void loginFailed(Exception ex);

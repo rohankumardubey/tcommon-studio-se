@@ -4,7 +4,7 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Base64;
 
-public class CloudSignOnUtil{   
+public class SSOUtil{   
     public static final String GET_TOKEN_URL = "https://iam.int.cloud.talend.com/oidc/oauth2/token";
     public static final String STUDIO_REDIRECT_URL = "talendstudio://code";
     
@@ -22,7 +22,4 @@ public class CloudSignOnUtil{
         byte[] digest = messageDigest.digest();
         return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
     }
-    
-    
-
 }

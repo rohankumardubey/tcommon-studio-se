@@ -22,11 +22,11 @@ import org.apache.log4j.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
-import org.talend.signon.util.listener.SignOnEventListener;
+import org.talend.signon.util.listener.LoginEventListener;
 
-public class SignOnClientUtil {
+public class SSOClientUtil {
 
-    private static Logger LOGGER = Logger.getLogger(SignOnClientUtil.class);
+    private static Logger LOGGER = Logger.getLogger(SSOClientUtil.class);
 
     private static final String STUDIO_CLIENT_ID = "0c51933d-c542-4918-9baf-86ef709af5d8";
 
@@ -44,16 +44,16 @@ public class SignOnClientUtil {
 
     private static final String CLIENT_FILE_NAME_ON_MAC_AARCH64 = "Talend_Sign_On_Tool_aarch64.app";
 
-    private static final String CLIENT_FOLDER_NAME = "TalendSignTool";
+    private static final String CLIENT_FOLDER_NAME = "studio_sso_client";
 
-    private static final SignOnClientUtil instance = new SignOnClientUtil();
+    private static final SSOClientUtil instance = new SSOClientUtil();
 
-    private SignOnClientExec signOnClientExec;
+    private SSOClientExec signOnClientExec;
 
-    private SignOnClientUtil() {
-        if (SignClientInstallService.getInstance().isNeedInstall()) {
+    private SSOClientUtil() {
+        if (SSOClientInstaller.getInstance().isNeedInstall()) {
             try {
-                SignClientInstallService.getInstance().install();
+                SSOClientInstaller.getInstance().install();
             } catch (Exception e) {
                 LOGGER.error(e);
             }
@@ -68,7 +68,7 @@ public class SignOnClientUtil {
         if (System.getProperty(CLIENT_FILE_PATH_PROPERTY) != null) {
             return new File(System.getProperty(CLIENT_FILE_PATH_PROPERTY));
         }
-        File folder = getSignToolFolder();
+        File folder = getSSOClientFolder();
         if (EnvironmentUtils.isWindowsSystem()) {
             return new File(folder, CLIENT_FILE_NAME_ON_WINDOWS);
         } else if (EnvironmentUtils.isLinuxUnixSystem()) {
@@ -85,48 +85,51 @@ public class SignOnClientUtil {
                 appFolder = new File(folder, CLIENT_FILE_NAME_ON_MAC_AARCH64);
             }
             if (appFolder != null) {
-                return new File (appFolder, "Contents/MacOS/Talend_Sign_On_Tool");
+                return new File(appFolder, "Contents/MacOS/Talend_Sign_On_Tool");
             }
         }
         throw new Exception("Unsupported OS");
     }
 
-    public static File getSignToolFolder() {
+    public static File getSSOClientFolder() {
         File configFolder = getConfigurationFolder();
         File signClientFolder = new File(configFolder, CLIENT_FOLDER_NAME);
         return signClientFolder;
     }
 
-    private void startSignOnClient(SignOnEventListener listener) throws Exception {
+    private synchronized void startSignOnClient(LoginEventListener listener) throws Exception {
         if (signOnClientExec != null) {
             signOnClientExec.stop();
         }
         String clientId = getClientID();
         File execFile = getSSOClientAppFile();
         String codeChallenge = listener.getCodeChallenge();
-        
-        SignOnClientListener signOnClientListener = SignOnClientListener.getInscance();
+        LOGGER.info("Prepare to start sso client monitor");
+        SSOClientMonitor signOnClientListener = SSOClientMonitor.getInscance();
         signOnClientListener.addLoginEventListener(listener);
         new Thread(signOnClientListener).start();
-        while (!SignOnClientListener.isRunning()) {
+        LOGGER.info("Login sso monitor started.");
+        while (!SSOClientMonitor.isRunning()) {
             TimeUnit.MILLISECONDS.sleep(100);
         }
         if (signOnClientListener.getListenPort() < 0) {
-            throw new Exception("Sign on client listener start failed.");
+            throw new Exception("Login sso monitor start failed.");
         }
-        signOnClientExec = new SignOnClientExec(execFile, clientId, codeChallenge, signOnClientListener.getListenPort());
+        LOGGER.info("Prepare to start sso client on " + signOnClientListener.getListenPort());
+        signOnClientExec = new SSOClientExec(execFile, clientId, codeChallenge, signOnClientListener.getListenPort());
         new Thread(signOnClientExec).start();
+        LOGGER.info("Login sso started.");
     }
 
-    public static SignOnClientUtil getInstance() {
+    public static SSOClientUtil getInstance() {
         return instance;
     }
 
-    public void signOnCloud(SignOnEventListener listener) throws Exception {
-        SignOnClientUtil.getInstance().startSignOnClient(listener);
+    public void signOnCloud(LoginEventListener listener) throws Exception {
+        SSOClientUtil.getInstance().startSignOnClient(listener);
     }
 
-    public String getLoginURL(SignOnEventListener listener) {
+    public String getLoginURL(LoginEventListener listener) {
         return TMC_LOGIN_URL;
     }
 
@@ -152,7 +155,7 @@ public class SignOnClientUtil {
 
     // always return a valid bundlesContext or throw a runtimeException
     public static BundleContext getCurrentBundleContext() {
-        Bundle bundle = FrameworkUtil.getBundle(SignOnClientUtil.class);
+        Bundle bundle = FrameworkUtil.getBundle(SSOClientUtil.class);
         if (bundle != null) {
             BundleContext bundleContext = bundle.getBundleContext();
             if (bundleContext != null) {

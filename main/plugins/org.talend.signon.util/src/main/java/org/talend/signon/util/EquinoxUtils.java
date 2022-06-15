@@ -91,7 +91,7 @@ public class EquinoxUtils {
   
     // always return a valid bundlesContext or throw a runtimeException
     public static BundleContext getCurrentBundleContext() {
-        Bundle bundle = FrameworkUtil.getBundle(SignClientInstallService.class);
+        Bundle bundle = FrameworkUtil.getBundle(EquinoxUtils.class);
         if (bundle != null) {
             BundleContext bundleContext = bundle.getBundleContext();
             if (bundleContext != null) {

@@ -24,22 +24,22 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.talend.utils.io.FilesUtils;
 
-public class SignClientInstallService {
+public class SSOClientInstaller {
 
-    private static Logger LOGGER = Logger.getLogger(SignClientInstallService.class);
+    private static Logger LOGGER = Logger.getLogger(SSOClientInstaller.class);
 
     private final String SIGN_CLIENT_BUNDLE_NAME = "org.talend.singlesignon.client";
     private final String installFileName = "TalendSignTool.zip";
     
     private final String version = "8.0.1.202206081050";
 
-    private static final SignClientInstallService instance = new SignClientInstallService();
+    private static final SSOClientInstaller instance = new SSOClientInstaller();
 
-    public static SignClientInstallService getInstance() {
+    public static SSOClientInstaller getInstance() {
         return instance;
     }
 
-    private SignClientInstallService() {
+    private SSOClientInstaller() {
     }
 
     public boolean isNeedInstall() {
@@ -63,7 +63,7 @@ public class SignClientInstallService {
         targetFolder.mkdirs();
         LOGGER.info("Created target folder:" + targetFolder.getAbsolutePath());
         FilesUtils.unzip(sourceFile.getAbsolutePath(), targetFolder.getAbsolutePath(), true);
-        LOGGER.info("Installed sign client:" + targetFolder.getAbsolutePath());
+        LOGGER.info("Installed login client:" + targetFolder.getAbsolutePath());
     }
 
     private String getInstalledVersion() {
@@ -97,7 +97,7 @@ public class SignClientInstallService {
     }
     
     protected File getInstallDir() {
-        return SignOnClientUtil.getSignToolFolder();
+        return SSOClientUtil.getSSOClientFolder();
     }
     
     protected File getInstallFile() throws IOException {
