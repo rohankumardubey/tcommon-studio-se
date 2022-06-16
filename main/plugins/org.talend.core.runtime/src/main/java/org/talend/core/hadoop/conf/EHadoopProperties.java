@@ -148,7 +148,13 @@ public enum EHadoopProperties {
     
     DATABRICKS_TOKEN,
     
-    DATABRICKS_DBFS_DEP_FOLDER;
+    DATABRICKS_DBFS_DEP_FOLDER,
+    
+    UNIV_STANDALONE_MASTER,
+    
+    UNIV_STANDALONE_EXEC_MEMORY,
+    
+    UNIV_STANDALONE_EXEC_CORE;
 
     public String getName() {
         return this.name();
