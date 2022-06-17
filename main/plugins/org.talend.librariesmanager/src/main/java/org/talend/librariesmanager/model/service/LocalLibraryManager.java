@@ -377,6 +377,10 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                     .process(new Exception(getClass().getSimpleName() + " resolve " + module.getModuleName() + " failed !"));
         }
         try {
+            // try maven uri first
+            if (jarFile == null) {
+                jarFile = getJarFile(module.getMavenUri());
+            }
             // try the jar name if can't get jar with uri.
             if (jarFile == null) {
                 jarFile = getJarFile(jarNeeded);
@@ -388,7 +392,10 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                         ILibraryManagerUIService libUiService = GlobalServiceRegister.getDefault()
                                 .getService(ILibraryManagerUIService.class);
 
-                        libUiService.installModules(new String[] { jarNeeded });
+                        // libUiService.installModules(new String[] { jarNeeded });
+                        List<ModuleNeeded> moduleList = new ArrayList<ModuleNeeded>();
+                        moduleList.add(module);
+                        libUiService.installModules(moduleList);
                     }
                     jarFile = retrieveJarFromLocal(module);
                     if (jarFile == null) {
