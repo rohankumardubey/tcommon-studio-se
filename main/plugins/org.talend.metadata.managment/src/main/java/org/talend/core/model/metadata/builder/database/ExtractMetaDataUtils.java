@@ -1075,8 +1075,10 @@ public class ExtractMetaDataUtils {
                             }
                         }
                     } else {
-                        if (driverJarPathArg.startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
-                            setDriverPath(librairesManagerService, jarPathList, driverJarPathArg);
+                        if (TalendQuoteUtils.removeQuotesIfExist(driverJarPathArg)
+                                .startsWith(MavenUrlHelper.MVN_PROTOCOL)) {
+                            setDriverPath(librairesManagerService, jarPathList,
+                                    TalendQuoteUtils.removeQuotesIfExist(driverJarPathArg));
                         } else {
                             String jarName = librairesManagerService.getJarNameFromMavenuri(driverJarPathArg);
                             if (jarName == null) {
