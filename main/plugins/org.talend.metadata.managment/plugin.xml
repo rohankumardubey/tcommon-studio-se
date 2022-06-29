@@ -109,6 +109,14 @@
             required="true">
       </libraryNeeded>
       <libraryNeeded
+            context="Sybase wizard"
+            language="java"
+            message="Needed for create Sybase connection"
+            mvn_uri="mvn:sap.jdbc4.sqlanywhere/sajdbc4/17.0.0"
+            name="sajdbc4-17.0.0.jar"
+            required="true">
+      </libraryNeeded>
+      <libraryNeeded
             context="plugin:org.talend.metadata.managment"
             language="java"
             message="Needed for create snowflake connection"

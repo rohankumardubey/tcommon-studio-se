@@ -15,6 +15,9 @@ package org.talend.designer.maven.tools;
 import static org.talend.designer.maven.model.TalendJavaProjectConstants.*;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +49,8 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.swt.widgets.Display;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.MojoType;
@@ -98,6 +103,8 @@ import org.talend.repository.ProjectManager;
  * DOC zwxue class global comment. Detailled comment
  */
 public class AggregatorPomsHelper {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(AggregatorPomsHelper.class);
 
     private String projectTechName;
 
@@ -445,6 +452,44 @@ public class AggregatorPomsHelper {
         }
         return jobFolder;
     }
+    
+    public static void updateProjectPomFile(Set<String> visistedProjects, Project prj, Set<String> removedTechLabels) {
+        if (visistedProjects.contains(prj.getTechnicalLabel())) {
+            return;
+        }
+        
+        visistedProjects.add(prj.getTechnicalLabel());
+
+        IFile pomFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(prj.getTechnicalLabel() + "/" + DIR_POMS + "/" + TalendMavenConstants.POM_FILE_NAME));
+        // read project pom
+        try (InputStream is = new BufferedInputStream(new FileInputStream(pomFile.getLocation().toFile()))) {
+            Model projectModel = MavenPlugin.getMavenModelManager().readMavenModel(is);
+
+            Set<String> newMods = projectModel.getModules().stream().filter(mod -> {
+                String techLabel = getTechnicalLabelFromRefModule(mod);
+                return !removedTechLabels.contains(techLabel);
+            }).collect(Collectors.toSet());
+
+            // remove the ref mods
+            if (newMods.size() != projectModel.getModules().size()) {
+                LOGGER.info("project: " + prj.getTechnicalLabel() + " removed number of ref mods: " + (projectModel.getModules().size() - newMods.size()));
+                projectModel.getModules().clear();
+                projectModel.getModules().addAll(newMods);
+
+                // update the pom file.
+                PomUtil.savePom(null, projectModel, pomFile);
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+
+        List<ProjectReference> prjRefs = prj.getProjectReferenceList();
+        if (!prjRefs.isEmpty()) {
+            for (ProjectReference pr : prjRefs) {
+                updateProjectPomFile(visistedProjects, new Project(pr.getReferencedProject()), removedTechLabels);
+            }
+        }
+    }
 
     public static IFolder getItemPomFolder(Property property, String realVersion) {
         return getItemPomFolder(property, realVersion, p -> ItemResourceUtil.getItemRelativePath(p));
@@ -579,6 +624,7 @@ public class AggregatorPomsHelper {
     }
 
     public void syncAllPomsWithoutProgress(IProgressMonitor monitor, String pomFilter) throws Exception {
+        LOGGER.info("syncAllPomsWithoutProgress, pomFilter: " + pomFilter);
         IRunProcessService runProcessService = IRunProcessService.get();
         if (runProcessService == null) {
             return;
@@ -598,7 +644,7 @@ public class AggregatorPomsHelper {
         // project pom
         monitor.subTask("Synchronize project pom"); //$NON-NLS-1$
         Model model = getCodeProjectTemplateModel();
-
+        LOGGER.info("syncAllPomsWithoutProgress, isCIMode: " + isCIMode + ", useProfileMode: " + PomIdsHelper.useProfileModule());
         if (isCIMode) {
             if (PomIdsHelper.useProfileModule()) {
                 model.getProfiles().addAll(collectRefProjectProfiles(null));
@@ -691,8 +737,22 @@ public class AggregatorPomsHelper {
             }
             CodesJarResourceCache.getAllCodesJars().stream().filter(CodesJarInfo::isInCurrentMainProject)
                     .forEach(info -> CodesJarM2CacheManager.updateCodesJarProjectPom(monitor, info));
+            
+            if (!PomIdsHelper.useProfileModule()) {
+                // remove ref mods
+                Set<String> visitedProjectLabels = new HashSet<String>();
+                Map<String, ReferenceCount> rcs = new HashMap<String, ReferenceCount>();
+                findReferenceCount(visitedProjectLabels, ProjectManager.getInstance().getCurrentProject(), rcs);
+                
+                visitedProjectLabels = new HashSet<String>();
+                Set<String> removedTechLabels = rcs.values().stream().filter(rc -> rc.referenceCount > 1).map(rc -> rc.getTalendProject().getTechnicalLabel()).collect(Collectors.toSet());
+                if (!removedTechLabels.isEmpty()) {
+                    LOGGER.info("Need to remove duplicated mods: " + removedTechLabels);
+                    updateProjectPomFile(visitedProjectLabels, ProjectManager.getInstance().getCurrentProject(), removedTechLabels);
+                }
+            }
         }
-
+        LOGGER.info("syncAllPomsWithoutProgress, done");
         monitor.done();
     }
 
@@ -778,6 +838,75 @@ public class AggregatorPomsHelper {
         // FIXME get profile id from extension point.
         List<String> otherProfiles = Arrays.asList("docker", "cloud-publisher", "nexus"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return !otherProfiles.contains(profileId) && StringUtils.startsWithIgnoreCase(profileId, projectTechName + "_");
+    }
+    
+    public static String getTechnicalLabelFromRefModule(String refMod) {
+        String[] modPaths= refMod.split("/");
+        return modPaths[modPaths.length-2];
+    }
+    
+    protected void findReferenceCount(Set<String> visitedProjects, Project projectTree, Map<String, ReferenceCount> rcs) {
+        if (visitedProjects.contains(projectTree.getTechnicalLabel()) || projectTree == null || projectTree.getProjectReferenceList().isEmpty()) {
+            return;
+        }
+
+        visitedProjects.add(projectTree.getTechnicalLabel());
+
+        for (ProjectReference refPrj : projectTree.getProjectReferenceList()) {
+            ReferenceCount rc = rcs.get(refPrj.getReferencedProject().getTechnicalLabel());
+            if (rc == null) {
+                rc = new ReferenceCount(new Project(refPrj.getReferencedProject()));
+                rcs.put(refPrj.getReferencedProject().getTechnicalLabel(), rc);
+            }
+            if (StringUtils.equals(refPrj.getReferencedProject().getTechnicalLabel(), rc.getTalendProject().getTechnicalLabel())) {
+                rc.increaseReferenceCount();
+            }
+            rc.increaseReferenceLevel();
+            findReferenceCount(visitedProjects, new Project(refPrj.getReferencedProject()), rcs);
+        }
+    }
+
+    static class ReferenceCount {
+
+        private Project talendProject;
+
+        private int referenceCount;
+        
+        private int referenceLevel;
+
+        
+        /**
+         * @return the referenceLevel
+         */
+        public int getReferenceLevel() {
+            return referenceLevel;
+        }
+
+        public void increaseReferenceLevel() {
+            referenceLevel++;
+        }
+        
+        /**
+         * @return the talendProject
+         */
+        public Project getTalendProject() {
+            return talendProject;
+        }
+
+        /**
+         * @return the referenceCount
+         */
+        public int getReferenceCount() {
+            return referenceCount;
+        }
+
+        public void increaseReferenceCount() {
+            referenceCount++;
+        }
+
+        public ReferenceCount(Project project) {
+            talendProject = project;
+        }
     }
 
 }
