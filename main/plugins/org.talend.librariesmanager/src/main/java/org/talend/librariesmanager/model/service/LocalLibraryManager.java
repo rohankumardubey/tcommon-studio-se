@@ -1354,7 +1354,7 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                                 if (path.equals(moduleLocation)) {
                                     continue;
                                 } else {
-                                    if (CommonsPlugin.isDebugMode()) {
+                                    if (CommonsPlugin.isDebugMode() && !CommonsPlugin.isHeadless()) {
                                         CommonExceptionHandler
                                                 .warn(name + " is duplicated, locations:" + path + " and:" + moduleLocation);
                                     }
