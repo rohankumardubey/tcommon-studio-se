@@ -147,23 +147,27 @@ public class XmiResourceManager {
     }
 
     public Property loadProperty(IResource iResource) {
+        URI propertyUri = URIHelper.convert(iResource.getFullPath());
+        return loadProperty(propertyUri);
+    }
+
+    public Property loadProperty(URI propertyUri) {
         final Map<Object, Object> oldLoadOptions = new HashMap<Object, Object>(resourceSet.getLoadOptions());
         try {
-            return doLoadProperty(iResource);
+            return doLoadProperty(propertyUri);
         } finally {
             resourceSet.getLoadOptions().clear();
             resourceSet.getLoadOptions().putAll(oldLoadOptions);
         }
     }
 
-    private Property doLoadProperty(IResource iResource) {
+    private Property doLoadProperty(URI propertyUri) {
 
         Property property = null;
         // force unload old version, or the UI won't be synchronized all the time to the current file.
         // this is only if a user update itself a .item or .properties, or for SVN repository.
         //
         URIConverter theURIConverter = resourceSet.getURIConverter();
-        URI propertyUri = URIHelper.convert(iResource.getFullPath());
         URI itemResourceURI = theURIConverter.normalize(getItemResourceURI(propertyUri));
         URI screenshotResourceURI = theURIConverter.normalize(getScreenshotResourceURI(itemResourceURI));
         List<Resource> resources = resourceSet.getResources();
@@ -655,6 +659,10 @@ public class XmiResourceManager {
     }
 
     public void saveResource(Resource resource) throws PersistenceException {
+        saveResource(resource, null);
+    }
+
+    public void saveResource(Resource resource, OutputStream out) throws PersistenceException {
         try {
             if (resource != null) {
                 Object objectByType = EcoreUtil.getObjectByType(resource.getContents(), PropertiesPackage.eINSTANCE.getProject());
@@ -672,7 +680,7 @@ public class XmiResourceManager {
         } catch (Throwable e) {
             org.talend.commons.exception.ExceptionHandler.process(e);
         }
-        EmfHelper.saveResource(resource);
+        EmfHelper.saveResource(resource, out);
     }
 
     // MOD mzhao 2010-11-22, suppport TDQ item file extensions.(.ana, .rep, etc), this function do not work items that
