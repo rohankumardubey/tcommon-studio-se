@@ -10,6 +10,24 @@
              label="Talend default theme">
              <!-- please see: TalendThemeConstants.TALEND_DEFAULT_THEME_ID -->
        </theme>
+       <theme
+	        basestylesheeturi="themes/dark/css/e4-dark_linux.css"
+	        id="org.talend.themes.css.talend.dark"
+	        label="Talend experimental dark theme"
+	        os="linux">
+	    </theme>
+	    <theme
+	        basestylesheeturi="themes/dark/css/e4-dark_win.css"
+	        id="org.talend.themes.css.talend.dark"
+	        label="Talend experimental dark theme"
+	        os="win32">
+	    </theme>
+	    <theme
+	        basestylesheeturi="themes/dark/css/e4-dark_mac.css"
+	        id="org.talend.themes.css.talend.dark"
+	        label="Talend experimental dark theme"
+	        os="macosx">
+	    </theme>
     </extension>
 
 </plugin>
