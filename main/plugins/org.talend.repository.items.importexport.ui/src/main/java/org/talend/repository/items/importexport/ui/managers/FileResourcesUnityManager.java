@@ -165,12 +165,10 @@ public class FileResourcesUnityManager extends FilesManager {
         if (fileName.length() == 0) {
             return false;
         }
-        boolean isZip = true;
         ZipFile zipFile = null;
         try {
             zipFile = new ZipFile(fileName);
         } catch (IOException ioException) {
-            isZip = false;
             throw ioException;
 
         } finally {
@@ -183,7 +181,7 @@ public class FileResourcesUnityManager extends FilesManager {
             }
         }
 
-        return isZip;
+        return true;
     }
 
     private void decompress(ResourcesManager srcManager, File destRootFolder, boolean interrupable) throws IOException {
