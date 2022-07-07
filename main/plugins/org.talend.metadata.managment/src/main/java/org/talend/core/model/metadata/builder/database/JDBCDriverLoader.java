@@ -42,6 +42,8 @@ public class JDBCDriverLoader {
     private static MultiKeyMap classLoadersMap = new MultiKeyMap();
 
     private static Map<String, HotClassLoader> classLoadersMapBasedOnLibraries = new HashMap<String, HotClassLoader>();
+    
+    private static MultiKeyMap driverShimCacheMap = new MultiKeyMap();
 
     /**
      * Loads the jars for hive embedded mode required, I do not think it is the better method to do this here. Due to
@@ -145,8 +147,14 @@ public class JDBCDriverLoader {
         DriverShim wapperDriver = null;
         Connection connection = null;
         try {
-            HotClassLoader loader = getHotClassLoader(jarPath, dbType, dbVersion);
-            wapperDriver = new DriverShim((getDriver(loader, jarPath, driverClassName, dbType, dbVersion)));
+            HotClassLoader loader = (HotClassLoader) classLoadersMap.get(dbType, dbVersion);
+            if(driverShimCacheMap.containsKey(driverClassName, dbType, dbVersion)) {
+                wapperDriver = (DriverShim) driverShimCacheMap.get(driverClassName, dbType, dbVersion);
+            } else {
+                loader = getHotClassLoader(jarPath, dbType, dbVersion);
+                wapperDriver = new DriverShim((getDriver(loader, jarPath, driverClassName, dbType, dbVersion)));
+                driverShimCacheMap.put(driverClassName, dbType, dbVersion, wapperDriver);
+            }
             // Object driver = loader.loadClass(driverClassName).newInstance();
             // wapperDriver = new DriverShim((Driver) (driver));
             Properties info = new Properties();

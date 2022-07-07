@@ -194,7 +194,13 @@ public enum EHadoopProperties {
     
     K8S_AZUREAADCLIENTID,
     
-    K8S_AZUREAADDIRECTORYID;
+    K8S_AZUREAADDIRECTORYID,
+    
+    UNIV_STANDALONE_MASTER,
+    
+    UNIV_STANDALONE_EXEC_MEMORY,
+    
+    UNIV_STANDALONE_EXEC_CORE;
 
     public String getName() {
         return this.name();

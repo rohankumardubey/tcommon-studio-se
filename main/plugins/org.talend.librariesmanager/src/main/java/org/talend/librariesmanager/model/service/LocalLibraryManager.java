@@ -67,6 +67,7 @@ import org.talend.core.model.general.ILibrariesService.IChangedLibrariesListener
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.ModuleNeeded.ELibraryInstallStatus;
 import org.talend.core.model.general.ModuleStatusProvider;
+import org.talend.core.model.general.RetrieveResult;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.nexus.ArtifactRepositoryBean;
 import org.talend.core.nexus.NexusConstants;
@@ -376,6 +377,10 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                     .process(new Exception(getClass().getSimpleName() + " resolve " + module.getModuleName() + " failed !"));
         }
         try {
+            // try maven uri first
+            if (jarFile == null) {
+                jarFile = getJarFile(module.getMavenUri());
+            }
             // try the jar name if can't get jar with uri.
             if (jarFile == null) {
                 jarFile = getJarFile(jarNeeded);
@@ -387,7 +392,10 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                         ILibraryManagerUIService libUiService = GlobalServiceRegister.getDefault()
                                 .getService(ILibraryManagerUIService.class);
 
-                        libUiService.installModules(new String[] { jarNeeded });
+                        // libUiService.installModules(new String[] { jarNeeded });
+                        List<ModuleNeeded> moduleList = new ArrayList<ModuleNeeded>();
+                        moduleList.add(module);
+                        libUiService.installModules(moduleList);
                     }
                     jarFile = retrieveJarFromLocal(module);
                     if (jarFile == null) {
@@ -717,8 +725,15 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
     @Override
     public boolean retrieve(ERepositoryObjectType codeType, Set<ModuleNeeded> modulesNeeded, String pathToStore,
             boolean showDialog, IProgressMonitor... monitorWrap) {
+        return retrieveModules(codeType, modulesNeeded, pathToStore, showDialog, monitorWrap).isAllResolved();
+    }
+
+    @Override
+    public RetrieveResult retrieveModules(ERepositoryObjectType codeType, Set<ModuleNeeded> modulesNeeded, String pathToStore,
+            boolean showDialog, IProgressMonitor... monitorWrap) {
+        RetrieveResult result = new RetrieveResult();
         if (modulesNeeded == null || modulesNeeded.size() == 0) {
-            return false;
+            return result;
         }
         
         // install local platform jars.
@@ -745,8 +760,10 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                     if (!retrieve(jar, pathToStore, false, false)) {
                         jarNotFound.add(jar);
                         allIsOK = false;
+                        result.getUnresolvedModules().add(jar);
                     } else {
                         needResetModulesNeeded = true;
+                        result.getResovledModules().add(jar);
                     }
                 }
                 if (needResetModulesNeeded) {
@@ -763,8 +780,8 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
                 }
             }
         }
-
-        return allIsOK;
+        result.setAllResolved(allIsOK);
+        return result;
     }
 
     @Override
@@ -822,12 +839,19 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
     }
 
     @Override
-    public void clearCache() {
+    public void clearCache(boolean cleanIndex) {
         if (isInitialized()) {
-            LibrariesIndexManager.getInstance().clearAll();
+            if (cleanIndex) {
+                LibrariesIndexManager.getInstance().clearAll();
+            }
             ModuleStatusProvider.reset();
         }
         jarList.clear();
+    }
+    
+    @Override
+    public void clearCache() {
+        clearCache(true);
     }
 
     @Override
