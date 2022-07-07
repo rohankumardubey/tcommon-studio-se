@@ -1953,12 +1953,6 @@ public class ProcessorUtilities {
     
     private static void updateCodeSources() throws ProcessorException {
         if (isRemoteProject()) {
-        	// TESB-29071
-        	try {
-                ProxyRepositoryFactory.getInstance().initialize();
-            } catch (PersistenceException e) {
-                ExceptionHandler.process(e);
-            }
             RepositoryManager.syncRoutineAndJoblet(ERepositoryObjectType.ROUTINES);
             RepositoryManager.syncRoutineAndJoblet(ERepositoryObjectType.BEANS);
         }  	

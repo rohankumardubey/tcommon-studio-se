@@ -839,12 +839,19 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
     }
 
     @Override
-    public void clearCache() {
+    public void clearCache(boolean cleanIndex) {
         if (isInitialized()) {
-            LibrariesIndexManager.getInstance().clearAll();
+            if (cleanIndex) {
+                LibrariesIndexManager.getInstance().clearAll();
+            }
             ModuleStatusProvider.reset();
         }
         jarList.clear();
+    }
+    
+    @Override
+    public void clearCache() {
+        clearCache(true);
     }
 
     @Override
