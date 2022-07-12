@@ -25,7 +25,6 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
-import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.workbench.extensions.ExtensionImplementationProvider;
 import org.talend.commons.utils.workbench.extensions.ExtensionPointLimiterImpl;
@@ -110,7 +109,7 @@ public class ExtensionModuleManager {
 
     private ExtensionModuleManager() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ILibraryManagerService.class)) {
-            libManagerService = GlobalServiceRegister.getDefault().getService(
+            libManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault().getService(
                     ILibraryManagerService.class);
         }
         moduleGroupElementsCache = new ArrayList<>();
@@ -186,12 +185,6 @@ public class ExtensionModuleManager {
             moduleNeeded.setShow(importType.isSHOW());
             if (!StringUtils.isEmpty(importType.getMVN())) {
                 moduleNeeded.setMavenUri(importType.getMVN());
-            }
-            if (StringUtils.isBlank(importType.getMVN())) {
-                if (importType.getMODULE() != null) {
-
-                    CommonExceptionHandler.error("Missing module MVN_URI definition: " + importType.getMODULE());
-                }
             }
             if (importType.getUrlPath() != null && libManagerService.checkJarInstalledFromPlatform(importType.getUrlPath())) {
                 moduleNeeded.setModuleLocaion(importType.getUrlPath());
