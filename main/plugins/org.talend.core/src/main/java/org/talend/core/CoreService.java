@@ -526,4 +526,24 @@ public class CoreService implements ICoreService {
             }
         });
     }
+
+    @Override
+    public boolean isGitProject(Project project) {
+        if (org.talend.core.services.IGITProviderService.get() != null) {
+            try {
+                return org.talend.core.services.IGITProviderService.get().isGITProject(project);
+            } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isStandardGitMode() {
+        if (org.talend.core.services.IGITProviderService.get() != null) {
+            return org.talend.core.services.IGITProviderService.get().isStandardMode();
+        }
+        return false;
+    }
 }

@@ -22,6 +22,7 @@ import java.util.Set;
 import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.ICoreService;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.runtime.i18n.Messages;
@@ -207,13 +208,28 @@ public class ReferenceProjectProblemManager {
         visited[id] = false;
         return true;
     }
-
+    
+    private static ICoreService getCoreService() {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreService.class)) {
+            return GlobalServiceRegister.getDefault().getService(ICoreService.class);
+        }
+        return null;
+    }
+    
     /**
      *
      * @param projectRefMap key : project technical label, value : all referenced project list
      * @throws MoreThanOneBranchException
      */
     public static void checkMoreThanOneBranch(Map<String, List<ProjectReference>> projectRefMap) throws BusinessException {
+        
+        // for standard git mode, all of reference projects are on the same branch
+        ICoreService coreSvc = getCoreService();
+        if (coreSvc != null) {
+            if (coreSvc.isGitProject(ProjectManager.getInstance().getCurrentProject()) && coreSvc.isStandardGitMode()) {
+                return;
+            }
+        }
         Map<String, Set<String>> prjectBranchMap = new HashMap<String, Set<String>>();
         for (List<ProjectReference> referenceList : projectRefMap.values()) {
             for (ProjectReference pr : referenceList) {

@@ -131,5 +131,18 @@ public interface ICoreService extends IService {
      * @param monitor
      */
     void installComponents(IProgressMonitor monitor);
+    
+    /**
+     * Check whether project is a project managed by git
+     * @param project project
+     * @return
+     */
+    boolean isGitProject(Project project);
+    
+    /**
+     * Whether is Git standard mode.
+     * @return
+     */
+    boolean isStandardGitMode();
 
 }
