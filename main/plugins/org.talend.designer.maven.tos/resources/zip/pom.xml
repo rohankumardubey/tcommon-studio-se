@@ -20,7 +20,11 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <tasks>
-                                <zip destfile="${basedir}/../repository/maven_repository.zip" basedir="${basedir}/../tmp/" />
+                                <zip destfile="${basedir}/../repository/maven_repository.zip" basedir="${basedir}/../tmp/" >
+                                <fileset dir="${basedir}/../tmp/">
+                                    <exclude name="repository/dom4j/dom4j/1.6.1/**" />
+                                </fileset>
+                                </zip>
                                  <delete dir="${basedir}/../tmp/" />
                             </tasks>
                         </configuration>
