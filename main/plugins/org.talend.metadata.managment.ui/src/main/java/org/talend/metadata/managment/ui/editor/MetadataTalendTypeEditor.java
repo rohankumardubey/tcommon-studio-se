@@ -537,7 +537,7 @@ public class MetadataTalendTypeEditor extends FieldEditor {
             if (optional.isPresent()) {
                 FileInfo tmpFileInfo = optional.get();
                 try {
-                    String content = Files.readAllBytes(input.toPath()).toString();
+                    String content = new String(Files.readAllBytes(input.toPath()));
                     if (FileType.SYSTEM_DEFAULT == tmpFileInfo.type) {
                         String systemSha1 = MetadataTalendType.getSha1OfSystemMappingFile(tmpFileInfo.fileName);
                         String inputSha1 = MetadataTalendType.getSha1OfText(content);
@@ -765,6 +765,9 @@ public class MetadataTalendTypeEditor extends FieldEditor {
                     if (file.exists()) {
                         file.setContents(inputStream, true, false, null);
                     } else {
+                        if (!mappingFolder.exists()) {
+                            ResourceUtils.createFolder(mappingFolder);
+                        }
                         file.create(inputStream, true, null);
                     }
                     needReload = true;
