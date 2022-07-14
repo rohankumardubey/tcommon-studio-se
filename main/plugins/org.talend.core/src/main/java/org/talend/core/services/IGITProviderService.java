@@ -57,7 +57,18 @@ public interface IGITProviderService extends IService {
 
     String getDefaultBranch(Project project);
     
+    /**
+     * Whether git mode is standard mode
+     * @return
+     */
     boolean isStandardMode();
+    
+    /**
+     * Get clean git repository url
+     * @param project project
+     * @return
+     */
+    String getCleanGitRepositoryUrl(org.talend.core.model.properties.Project project);
 
     public static IGITProviderService get() {
         GlobalServiceRegister register = GlobalServiceRegister.getDefault();
