@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -515,14 +516,15 @@ public final class MetadataTalendType {
         try {
             Map<String, File> targetFileMap = Stream.of(arr).collect(Collectors.toMap(File::getName, Function.identity()));
             Map<String, File> workingFileMap = getWorkingMappingFiles().stream()
-                    .collect(Collectors.toMap(File::getName, Function.identity()));
+                    .collect(Collectors.toMap(f -> getTargetName(f, rename), Function.identity(), (f1, f2) -> f1));
 
             targetFileMap.entrySet().stream().filter(entry -> !workingFileMap.containsKey(entry.getKey()))
                     .forEach(entry -> entry.getValue().delete());
 
-            for (File workingMappingFile : workingFileMap.values()) {
+            for (Entry<String, File> entry : workingFileMap.entrySet()) {
+                String targetName = entry.getKey();
+                File workingMappingFile = entry.getValue();
                 boolean needUpdate = false;
-                String targetName = getTargetName(workingMappingFile, rename);
                 File targetMappingFile = targetFileMap.get(targetName);
                 if (targetMappingFile == null) {
                     targetMappingFile = new File(target, targetName);
