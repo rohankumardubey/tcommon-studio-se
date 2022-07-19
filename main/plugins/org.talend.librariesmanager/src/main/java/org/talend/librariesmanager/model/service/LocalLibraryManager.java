@@ -1352,6 +1352,21 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
         }
         return mavenURIMap;
     }
+    
+    public void deployLibsFromCustomComponents() {
+        IComponentsService service = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IComponentsService.class)) {
+            service = GlobalServiceRegister.getDefault().getService(IComponentsService.class);
+        }
+        if (service != null) {
+            Map<String, String> platformURLMap = new HashMap<>();
+            platformURLMap = LibrariesIndexManager.getInstance().getAllStudioLibsFromIndex();
+            // Need to read components first, otherwise FiltUtils.getFilesFromFolderByName() returns empty for custom
+            // component folder.
+            service.getComponentsFactory().readComponents();
+            deployLibsFromCustomComponents(service, platformURLMap);
+        }
+    }
 
     /**
      *
