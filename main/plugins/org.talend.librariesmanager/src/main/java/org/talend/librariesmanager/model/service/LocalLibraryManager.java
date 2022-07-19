@@ -247,6 +247,7 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
         }
     }
 
+    @Override
     public void guessMavenRUIFromIndex(File jarFile, Map<String, String> sourceAndMavenUri) {
         guessMavenRUIFromIndex(jarFile, false, sourceAndMavenUri);
 
@@ -1301,6 +1302,7 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
         buildModulesIndexFromComponentAndExtension(monitorWrap);
     }
     
+    @Override
     public Map<String, String> buildModulesIndexFromComponentAndExtension(IProgressMonitor... monitorWrap) {
         // key: moduleName, value: platformURL
         Map<String, String> platformURLMap = new HashMap<>();
@@ -1415,7 +1417,7 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
         }
     }
     
-   private boolean isExtComponentProvider(String id) {
+    public static boolean isExtComponentProvider(String id) {
        if ("org.talend.designer.components.model.UserComponentsProvider".equals(id)
                || "org.talend.designer.codegen.components.model.SharedStudioUserComponentProvider".equals(id)
                || "org.talend.designer.components.exchange.ExchangeComponentsProvider".equals(id)
@@ -1745,6 +1747,7 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
         return isSameFile(jarFile, jarInLib);
     }
 
+    @Override
     public boolean isSameFile(File f1, File f2) {
         if (f1 == null || f2 == null) {
             return false;
