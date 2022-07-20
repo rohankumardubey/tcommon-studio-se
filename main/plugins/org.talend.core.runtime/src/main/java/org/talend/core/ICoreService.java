@@ -116,6 +116,7 @@ public interface ICoreService extends IService {
 
     public String validateValueForDBType(String columnName);
 
+    @Deprecated
     public void synchronizeMapptingXML(ITalendProcessJavaProject talendJavaProject);
 
     public IPreferenceStore getPreferenceStore();
@@ -124,6 +125,7 @@ public interface ICoreService extends IService {
 
     public IMetadataTable convert(MetadataTable originalTable);
 
+    @Deprecated
     public void syncMappingsFileFromSystemToProject();
     
     /**
@@ -144,5 +146,12 @@ public interface ICoreService extends IService {
      * @return
      */
     boolean isStandardGitMode();
+
+    public static ICoreService get() {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreService.class)) {
+            return GlobalServiceRegister.getDefault().getService(ICoreService.class);
+        }
+        return null;
+    }
 
 }
