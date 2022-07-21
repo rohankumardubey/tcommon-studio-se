@@ -124,10 +124,10 @@ public class TalendLibsServerManager {
                 String snapshotRepId = System.getProperty(NEXUS_LIB_SNAPSHOT_REPO, DEFAULT_LIB_SNAPSHOT_REPO);
                 String serverType = System.getProperty(NEXUS_LIB_SERVER_TYPE, "NEXUS_2");
 
-                log.info("Debug log - nexus.url:" + nexus_url);//$NON-NLS-1$
-                log.info("Debug log - nexus.user:" + nexus_user);//$NON-NLS-1$
-                log.info("Debug log - nexus.lib.repo:" + repositoryId);//$NON-NLS-1$
-                log.info("Debug log - nexus.lib.repo.snapshot:" + snapshotRepId);//$NON-NLS-1$
+                log.info("nexus.url:" + nexus_url);//$NON-NLS-1$
+                log.info("nexus.user:" + nexus_user);//$NON-NLS-1$
+                log.info("nexus.lib.repo:" + repositoryId);//$NON-NLS-1$
+                log.info("nexus.lib.repo.snapshot:" + snapshotRepId);//$NON-NLS-1$
 
                 IProxyRepositoryFactory factory = CoreRuntimePlugin.getInstance().getProxyRepositoryFactory();
                 RepositoryContext repositoryContext = factory.getRepositoryContext();
@@ -176,14 +176,9 @@ public class TalendLibsServerManager {
                 serverBean.setSnapshotRepId(snapshotRepId);
                 serverBean.setType(serverType);
 
-                log.info("Debug log - nexus.url:" + nexus_url);//$NON-NLS-1$
-                log.info("Debug log - nexus.user:" + nexus_user);//$NON-NLS-1$
-                log.info("Debug log - nexus.lib.repo:" + repositoryId);//$NON-NLS-1$
-                log.info("Debug log - nexus.lib.repo.snapshot:" + snapshotRepId);//$NON-NLS-1$
-
                 IRepositoryArtifactHandler repHander = RepositoryArtifactHandlerManager.getRepositoryHandler(serverBean);
                 if (repHander.checkConnection()) {
-                    log.info("Debug log - check connection success.");//$NON-NLS-1$
+                    log.info("Check connection success.");//$NON-NLS-1$
                     artifactServerBean = serverBean;
                 }
 
@@ -192,7 +187,6 @@ public class TalendLibsServerManager {
                 ExceptionHandler.process(e);
             }
         }
-        log.info("Debug log - artifactServerBean:" + artifactServerBean);//$NON-NLS-1$
         return artifactServerBean;
 
     }

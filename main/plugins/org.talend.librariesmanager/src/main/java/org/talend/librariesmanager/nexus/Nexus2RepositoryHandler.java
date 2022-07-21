@@ -57,19 +57,15 @@ public class Nexus2RepositoryHandler extends AbstractArtifactRepositoryHandler {
     public boolean checkConnection(boolean checkRelease, boolean checkSnapshot) {
         boolean releaseStatus = false;
         boolean snapshotStatus = false;
-        log.info("Debug log - nexus.url:" + serverBean.getServer());//$NON-NLS-1$
-        log.info("Debug log - nexus.user:" + serverBean.getUserName());//$NON-NLS-1$
-        log.info("Debug log - nexus.lib.repo:" + serverBean.getRepositoryId());//$NON-NLS-1$
-        log.info("Debug log - nexus.lib.repo.snapshot:" + serverBean.getSnapshotRepId());//$NON-NLS-1$
         if (checkRelease && serverBean.getRepositoryId() != null) {
             releaseStatus = NexusServerUtils.checkConnectionStatus(serverBean.getServer(), serverBean.getRepositoryId(),
                     serverBean.getUserName(), serverBean.getPassword());
-            log.info("Debug log - releaseStatus:" + releaseStatus);//$NON-NLS-1$
+            log.info("release status:" + releaseStatus);//$NON-NLS-1$
         }
         if (checkSnapshot && serverBean.getSnapshotRepId() != null) {
             snapshotStatus = NexusServerUtils.checkConnectionStatus(serverBean.getServer(), serverBean.getSnapshotRepId(),
                     serverBean.getUserName(), serverBean.getPassword());
-            log.info("Debug log - snapshotStatus:" + snapshotStatus);//$NON-NLS-1$
+            log.info("snapshot status:" + snapshotStatus);//$NON-NLS-1$
         }
         boolean result = (checkRelease ? releaseStatus : true) && (checkSnapshot ? snapshotStatus : true);
         return result;

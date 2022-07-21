@@ -507,6 +507,7 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
             }
         }
         File resolvedFile = TalendMavenResolver.resolve(uri);
+        log.info("maven uri:" + uri);//$NON-NLS-1$
         if (resolvedFile != null) {
             // reset module status
             ModuleStatusProvider.putStatus(uri, ELibraryInstallStatus.INSTALLED);
