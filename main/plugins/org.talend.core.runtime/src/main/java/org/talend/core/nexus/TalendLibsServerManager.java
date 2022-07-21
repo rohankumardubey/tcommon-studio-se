@@ -15,6 +15,7 @@ package org.talend.core.nexus;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
@@ -33,6 +34,8 @@ import org.talend.repository.model.RepositoryConstants;
  *
  */
 public class TalendLibsServerManager {
+
+    private static final Logger log = Logger.getLogger(TalendLibsServerManager.class);
 
     private ProjectPreferenceManager prefManager;
 
@@ -121,6 +124,11 @@ public class TalendLibsServerManager {
                 String snapshotRepId = System.getProperty(NEXUS_LIB_SNAPSHOT_REPO, DEFAULT_LIB_SNAPSHOT_REPO);
                 String serverType = System.getProperty(NEXUS_LIB_SERVER_TYPE, "NEXUS_2");
 
+                log.info("Debug log - nexus.url:" + nexus_url);//$NON-NLS-1$
+                log.info("Debug log - nexus.user:" + nexus_user);//$NON-NLS-1$
+                log.info("Debug log - nexus.lib.repo:" + repositoryId);//$NON-NLS-1$
+                log.info("Debug log - nexus.lib.repo.snapshot:" + snapshotRepId);//$NON-NLS-1$
+
                 IProxyRepositoryFactory factory = CoreRuntimePlugin.getInstance().getProxyRepositoryFactory();
                 RepositoryContext repositoryContext = factory.getRepositoryContext();
                 if ((nexus_url == null && (factory.isLocalConnectionProvider() || repositoryContext.isOffline()))) {
@@ -139,7 +147,7 @@ public class TalendLibsServerManager {
 
                     if (adminUrl != null && !"".equals(adminUrl)
                             && GlobalServiceRegister.getDefault().isServiceRegistered(IRemoteService.class)) {
-                        IRemoteService remoteService = (IRemoteService) GlobalServiceRegister.getDefault()
+                        IRemoteService remoteService = GlobalServiceRegister.getDefault()
                                 .getService(IRemoteService.class);
                         ArtifactRepositoryBean bean = remoteService.getLibNexusServer(userName, password, adminUrl);
                         if (bean != null) {
@@ -168,8 +176,14 @@ public class TalendLibsServerManager {
                 serverBean.setSnapshotRepId(snapshotRepId);
                 serverBean.setType(serverType);
 
+                log.info("Debug log - nexus.url:" + nexus_url);//$NON-NLS-1$
+                log.info("Debug log - nexus.user:" + nexus_user);//$NON-NLS-1$
+                log.info("Debug log - nexus.lib.repo:" + repositoryId);//$NON-NLS-1$
+                log.info("Debug log - nexus.lib.repo.snapshot:" + snapshotRepId);//$NON-NLS-1$
+
                 IRepositoryArtifactHandler repHander = RepositoryArtifactHandlerManager.getRepositoryHandler(serverBean);
                 if (repHander.checkConnection()) {
+                    log.info("Debug log - check connection success.");//$NON-NLS-1$
                     artifactServerBean = serverBean;
                 }
 
@@ -178,6 +192,7 @@ public class TalendLibsServerManager {
                 ExceptionHandler.process(e);
             }
         }
+        log.info("Debug log - artifactServerBean:" + artifactServerBean);//$NON-NLS-1$
         return artifactServerBean;
 
     }
@@ -208,7 +223,7 @@ public class TalendLibsServerManager {
 
                 if (StringUtils.isNotBlank(adminUrl) && StringUtils.isNotBlank(userName) && StringUtils.isNotBlank(password)
                         && GlobalServiceRegister.getDefault().isServiceRegistered(IRemoteService.class)) {
-                    IRemoteService remoteService = (IRemoteService) GlobalServiceRegister.getDefault()
+                    IRemoteService remoteService = GlobalServiceRegister.getDefault()
                             .getService(IRemoteService.class);
                     bean = remoteService.getLibNexusServer(userName, password, adminUrl);
                     if (bean != null) {
@@ -300,7 +315,7 @@ public class TalendLibsServerManager {
                 softWareLastTimeInMillis = date.getTime();
                 if (adminUrl != null && !"".equals(adminUrl)
                         && GlobalServiceRegister.getDefault().isServiceRegistered(IRemoteService.class)) {
-                    IRemoteService remoteService = (IRemoteService) GlobalServiceRegister.getDefault()
+                    IRemoteService remoteService = GlobalServiceRegister.getDefault()
                             .getService(IRemoteService.class);
                     ArtifactRepositoryBean serverBean = remoteService.getUpdateRepositoryUrl(userName, password, adminUrl);
                     IRepositoryArtifactHandler repHander = RepositoryArtifactHandlerManager.getRepositoryHandler(serverBean);
