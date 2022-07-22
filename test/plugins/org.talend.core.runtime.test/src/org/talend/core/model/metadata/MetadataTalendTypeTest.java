@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -44,7 +45,7 @@ public class MetadataTalendTypeTest {
     public void testGetProjectForderURLOfMappingsFile() throws SystemException {
         URL url = MetadataTalendType.getProjectFolderURLOfMappingsFile();
         String projectLabel = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
-        assertTrue(url.getFile().endsWith(projectLabel + "/.settings/mappings/"));
+        assertTrue(StringUtils.removeEnd(url.getFile(), "/").endsWith(projectLabel + "/.settings/mappings"));
     }
 
     @Test
