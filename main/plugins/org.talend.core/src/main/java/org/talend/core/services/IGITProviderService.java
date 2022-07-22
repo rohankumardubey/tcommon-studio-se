@@ -64,6 +64,12 @@ public interface IGITProviderService extends IService {
     boolean isStandardMode();
     
     /**
+     * Set git mode
+     * @param standardMode
+     */
+    void setStandardMode(boolean standardMode);
+    
+    /**
      * Get clean git repository url
      * @param project project
      * @return
