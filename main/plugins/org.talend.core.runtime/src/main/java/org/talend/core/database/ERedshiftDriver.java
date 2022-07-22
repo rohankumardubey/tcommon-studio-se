@@ -17,23 +17,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
+
 /**
  * DOC jding  class global comment. Detailled comment
  */
 public enum ERedshiftDriver {
 
-    DRIVER_V2("Driver v2", new String[] { "redshift-jdbc42-2.1.0.3.jar", "antlr4-runtime-4.8-1.jar" }),
-    DRIVER_V1("Driver v1", new String[] { "redshift-jdbc42-no-awssdk-1.2.55.1083.jar", "antlr4-runtime-4.8-1.jar" });
+    DRIVER_V2("Driver v2", new String[] { "redshift-jdbc42-2.1.0.3.jar" }),
+    DRIVER_V1("Driver v1", new String[] { "redshift-jdbc42-no-awssdk-1.2.55.1083.jar" });
 
     private String displayName;
 
-    private Set<String> drivers = new HashSet<String>();
+    private String[] drivers = new String[] {};
 
-    private ERedshiftDriver(String displayName, String[] driverStr) {
+    private ERedshiftDriver(String displayName, String[] drivers) {
         this.displayName = displayName;
-        for (String driver : driverStr) {
-            drivers.add(driver);
-        }
+        this.drivers = drivers;
     }
 
     public String getDisplayName() {
@@ -44,19 +44,36 @@ public enum ERedshiftDriver {
         this.displayName = displayName;
     }
 
-    public Set<String> getDrivers() {
+    public String[] getDrivers() {
         return drivers;
     }
 
-    public void setDrivers(Set<String> drivers) {
+    public void setDrivers(String[] drivers) {
         this.drivers = drivers;
     }
 
-    public static Set<String> getDriversByVersion(String version) {
+    public static Set<String> getDriversByVersion(EDatabaseVersion4Drivers v4d, String version) {
         Set<String> drivers = new HashSet<String>();
+        Set<String> providerDrivers = v4d.getProviderDrivers();
         ERedshiftDriver redshiftDriver = ERedshiftDriver.valueOf(version);
-        if (redshiftDriver != null) {
-            return redshiftDriver.getDrivers();
+        if (redshiftDriver != null && DRIVER_V1 != redshiftDriver) {
+            // to replace default one
+            String[] v1Drivers = DRIVER_V1.getDrivers();
+            for (String driver : providerDrivers) {
+                boolean replaced = false;
+                for (int i = 0; i < v1Drivers.length; i++) {
+                    if (driver.equals(v1Drivers[i])) {
+                        drivers.add(redshiftDriver.getDrivers()[i]);
+                        replaced = true;
+                        break;
+                    }
+                }
+                if (!replaced) {
+                    drivers.add(driver);
+                }
+            }
+        } else {
+            drivers.addAll(providerDrivers);
         }
         return drivers;
     }

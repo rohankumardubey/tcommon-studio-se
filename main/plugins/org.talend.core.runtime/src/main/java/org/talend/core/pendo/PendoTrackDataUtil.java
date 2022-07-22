@@ -30,6 +30,7 @@ import org.talend.core.ui.IInstalledPatchService;
 import org.talend.repository.ProjectManager;
 import org.talend.utils.json.JSONObject;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -138,6 +139,19 @@ public class PendoTrackDataUtil {
 
     }
 
+    public static String convertEntityJsonString(Object entity) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String content = mapper.writeValueAsString(entity);
+            if (StringUtils.isNotBlank(content)) {
+                return content;
+            }
+        } catch (JsonProcessingException e) {
+            ExceptionHandler.process(e);
+        }
+        return "";
+    }
+
     public enum TrackEvent {
 
         PROJECT_LOGIN("Project Login"),
@@ -146,7 +160,9 @@ public class PendoTrackDataUtil {
         USE_API_DEF("Use API Definition"),
         OPEN_IN_APIDesigner("Open in API Designer"),
         OPEN_IN_APITester("Open in API Tester"),
-        OPEN_API_DOCUMENTATION("Open API Documentation");
+        OPEN_API_DOCUMENTATION("Open API Documentation"),
+        AUTOMAP("tMap Automap"),
+        TMAP("Studio tMap");
 
         private String event;
 

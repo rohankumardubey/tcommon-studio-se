@@ -26,6 +26,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.widgets.Shell;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
 import org.talend.core.language.ECodeLanguage;
@@ -133,7 +134,7 @@ public interface IRunProcessService extends IService {
     public void updateLibraries(Set<ModuleNeeded> jobModuleList, IProcess process, Set<ModuleNeeded> alreadyRetrievedModules)
             throws ProcessorException;
 
-    public void updateLibraries(Item routineItem);
+    public boolean updateLibraries(Item routineItem);
 
     public void refreshView();
 
@@ -278,5 +279,7 @@ public interface IRunProcessService extends IService {
     public void deleteOldVersionTalendJobProject(IRepositoryViewObject object);
 
     void updateAllCodeCacheStatus(boolean isUpdated);
+
+    IContext promptConfirmLauch(Shell shell, IProcess process);
 
 }
