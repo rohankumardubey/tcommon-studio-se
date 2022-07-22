@@ -16,7 +16,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Dictionary;
@@ -89,7 +88,6 @@ import org.talend.core.hadoop.BigDataBasicUtil;
 import org.talend.core.model.general.ILibrariesService;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
-import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.metadata.builder.connection.AbstractMetadataObject;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.migration.IMigrationToolService;
@@ -2241,14 +2239,6 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                     TimeMeasurePerformance.step("logOnProject", "Sync components libraries"); //$NON-NLS-1$
                 }
 
-                try {
-                    // for new added mapping file, sync to project mapping folder
-                    MetadataTalendType.syncNewMappingFileToProject();
-                } catch (SystemException e) {
-                    // ignore
-                    ExceptionHandler.process(e);
-                }
-
                 CodesJarResourceCache.initCodesJarCache();
 
                 currentMonitor = subMonitor.newChild(1, SubMonitor.SUPPRESS_NONE);
@@ -2347,17 +2337,6 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                 if (coreUiService != null && coreService != null) {
                     coreService.syncLog4jSettings(null);
                     TimeMeasurePerformance.step("logOnProject", "sync log4j"); //$NON-NLS-1$ //$NON-NLS-2$
-                }
-
-                try {
-                    URL url = MetadataTalendType.getProjectForderURLOfMappingsFile();
-                    if (url != null) {
-                        // set the project mappings url
-                        System.setProperty("talend.mappings.url", url.toString()); // $NON-NLS-1$
-                    }
-                } catch (SystemException e) {
-                    // ignore
-                    ExceptionHandler.process(e);
                 }
 
                 if (runProcessService != null && !isCommandLineLocalRefProject) {
