@@ -108,6 +108,8 @@ public class ExtendedNodeConnectionContextUtils {
         SynapseClientId,
         SynapseDirectoryId,
         SynapseSecretKey,
+        UseSynapseCertificate,
+        SynapseClientCertificate,
         SynapseDeployBlob,
         SynapseDriverMemory,
         SynapseDriverCores,

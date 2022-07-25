@@ -130,6 +130,10 @@ public enum EHadoopProperties {
     
     SYNAPSE_CLIENT_KEY,
     
+    SYNAPSE_USE_CERTIFICATE,
+    
+    SYNAPSE_CLIENT_CERTIFICATE,
+    
     DEPLOY_FOLDER,
     
     SPARK_DRIVER_MEM,
