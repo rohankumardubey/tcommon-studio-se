@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.util.EList;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
@@ -882,18 +883,16 @@ public class ModulesNeededProvider {
         if (!StringUtils.isEmpty(mvn_rui)) {
             module.setMavenUri(mvn_rui);
         }
-        if (StringUtils.isBlank(mvn_rui)) {
-            if (StringUtils.isNotBlank(context)) {
 
-                CommonExceptionHandler.error("Missing module MVN_URI definition: " + context);
-            }
+        if (CommonsPlugin.isDebugMode() && StringUtils.isBlank(mvn_rui)) {
+
             if (StringUtils.isNotBlank(module.getModuleName())) {
-                String generateMvnUrlForJarName = MavenUrlHelper.generateMvnUrlForJarName(module.getModuleName(), true,
-                        false);
-                if (StringUtils.isNotBlank(generateMvnUrlForJarName)) {
+                if (StringUtils.isNotBlank(context)) {
 
-                    mvn_rui = generateMvnUrlForJarName;
+                    CommonExceptionHandler
+                            .error("Missing module MVN_URI definition: " + context + ": " + module.getModuleName());
                 }
+
             }
         }
         module.setMavenUri(mvn_rui);
