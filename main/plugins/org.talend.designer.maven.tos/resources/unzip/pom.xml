@@ -25,6 +25,10 @@
                     <groupId>commons-codec</groupId>
                     <artifactId>commons-codec</artifactId>
                 </exclusion>
+				<exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
             </exclusions>
 		</dependency>
 		<dependency>
@@ -87,7 +91,12 @@
                         <configuration>
                             <tasks>
                                 <echo message="Unzip old repository..." />
-                                <unzip src="${basedir}/../repository/maven_repository.zip" dest="${basedir}/../tmp/" />
+                                <unzip src="${basedir}/../repository/maven_repository.zip" dest="${basedir}/../tmp/">
+                                <patternset>
+                                        <exclude name="repository/org/apache/maven/maven-artifact-manager/2.0.9/"/>
+                                        <exclude name="repository/org/apache/maven/maven-artifact-manager/2.0.6/"/>
+                                    </patternset>
+                                </unzip>
                             </tasks>
                         </configuration>
                         <goals>
