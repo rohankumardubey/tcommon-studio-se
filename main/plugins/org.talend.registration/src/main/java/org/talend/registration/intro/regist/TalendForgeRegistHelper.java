@@ -67,7 +67,7 @@ public class TalendForgeRegistHelper {
                 IntroContentParser parser = new IntroContentParser(result);
                 Document dom = parser.getDocument();
                 if (dom != null) {
-                    boolean cloud = IRemoteService.get().isCloudConnection();
+                    boolean cloud = IRemoteService.get() != null && IRemoteService.get().isCloudConnection();
                     Element ele = dom.createElement("licensetype");
                     ele.setAttribute("id", "license_cloud");
                     ele.setAttribute("isCloud",""+cloud);

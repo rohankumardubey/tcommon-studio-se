@@ -122,7 +122,7 @@ public class TalendMavenLaunchDelegate extends JavaLaunchDelegate implements Mav
             this.extensionsSupport = MavenLaunchExtensionsSupport.create(configuration, launch);
 
             log.info("" + getWorkingDirectory(configuration)); //$NON-NLS-1$
-            log.info(" mvn" + getProgramArguments(configuration, IRemoteService.get().isCloudConnection())); //$NON-NLS-1$
+            log.info(" mvn" + getProgramArguments(configuration, IRemoteService.get() == null ? false: IRemoteService.get().isCloudConnection())); //$NON-NLS-1$
             this.programArguments = null;
 
             extensionsSupport.configureSourceLookup(configuration, launch, monitor);
