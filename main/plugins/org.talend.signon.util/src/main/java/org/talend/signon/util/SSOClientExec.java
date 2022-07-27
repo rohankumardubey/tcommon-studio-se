@@ -49,7 +49,7 @@ public class SSOClientExec implements Runnable {
     @Override
     public void run() {
         CommandLine cmdLine = new CommandLine(execFile);
-        cmdLine.addArgument(getInvokeParameter(clientId, SSOClientUtil.TMC_LOGIN_URL, port)); 
+        cmdLine.addArgument(getInvokeParameter(clientId, port)); 
         if (getClientDebugPort() != null) {
             cmdLine.addArgument("-vmargs");
             cmdLine.addArgument("-Xdebug");
@@ -86,10 +86,10 @@ public class SSOClientExec implements Runnable {
         return System.getProperty(STUDIO_SSO_CLIENT_DEBUG_PORT);
     }
 
-    private String getInvokeParameter(String clientID, String loginURL, int callbackPort) {
+    private String getInvokeParameter(String clientID, int callbackPort) {
         StringBuffer stateSB = new StringBuffer();
         stateSB.append(callbackPort);
-        return STUDIO_CALL_PREFIX + SSOClientUtil.getInstance().getSignOnURL(loginURL, clientID, codeChallenge, stateSB.toString());
+        return STUDIO_CALL_PREFIX + SSOClientUtil.getInstance().getSignOnURL(clientID, codeChallenge, stateSB.toString());
     }
 
     public void stop() {

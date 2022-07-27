@@ -30,8 +30,6 @@ public class SSOClientUtil {
 
     private static final String STUDIO_CLIENT_ID = "0c51933d-c542-4918-9baf-86ef709af5d8";
 
-    static final String TMC_LOGIN_URL = "http://10.67.8.153:8080/auth/auth.jsp";
-
     private static final String CLIENT_FILE_PATH_PROPERTY = "talend.studio.signon.client.path";
 
     private static final String CLIENT_FILE_NAME_ON_WINDOWS = "Talend_Sign_On_Tool_win-x86_64.exe";
@@ -45,6 +43,8 @@ public class SSOClientUtil {
     private static final String CLIENT_FILE_NAME_ON_MAC_AARCH64 = "Talend_Sign_On_Tool_aarch64.app";
 
     private static final String CLIENT_FOLDER_NAME = "studio_sso_client";
+
+    private static final String DATA_CENTER_KEY = "talend.tmc.datacenter";
 
     private static final SSOClientUtil instance = new SSOClientUtil();
 
@@ -129,13 +129,9 @@ public class SSOClientUtil {
         SSOClientUtil.getInstance().startSignOnClient(listener);
     }
 
-    public String getLoginURL(LoginEventListener listener) {
-        return TMC_LOGIN_URL;
-    }
-
-    public String getSignOnURL(String loginURL, String clientID, String codeChallenge, String state) {
+    public String getSignOnURL(String clientID, String codeChallenge, String state) {
         StringBuffer urlSB = new StringBuffer();
-        urlSB.append(loginURL).append("?");
+        urlSB.append(getBaseLoginURL(null)).append("?");
         urlSB.append("client_id=").append(clientID).append("&");
         urlSB.append("code_challenge=").append(codeChallenge).append("&");
         urlSB.append("state=").append(state);
@@ -168,5 +164,24 @@ public class SSOClientUtil {
             throw new RuntimeException(
                     "could not find current Bundle, this should never happen, check that the bunlde is activated when this class is accessed");
         }
+    }
+
+    public static String getDefaultDataCenter() {
+        String defaultDataCenter = "int";
+        if (System.getProperty(DATA_CENTER_KEY) != null) {
+            defaultDataCenter = System.getProperty(DATA_CENTER_KEY);
+        }
+        return defaultDataCenter;
+    }
+
+    public static String getBaseLoginURL(String dataCenter) {
+        if (dataCenter == null) {
+            dataCenter = getDefaultDataCenter();
+        }
+        return "https://iam." + dataCenter + ".cloud.talend.com/oidc/idp/authorize";
+    }
+
+    public static String getCloudAdminURL(String dataCenter) {
+        return "https://tmc." + dataCenter + ".cloud.talend.com/studio_cloud_connection";
     }
 }
