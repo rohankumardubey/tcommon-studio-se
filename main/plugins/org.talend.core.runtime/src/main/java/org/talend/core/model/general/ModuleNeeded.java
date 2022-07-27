@@ -13,17 +13,16 @@
 package org.talend.core.model.general;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Path;
 import org.osgi.framework.Version;
+import org.talend.commons.CommonsPlugin;
+import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ILibraryManagerService;
@@ -108,7 +107,7 @@ public class ModuleNeeded {
 
     private Map<String, String> attributes;
 
-    ILibraryManagerService libManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault()
+    ILibraryManagerService libManagerService = GlobalServiceRegister.getDefault()
             .getService(ILibraryManagerService.class);
     
 
@@ -369,7 +368,7 @@ public class ModuleNeeded {
     }
 
     public ELibraryInstallStatus getStatus() {
-        ILibraryManagerService libManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault()
+        ILibraryManagerService libManagerService = GlobalServiceRegister.getDefault()
                 .getService(ILibraryManagerService.class);
         libManagerService.checkModuleStatus(this);
         String mvnUriStatusKey = getMavenUri();
@@ -378,7 +377,7 @@ public class ModuleNeeded {
     }
 
     public ELibraryInstallStatus getDeployStatus() {
-        ILibraryManagerService libManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault()
+        ILibraryManagerService libManagerService = GlobalServiceRegister.getDefault()
                 .getService(ILibraryManagerService.class);
         libManagerService.checkModuleStatus(this);
         String mvnUriStatusKey = getMavenUri();
@@ -714,6 +713,19 @@ public class ModuleNeeded {
         this.mavenUriFromConfiguration = MavenUrlHelper.addTypeForMavenUri(mavenUri, getModuleName());
         if (!StringUtils.isEmpty(mavenUriFromConfiguration)) {
             this.mavenUri = mavenUriFromConfiguration;
+        }
+        String generateModuleName = MavenUrlHelper.generateModuleNameByMavenURI(this.mavenUri);
+        if (StringUtils.isNotBlank(generateModuleName)) {
+
+            if (!StringUtils.equals(getModuleName(), generateModuleName)) {
+                if (CommonsPlugin.isDebugMode() && StringUtils.isNotBlank(this.context)) {
+                    CommonExceptionHandler
+                            .warn("module name definition should be " + generateModuleName + ", not " + getModuleName()
+                                    + " :" + this.context);
+                }
+
+                setModuleName(generateModuleName);
+            }
         }
     }
 
