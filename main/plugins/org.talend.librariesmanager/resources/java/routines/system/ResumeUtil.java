@@ -359,13 +359,12 @@ public class ResumeUtil {
         String str = out.toString();
         return str;
     }
-
-    // to support encrypt the password in the resume
-    public static String convertToJsonText(Object context, List<String> parametersToEncrypt) {
+    
+    public static String convertToJsonText(Object context, Class<?> expectedClass, List<String> parametersToEncrypt) {
         String jsonText = "";
         try {
             JSONObject firstNode = new JSONObject();
-            JSONObject secondNode = new JSONObject(context);
+            JSONObject secondNode = new JSONObject(context, expectedClass);
             if (parametersToEncrypt != null) {
                 for (String parameterToEncrypt : parametersToEncrypt) {
                     if (secondNode.isNull(parameterToEncrypt)) {
@@ -385,9 +384,15 @@ public class ResumeUtil {
         return jsonText;
     }
 
+    // to support encrypt the password in the resume
+    @Deprecated
+    public static String convertToJsonText(Object context, List<String> parametersToEncrypt) {
+        return convertToJsonText(context, context == null ? null : context.getClass(), parametersToEncrypt);
+    }
+
     // Util: convert the context variable to json style text.
     // feature:11296
-    // @Deprecated
+    @Deprecated
     public static String convertToJsonText(Object context) {
         return convertToJsonText(context, null);
     }
