@@ -133,6 +133,7 @@ public class SSOClientUtil {
         StringBuffer urlSB = new StringBuffer();
         urlSB.append(getBaseLoginURL(null)).append("?");
         urlSB.append("client_id=").append(clientID).append("&");
+        urlSB.append("redirect_uri=talendstudio://code&scope=openid refreshToken&response_type=code&code_challenge_method=S256").append("&");
         urlSB.append("code_challenge=").append(codeChallenge).append("&");
         urlSB.append("state=").append(state);
         return urlSB.toString();
