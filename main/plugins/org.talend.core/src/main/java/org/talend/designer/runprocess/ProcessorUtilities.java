@@ -275,7 +275,10 @@ public class ProcessorUtilities {
         exportAsOSGI = false;
         exportTimeStamp = null;
         exportJobAsMicroService = false;
-        needExportItemsForDQ = false;
+        // TDQ-20624 Avoid to reset for joblet
+        if (!isGeneratePomOnly()) {
+            needExportItemsForDQ = false;
+        }
     }
 
     public static String getInterpreter() {
