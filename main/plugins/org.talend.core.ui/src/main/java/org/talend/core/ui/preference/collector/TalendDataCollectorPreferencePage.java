@@ -47,7 +47,7 @@ public class TalendDataCollectorPreferencePage extends FieldEditorPreferencePage
 
     @Override
     protected void createFieldEditors() {
-        if(!IRemoteService.get().isCloudConnection()) {
+        if(!(IRemoteService.get() != null && IRemoteService.get().isCloudConnection())) {
             addField(new BooleanFieldEditor(ITalendCorePrefConstants.DATA_COLLECTOR_ENABLED,
                     Messages.getString("TalendDataCollectorPreferencePage_EnableCapture"), getFieldEditorParent())); //$NON-NLS-1$
         }

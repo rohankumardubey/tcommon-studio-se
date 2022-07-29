@@ -33,7 +33,7 @@ public class TalendDataCollectorPreferenceInitializer extends AbstractPreference
         IPreferenceStore preferenceStore = CoreUIPlugin.getDefault().getPreferenceStore();
         preferenceStore.setDefault(ITalendCorePrefConstants.DATA_COLLECTOR_ENABLED, true);
         preferenceStore.setDefault(ITalendCorePrefConstants.DATA_COLLECTOR_UPLOAD_PERIOD, 5);
-        if(IRemoteService.get().isCloudConnection()) {
+        if(IRemoteService.get() != null && IRemoteService.get().isCloudConnection()) {
             preferenceStore.setValue(ITalendCorePrefConstants.DATA_COLLECTOR_ENABLED, true);
         }
     }
