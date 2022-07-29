@@ -310,12 +310,12 @@ TabbedPropertyList {
 .TalendPaletteCls {
     tPalette-collapsed-forground-color:  #515658;
     tPalette-collapsed-background-color: #515658;
-    tPalette-mouseOver-forground-color1:blue;
-    tPalette-mouseOver-forground-color2:blue;
-    tPalette-mouseOver-forground-color3:blue;
-    tPalette-mouseOver-background-color1:blue;
-    tPalette-mouseOver-background-color2:blue;
-    tPalette-mouseOver-background-color3:blue;				/* */
+    tPalette-mouseOver-forground-color1:#cccccc;
+    tPalette-mouseOver-forground-color2:#cccccc;
+    tPalette-mouseOver-forground-color3:#cccccc;
+    tPalette-mouseOver-background-color1:#3c8ad2;
+    tPalette-mouseOver-background-color2:#3c8ad2;
+    tPalette-mouseOver-background-color3:#3c8ad2;				/* */
     tPalette-expanded-background-color: black;
 /*   	tPalette-expanded-background-color:#0069d9;					/* background color when level is selected */
 
@@ -335,4 +335,14 @@ TabbedPropertyList {
     
     tPalette-searchButton-background-color:'#org-eclipse-ui-workbench-DARK_BACKGROUND';
     tPalette-searchButton-image: url('./default/pics/studio_6.0-repo-search.png');
+}
+
+/* Repository tree */
+.TalendRepositoryLabel {
+	STABLE_SECONDARY_ENTRY_COLOR: #646464;
+	STABLE_PRIMARY_ENTRY_COLOR: #000000;
+	INACTIVE_ENTRY_COLOR: #C8C8C8;
+	LOCKED_ENTRY: #C80000;
+	MERGED_REFERENCED_ITEMS_COLOR: #787878;
+	
 }
