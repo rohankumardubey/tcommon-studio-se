@@ -147,6 +147,7 @@
 			<activation>
 				<property>
 					<name>junit.product</name>
+					<value>true</value>
 				</property>
 			</activation>
 			<modules>
