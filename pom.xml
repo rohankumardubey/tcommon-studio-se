@@ -119,31 +119,6 @@
 
 		<module>main/plugins/org.talend.libraries.persist.lookup</module>
 		<module>main/plugins/org.talend.designer.maven.aether</module>
-		<!--<module>test/features/org.talend.test.tos.feature</module>-->
-		<module>test/plugins/org.talend.commons.runtime.test</module>
-		<module>test/plugins/org.talend.commons.ui.test</module>
-		<module>test/plugins/org.talend.core.repository.test</module>
-		<module>test/plugins/org.talend.core.runtime.test</module>
-		<module>test/plugins/org.talend.core.test</module>
-		<module>test/plugins/org.talend.core.ui.test</module>
-		<module>test/plugins/org.talend.libraries.javacsv.test</module>
-		<module>test/plugins/org.talend.librariesmanager.test</module>
-		<module>test/plugins/org.talend.librariesmanager.ui.test</module>
-		<module>test/plugins/org.talend.metadata.managment.test</module>
-		<module>test/plugins/org.talend.metadata.managment.ui.test</module>
-		<module>test/plugins/org.talend.migrationTool.test</module>
-		<module>test/plugins/org.talend.model.test</module>
-		<module>test/plugins/org.talend.repository.items.importexport.test</module>
-		<module>test/plugins/org.talend.repository.items.importexport.ui.test</module>
-		<module>test/plugins/org.talend.repository.localprovider.test</module>
-		<module>test/plugins/org.talend.repository.metadata.test</module>
-		<module>test/plugins/org.talend.repository.view.test</module>
-		<module>test/plugins/org.talend.testutils</module>
-		<module>test/plugins/org.talend.updates.runtime.test</module>
-		<module>test/plugins/org.talend.utils.test</module>
-		<module>test/plugins/org.talend.designer.maven.test</module>
-		<module>test/plugins/test.all.test.suite</module>
-		<module>test/plugins/org.talend.datatools.xml.test</module>
 	</modules>
 	<build>
 		<plugins>
@@ -166,4 +141,41 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>junit.p2</id>
+			<activation>
+				<property>
+					<name>junit.product</name>
+				</property>
+			</activation>
+			<modules>
+				<!--<module>test/features/org.talend.test.tos.feature</module>-->
+				<module>test/plugins/org.talend.commons.runtime.test</module>
+				<module>test/plugins/org.talend.commons.ui.test</module>
+				<module>test/plugins/org.talend.core.repository.test</module>
+				<module>test/plugins/org.talend.core.runtime.test</module>
+				<module>test/plugins/org.talend.core.test</module>
+				<module>test/plugins/org.talend.core.ui.test</module>
+				<module>test/plugins/org.talend.libraries.javacsv.test</module>
+				<module>test/plugins/org.talend.librariesmanager.test</module>
+				<module>test/plugins/org.talend.librariesmanager.ui.test</module>
+				<module>test/plugins/org.talend.metadata.managment.test</module>
+				<module>test/plugins/org.talend.metadata.managment.ui.test</module>
+				<module>test/plugins/org.talend.migrationTool.test</module>
+				<module>test/plugins/org.talend.model.test</module>
+				<module>test/plugins/org.talend.repository.items.importexport.test</module>
+				<module>test/plugins/org.talend.repository.items.importexport.ui.test</module>
+				<module>test/plugins/org.talend.repository.localprovider.test</module>
+				<module>test/plugins/org.talend.repository.metadata.test</module>
+				<module>test/plugins/org.talend.repository.view.test</module>
+				<module>test/plugins/org.talend.testutils</module>
+				<module>test/plugins/org.talend.updates.runtime.test</module>
+				<module>test/plugins/org.talend.utils.test</module>
+				<module>test/plugins/org.talend.designer.maven.test</module>
+				<module>test/plugins/test.all.test.suite</module>
+				<module>test/plugins/org.talend.datatools.xml.test</module>
+			</modules>
+		</profile>
+	</profiles>
 </project>
