@@ -213,7 +213,7 @@ public class ConnectionBean implements Cloneable {
                 return conDetails.getString(PASSWORD);
             }  else if (conDetails.has(CLOUD_TOKEN_ID)){ 
                 String object = conDetails.getString(CLOUD_TOKEN_ID);
-                TokenMode token = TokenMode.parseFromJson(object);
+                TokenMode token = TokenMode.parseFromJson(object, null);
                 return token.getAccessToken();
             }
         } catch (JSONException e) {
@@ -492,7 +492,7 @@ public class ConnectionBean implements Cloneable {
         try {
             if (conDetails.has(CLOUD_TOKEN_ID)) {
                 String object = conDetails.getString(CLOUD_TOKEN_ID);
-                return TokenMode.parseFromJson(object);
+                return TokenMode.parseFromJson(object, null);
             }
         } catch (JSONException e) {
             ExceptionHandler.process(e);

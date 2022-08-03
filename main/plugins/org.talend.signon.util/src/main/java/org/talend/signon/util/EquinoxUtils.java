@@ -88,7 +88,7 @@ public class EquinoxUtils {
         }
         return null;
     }
-  
+
     // always return a valid bundlesContext or throw a runtimeException
     public static BundleContext getCurrentBundleContext() {
         Bundle bundle = FrameworkUtil.getBundle(EquinoxUtils.class);

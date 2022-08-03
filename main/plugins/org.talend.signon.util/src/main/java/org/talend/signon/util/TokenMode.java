@@ -16,6 +16,7 @@ import org.talend.utils.json.JSONException;
 import org.talend.utils.json.JSONObject;
 
 public class TokenMode {
+
     private static final String ACCESS_TOKEN_KEY = "access_token";
 
     private static final String EXPIRES_IN_KEY = "expires_in";
@@ -30,6 +31,8 @@ public class TokenMode {
 
     private static final String LAST_REFRESH_TIME_KEY = "last_refresh_time";
 
+    private static final String DATA_CENTER_KEY = "data_center";
+
     private String clientId;
 
     private String accessToken;
@@ -43,6 +46,8 @@ public class TokenMode {
     private String scope;
 
     private String tokenType;
+
+    private String dataCenter;
 
     private long lastRefreshTime = System.currentTimeMillis();
 
@@ -110,7 +115,15 @@ public class TokenMode {
         this.lastRefreshTime = lastRefreshTime;
     }
 
-    public static TokenMode parseFromJson(String jsonString) throws JSONException {
+    public String getDataCenter() {
+        return dataCenter;
+    }
+
+    public void setDataCenter(String dataCenter) {
+        this.dataCenter = dataCenter;
+    }
+
+    public static TokenMode parseFromJson(String jsonString, String dataCenter) throws JSONException {
         JSONObject jsonObj = new JSONObject(jsonString);
         TokenMode token = new TokenMode();
         token.setAccessToken(jsonObj.getString(TokenMode.ACCESS_TOKEN_KEY));
@@ -121,6 +134,11 @@ public class TokenMode {
         token.setTokenType(jsonObj.getString(TokenMode.TOKEN_TYPE_KEY));
         if (jsonObj.has(TokenMode.LAST_REFRESH_TIME_KEY)) {
             token.setLastRefreshTime(jsonObj.getLong(TokenMode.LAST_REFRESH_TIME_KEY));
+        }
+        if (dataCenter == null && jsonObj.has(TokenMode.DATA_CENTER_KEY)) {
+            token.setDataCenter(jsonObj.getString(TokenMode.DATA_CENTER_KEY));
+        } else {
+            token.setDataCenter(dataCenter);
         }
         return token;
     }
@@ -134,6 +152,8 @@ public class TokenMode {
         object.put(TokenMode.SCOPE_KEY, token.getScope());
         object.put(TokenMode.TOKEN_TYPE_KEY, token.getTokenType());
         object.put(TokenMode.LAST_REFRESH_TIME_KEY, token.getLastRefreshTime());
+        object.put(TokenMode.DATA_CENTER_KEY, token.getDataCenter());
+
         return object;
     }
 

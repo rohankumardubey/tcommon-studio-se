@@ -29,8 +29,9 @@ public class SSOClientInstaller {
     private static Logger LOGGER = Logger.getLogger(SSOClientInstaller.class);
 
     private final String SIGN_CLIENT_BUNDLE_NAME = "org.talend.singlesignon.client";
+
     private final String installFileName = "TalendSignTool.zip";
-    
+
     private final String version = "8.0.1.202206081050";
 
     private static final SSOClientInstaller instance = new SSOClientInstaller();
@@ -95,11 +96,11 @@ public class SSOClientInstaller {
         File eclipseproductFile = new File(getInstallDir(), ".eclipseproduct");//$NON-NLS-1$
         return eclipseproductFile;
     }
-    
+
     protected File getInstallDir() {
         return SSOClientUtil.getSSOClientFolder();
     }
-    
+
     protected File getInstallFile() throws IOException {
         BundleContext context = EquinoxUtils.getCurrentBundleContext();
         Bundle[] bundles = context.getBundles();
@@ -112,7 +113,7 @@ public class SSOClientInstaller {
         }
         if (bundle != null) {
             File bundleFile = FileLocator.getBundleFile(bundle).getAbsoluteFile();
-            File folder = new File (bundleFile, "repository");
+            File folder = new File(bundleFile, "repository");
             File installFile = new File(folder, installFileName);
             return installFile;
         }

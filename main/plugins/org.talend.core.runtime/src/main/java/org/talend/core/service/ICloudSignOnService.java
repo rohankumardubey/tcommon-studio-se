@@ -20,7 +20,7 @@ import org.talend.signon.util.listener.LoginEventListener;
 
 public interface ICloudSignOnService extends IService {
 
-    TokenMode getToken(String authCode, String codeVerifier) throws Exception;
+    TokenMode getToken(String authCode, String codeVerifier, String dataCenter) throws Exception;
 
     void startHeartBeat() throws Exception;
 

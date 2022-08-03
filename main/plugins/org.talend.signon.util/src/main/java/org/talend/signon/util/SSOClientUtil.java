@@ -129,13 +129,14 @@ public class SSOClientUtil {
         SSOClientUtil.getInstance().startSignOnClient(listener);
     }
 
-    public String getSignOnURL(String clientID, String codeChallenge, String state) {
+    public String getSignOnURL(String clientID, String codeChallenge, int callbackPort) {
         StringBuffer urlSB = new StringBuffer();
         urlSB.append(getBaseLoginURL(null)).append("?");
         urlSB.append("client_id=").append(clientID).append("&");
-        urlSB.append("redirect_uri=talendstudio://code&scope=openid refreshToken&response_type=code&code_challenge_method=S256").append("&");
+        urlSB.append("redirect_uri=talendstudio://code&scope=openid refreshToken&response_type=code&code_challenge_method=S256")
+                .append("&");
         urlSB.append("code_challenge=").append(codeChallenge).append("&");
-        urlSB.append("state=").append(state);
+        urlSB.append("state=").append(callbackPort).append(SSOUtil.STATE_PARAM_SEPARATOR).append(getDefaultDataCenter());
         return urlSB.toString();
     }
 
@@ -184,5 +185,9 @@ public class SSOClientUtil {
 
     public static String getCloudAdminURL(String dataCenter) {
         return "https://tmc." + dataCenter + ".cloud.talend.com/studio_cloud_connection";
+    }
+
+    public static String getTokenURL(String dataCenter) {
+        return "https://iam." + dataCenter + ".cloud.talend.com/oidc/oauth2/token";
     }
 }

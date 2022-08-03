@@ -4,17 +4,19 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Base64;
 
-public class SSOUtil{   
-    public static final String GET_TOKEN_URL = "https://iam.int.cloud.talend.com/oidc/oauth2/token";
+public class SSOUtil {
+
     public static final String STUDIO_REDIRECT_URL = "talendstudio://code";
-    
+
+    public static final String STATE_PARAM_SEPARATOR = ".";
+
     public static String generateCodeVerifier() {
         SecureRandom secureRandom = new SecureRandom();
         byte[] codeVerifier = new byte[32];
         secureRandom.nextBytes(codeVerifier);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(codeVerifier);
     }
-   
+
     public static String getCodeChallenge(String seed) throws Exception {
         byte[] bytes = seed.getBytes("US-ASCII");
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");

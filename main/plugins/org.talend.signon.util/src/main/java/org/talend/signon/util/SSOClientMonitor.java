@@ -25,7 +25,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.talend.signon.util.listener.LoginEventListener;
 
-public class SSOClientMonitor implements Runnable{
+public class SSOClientMonitor implements Runnable {
 
     private static Logger LOGGER = Logger.getLogger(SSOClientMonitor.class);
 
@@ -160,7 +160,7 @@ public class SSOClientMonitor implements Runnable{
             LOGGER.info("Login client monitor started.");
             return;
         }
-        listenPort = newPort();       
+        listenPort = newPort();
         ServerSocket server;
         try {
             server = new ServerSocket(listenPort);
@@ -197,9 +197,9 @@ public class SSOClientMonitor implements Runnable{
         } catch (Exception ex) {
             LOGGER.error(ex);
             fireLoginFailed(ex);
-        }        
+        }
     }
- 
+
     public static boolean isRunning() {
         return isRunning;
     }

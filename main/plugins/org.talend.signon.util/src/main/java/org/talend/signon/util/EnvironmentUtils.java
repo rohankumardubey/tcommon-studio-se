@@ -44,7 +44,7 @@ public class EnvironmentUtils {
     public static String getEnvOs() {
         return System.getProperty("os.name"); //$NON-NLS-1$
     }
-    
+
     public static boolean isX86_64() {
         return StringUtils.equals(Platform.ARCH_X86_64, Platform.getOSArch());
     }

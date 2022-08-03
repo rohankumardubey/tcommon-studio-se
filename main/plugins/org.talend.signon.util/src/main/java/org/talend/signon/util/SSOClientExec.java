@@ -21,18 +21,19 @@ import org.apache.log4j.Logger;
 import org.eclipse.equinox.app.IApplication;
 
 public class SSOClientExec implements Runnable {
+
     private static Logger LOGGER = Logger.getLogger(SSOClientExec.class);
-    
+
     public static final String STUDIO_CALL_PREFIX = "studioCall:";
-    
-    private static final String STUDIO_SSO_CLIENT_DEBUG_PORT="talend.studio.sso.client.debug.port";
+
+    private static final String STUDIO_SSO_CLIENT_DEBUG_PORT = "talend.studio.sso.client.debug.port";
 
     private File execFile;
-    
+
     private String codeChallenge;
 
     private String clientId;
-    
+
     private int port;
 
     private ExecuteWatchdog executeWatchdog;
@@ -49,7 +50,7 @@ public class SSOClientExec implements Runnable {
     @Override
     public void run() {
         CommandLine cmdLine = new CommandLine(execFile);
-        cmdLine.addArgument(getInvokeParameter(clientId, port)); 
+        cmdLine.addArgument(getInvokeParameter(clientId, port));
         if (getClientDebugPort() != null) {
             cmdLine.addArgument("-vmargs");
             cmdLine.addArgument("-Xdebug");
@@ -59,7 +60,7 @@ public class SSOClientExec implements Runnable {
         DefaultExecutor executor = new DefaultExecutor();
         executeWatchdog = new ExecuteWatchdog(600000);
         executor.setWatchdog(executeWatchdog);
-        executor.setExitValues(new int [] {0, 24});
+        executor.setExitValues(new int[] { 0, 24 });
         try {
             if (!execFile.canExecute()) {
                 execFile.setExecutable(true);
@@ -81,15 +82,13 @@ public class SSOClientExec implements Runnable {
             LOGGER.error(e);
         }
     }
-    
+
     private String getClientDebugPort() {
         return System.getProperty(STUDIO_SSO_CLIENT_DEBUG_PORT);
     }
 
     private String getInvokeParameter(String clientID, int callbackPort) {
-        StringBuffer stateSB = new StringBuffer();
-        stateSB.append(callbackPort);
-        return STUDIO_CALL_PREFIX + SSOClientUtil.getInstance().getSignOnURL(clientID, codeChallenge, stateSB.toString());
+        return STUDIO_CALL_PREFIX + SSOClientUtil.getInstance().getSignOnURL(clientID, codeChallenge, callbackPort);
     }
 
     public void stop() {
@@ -97,7 +96,7 @@ public class SSOClientExec implements Runnable {
             executeWatchdog.destroyProcess();
         }
     }
- 
+
     public Exception getError() {
         return error;
     }

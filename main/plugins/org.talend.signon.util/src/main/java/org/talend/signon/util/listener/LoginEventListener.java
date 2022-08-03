@@ -12,10 +12,13 @@
 // ============================================================================
 package org.talend.signon.util.listener;
 
-
 public interface LoginEventListener {
+
     public void loginStart();
+
     public void loginStop(String authCode, String dataCenter);
+
     public void loginFailed(Exception ex);
+
     public String getCodeChallenge();
 }
