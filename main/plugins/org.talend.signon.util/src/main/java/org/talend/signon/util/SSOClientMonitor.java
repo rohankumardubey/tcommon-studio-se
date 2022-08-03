@@ -60,11 +60,11 @@ public class SSOClientMonitor implements Runnable{
         String state = data.get(STUDIO_AUTH_STATE_KEY);
 
         String[] splits = state.split(",");
+        String dateCenter = SSOClientUtil.getDefaultDataCenter();
         if (splits.length == 2) {
-            fireLoginStop(code, splits[1]);
-        } else {
-            LOGGER.error("Invalid state value, it should be contain \",\" :" + state);
+            dateCenter = splits[1];
         }
+        fireLoginStop(code, dateCenter);
     }
 
     private Map<String, String> decodeMsg(String data) {
