@@ -93,6 +93,7 @@ import org.talend.core.context.CommandLineContext;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
 import org.talend.core.exception.TalendInternalPersistenceException;
+import org.talend.core.hadoop.BigDataBasicUtil;
 import org.talend.core.hadoop.IHadoopDistributionService;
 import org.talend.core.model.components.IComponentsService;
 import org.talend.core.model.general.ILibrariesService;
@@ -2209,6 +2210,9 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                     ExceptionHandler.process(e);
                 }
                 
+                // init dynamic distirbution after `beforeLogon`, before loading libraries.
+                initDynamicDistribution(monitor);
+                
                 // need to set m2
                 LoginTaskRegistryReader loginTaskRegistryReader = new LoginTaskRegistryReader();
                 ILoginTask[] allLoginTasks = loginTaskRegistryReader.getAllCommandlineTaskListInstance();
@@ -2402,6 +2406,18 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                 ExceptionHandler.process(e1);
             }
             throw e;
+        }
+    }
+    
+    private void initDynamicDistribution(IProgressMonitor monitor) {
+        try {
+            if (BigDataBasicUtil.isDynamicDistributionLoaded(monitor)) {
+                BigDataBasicUtil.reloadAllDynamicDistributions(monitor);
+            } else {
+                BigDataBasicUtil.loadDynamicDistribution(monitor);
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
         }
     }
 
