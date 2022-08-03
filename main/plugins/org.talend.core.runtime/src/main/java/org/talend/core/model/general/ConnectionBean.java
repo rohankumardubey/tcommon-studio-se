@@ -94,7 +94,7 @@ public class ConnectionBean implements Cloneable {
         return newConnection;
     }
     
-    public static ConnectionBean getDefaultCloudConnectionBean() {
+    public static ConnectionBean getDefaultCloudConnectionBean(String dataCenter) {
         ConnectionBean newConnection = new ConnectionBean();
         newConnection.setName(Messages.getString("ConnectionBean.Cloud.name")); //$NON-NLS-1$
         newConnection.setDescription(Messages.getString("ConnectionBean.CloudConnection.description")); //$NON-NLS-1$
