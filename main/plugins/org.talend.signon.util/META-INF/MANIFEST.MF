@@ -11,6 +11,7 @@ Bundle-Vendor: .Talend SA.
 Import-Package: org.osgi.framework;version="1.10.0",
  org.talend.utils.json
 Export-Package: org.talend.signon.util,
+ org.talend.signon.util.i18n,
  org.talend.signon.util.listener
 Require-Bundle: org.talend.utils;bundle-version="8.0.1",
  org.apache.log4j;bundle-version="1.2.19",
