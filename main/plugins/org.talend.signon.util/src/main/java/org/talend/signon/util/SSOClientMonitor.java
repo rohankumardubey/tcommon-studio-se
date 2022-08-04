@@ -60,7 +60,7 @@ public class SSOClientMonitor implements Runnable {
         String state = data.get(STUDIO_AUTH_STATE_KEY);
 
         String[] splits = state.split(",");
-        String dateCenter = SSOClientUtil.getDefaultDataCenter();
+        String dateCenter = TMCRepositoryUtil.getDefaultDataCenter();
         if (splits.length == 2) {
             dateCenter = splits[1];
         }

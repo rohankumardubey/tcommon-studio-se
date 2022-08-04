@@ -23,6 +23,7 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.pendo.PendoTrackSender;
 import org.talend.core.runtime.i18n.Messages;
 import org.talend.repository.model.RepositoryConstants;
+import org.talend.signon.util.TMCRepositoryUtil;
 import org.talend.signon.util.TokenMode;
 import org.talend.utils.json.JSONException;
 import org.talend.utils.json.JSONObject;
@@ -96,8 +97,8 @@ public class ConnectionBean implements Cloneable {
     
     public static ConnectionBean getDefaultCloudConnectionBean(String dataCenter) {
         ConnectionBean newConnection = new ConnectionBean();
-        newConnection.setName(Messages.getString("ConnectionBean.Cloud.name")); //$NON-NLS-1$
-        newConnection.setDescription(Messages.getString("ConnectionBean.CloudConnection.description")); //$NON-NLS-1$
+        newConnection.setName(Messages.getString("ConnectionBean.Cloud.name", TMCRepositoryUtil.getDisplayNameByDatacenter(dataCenter))); //$NON-NLS-1$
+        newConnection.setDescription(Messages.getString("ConnectionBean.CloudConnection.description", TMCRepositoryUtil.getDisplayNameByDatacenter(dataCenter))); //$NON-NLS-1$
         newConnection.setRepositoryId(REPOSITORY_CLOUD_SSO_ID);
         newConnection.setToken(true);
         newConnection.setStoreCredentials(true);

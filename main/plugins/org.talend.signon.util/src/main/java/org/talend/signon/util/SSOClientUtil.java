@@ -14,14 +14,9 @@ package org.talend.signon.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.talend.signon.util.listener.LoginEventListener;
 
 public class SSOClientUtil {
@@ -44,7 +39,9 @@ public class SSOClientUtil {
 
     private static final String CLIENT_FOLDER_NAME = "studio_sso_client";
 
-    private static final String DATA_CENTER_KEY = "talend.tmc.datacenter";
+    static final String DATA_CENTER_KEY = "talend.tmc.datacenter";
+
+    static final String DATA_CENTER_DISPLAY_KEY = "talend.tmc.datacenter.display";
 
     private static final SSOClientUtil instance = new SSOClientUtil();
 
@@ -92,7 +89,7 @@ public class SSOClientUtil {
     }
 
     public static File getSSOClientFolder() {
-        File configFolder = getConfigurationFolder();
+        File configFolder = EquinoxUtils.getConfigurationFolder();
         File signClientFolder = new File(configFolder, CLIENT_FOLDER_NAME);
         return signClientFolder;
     }
@@ -131,63 +128,12 @@ public class SSOClientUtil {
 
     public String getSignOnURL(String clientID, String codeChallenge, int callbackPort) {
         StringBuffer urlSB = new StringBuffer();
-        urlSB.append(getBaseLoginURL(null)).append("?");
+        urlSB.append(TMCRepositoryUtil.getBaseLoginURL(null)).append("?");
         urlSB.append("client_id=").append(clientID).append("&");
         urlSB.append("redirect_uri=talendstudio://code&scope=openid refreshToken&response_type=code&code_challenge_method=S256")
                 .append("&");
         urlSB.append("code_challenge=").append(codeChallenge).append("&");
-        urlSB.append("state=").append(callbackPort).append(SSOUtil.STATE_PARAM_SEPARATOR).append(getDefaultDataCenter());
+        urlSB.append("state=").append(callbackPort).append(SSOUtil.STATE_PARAM_SEPARATOR).append(TMCRepositoryUtil.getDefaultDataCenter());
         return urlSB.toString();
-    }
-
-    public static File getConfigurationFolder() {
-        BundleContext configuratorBundleContext = getCurrentBundleContext();
-        final URL url = EquinoxUtils.getConfigLocation(configuratorBundleContext).getURL();
-        try {
-            return URIUtil.toFile(URIUtil.toURI(url));
-        } catch (URISyntaxException e) {
-            //
-        }
-        return null;
-    }
-
-    // always return a valid bundlesContext or throw a runtimeException
-    public static BundleContext getCurrentBundleContext() {
-        Bundle bundle = FrameworkUtil.getBundle(SSOClientUtil.class);
-        if (bundle != null) {
-            BundleContext bundleContext = bundle.getBundleContext();
-            if (bundleContext != null) {
-                return bundleContext;
-            } else {
-                throw new RuntimeException(
-                        "could not find current BundleContext, this should never happen, check that the bunlde is activated when this class is accessed");
-            }
-        } else {
-            throw new RuntimeException(
-                    "could not find current Bundle, this should never happen, check that the bunlde is activated when this class is accessed");
-        }
-    }
-
-    public static String getDefaultDataCenter() {
-        String defaultDataCenter = "int";
-        if (System.getProperty(DATA_CENTER_KEY) != null) {
-            defaultDataCenter = System.getProperty(DATA_CENTER_KEY);
-        }
-        return defaultDataCenter;
-    }
-
-    public static String getBaseLoginURL(String dataCenter) {
-        if (dataCenter == null) {
-            dataCenter = getDefaultDataCenter();
-        }
-        return "https://iam." + dataCenter + ".cloud.talend.com/oidc/idp/authorize";
-    }
-
-    public static String getCloudAdminURL(String dataCenter) {
-        return "https://tmc." + dataCenter + ".cloud.talend.com/studio_cloud_connection";
-    }
-
-    public static String getTokenURL(String dataCenter) {
-        return "https://iam." + dataCenter + ".cloud.talend.com/oidc/oauth2/token";
     }
 }

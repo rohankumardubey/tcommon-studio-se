@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.signon.util;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -104,5 +105,16 @@ public class EquinoxUtils {
             throw new RuntimeException(
                     "could not find current Bundle, this should never happen, check that the bunlde is activated when this class is accessed");
         }
+    }
+
+    public static File getConfigurationFolder() {
+        BundleContext configuratorBundleContext = getCurrentBundleContext();
+        final URL url = getConfigLocation(configuratorBundleContext).getURL();
+        try {
+            return URIUtil.toFile(URIUtil.toURI(url));
+        } catch (URISyntaxException e) {
+            //
+        }
+        return null;
     }
 }
