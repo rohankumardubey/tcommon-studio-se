@@ -268,11 +268,13 @@ public class JSONObject {
     public JSONObject(Object bean, Class<?> expectedClass) {
         this();
         
-        if(bean.getClass() != expectedClass) {
-            throw new JSONException("expectedClass doesn't match the bean or is null");
-        } 
+        Class<?> clazz = bean.getClass();
+        if((clazz == expectedClass) || (expectedClass!=null && expectedClass.isAssignableFrom(clazz))) {
+            populateMap(bean);
+            return;
+        }
         
-        populateMap(bean);
+        throw new JSONException("expectedClass doesn't match the bean or is null");
     }
 
     /**
