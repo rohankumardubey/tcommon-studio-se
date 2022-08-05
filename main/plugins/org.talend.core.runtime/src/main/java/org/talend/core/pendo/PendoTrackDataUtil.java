@@ -162,7 +162,7 @@ public class PendoTrackDataUtil {
         OPEN_IN_APITester("Open in API Tester"),
         OPEN_API_DOCUMENTATION("Open API Documentation"),
         AUTOMAP("tMap Automap"),
-        TMAP("Studio tMap");
+        TMAP("tMap");
 
         private String event;
 
