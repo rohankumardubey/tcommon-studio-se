@@ -273,7 +273,6 @@ public class PomIdsHelper {
                 version = (String) property.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
 //                APPINT-34581 - try to take cloud version if custom does not persist
                 if(version == null) {
-                	version = 3.5.6
                     version = (String) property.getAdditionalProperties().get(MavenConstants.CLOUD_VERSION);
                 }
                 useSnapshot = property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
