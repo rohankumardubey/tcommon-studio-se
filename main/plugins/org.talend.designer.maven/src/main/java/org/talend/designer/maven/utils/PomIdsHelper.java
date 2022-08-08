@@ -271,6 +271,27 @@ public class PomIdsHelper {
             boolean useSnapshot = false; 
             if (property.getAdditionalProperties() != null) {
                 version = (String) property.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
+                useSnapshot = property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
+            }
+            if (version == null) {
+                version = VersionUtils.getPublishVersion(property.getVersion());
+            }
+            if (useSnapshot) {
+                version += MavenConstants.SNAPSHOT;
+            }
+        }
+        return version;
+    }
+
+    /**
+     * @return "<jobVersion>-<projectName>".
+     */
+    public static String getJobFeatureVersion(Property property) {
+        String version = null;
+        if (property != null) {
+            boolean useSnapshot = false; 
+            if (property.getAdditionalProperties() != null) {
+                version = (String) property.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
 //                APPINT-34581 - try to take cloud version if custom does not persist
                 if(version == null) {
                     version = (String) property.getAdditionalProperties().get(MavenConstants.CLOUD_VERSION);
