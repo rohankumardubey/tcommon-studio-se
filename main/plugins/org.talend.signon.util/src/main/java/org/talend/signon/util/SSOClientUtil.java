@@ -14,6 +14,9 @@ package org.talend.signon.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -113,7 +116,7 @@ public class SSOClientUtil {
             throw new Exception("Login sso monitor start failed.");
         }
         LOGGER.info("Prepare to start sso client on " + signOnClientListener.getListenPort());
-        signOnClientExec = new SSOClientExec(execFile, clientId, codeChallenge, signOnClientListener.getListenPort());
+        signOnClientExec = new SSOClientExec(execFile, clientId, codeChallenge, signOnClientListener.getListenPort(), listener);
         new Thread(signOnClientExec).start();
         LOGGER.info("Login sso started.");
     }
@@ -126,12 +129,15 @@ public class SSOClientUtil {
         SSOClientUtil.getInstance().startSignOnClient(listener);
     }
 
-    public String getSignOnURL(String clientID, String codeChallenge, int callbackPort) {
+    public String getSignOnURL(String clientID, String codeChallenge, int callbackPort) throws UnsupportedEncodingException {
+        String dataCenter = TMCRepositoryUtil.getDefaultDataCenter();
         StringBuffer urlSB = new StringBuffer();
-        urlSB.append(TMCRepositoryUtil.getBaseLoginURL(null)).append("?");
+        urlSB.append(TMCRepositoryUtil.getBaseLoginURL(dataCenter)).append("?");
         urlSB.append("client_id=").append(clientID).append("&");
-        urlSB.append("redirect_uri=talendstudio://code&scope=openid refreshToken&response_type=code&code_challenge_method=S256")
-                .append("&");
+        urlSB.append("redirect_uri=").append(URLEncoder.encode(TMCRepositoryUtil.getRedirectURL(dataCenter), StandardCharsets.UTF_8.name())).append("&");
+        urlSB.append("scope=openid refreshToken&");
+        urlSB.append("response_type=code&");
+        urlSB.append("code_challenge_method=S256&");
         urlSB.append("code_challenge=").append(codeChallenge).append("&");
         urlSB.append("state=").append(callbackPort).append(SSOUtil.STATE_PARAM_SEPARATOR).append(TMCRepositoryUtil.getDefaultDataCenter());
         return urlSB.toString();

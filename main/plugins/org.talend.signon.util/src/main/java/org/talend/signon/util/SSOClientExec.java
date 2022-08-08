@@ -13,12 +13,15 @@
 package org.talend.signon.util;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.log4j.Logger;
 import org.eclipse.equinox.app.IApplication;
+import org.talend.signon.util.i18n.Messages;
+import org.talend.signon.util.listener.LoginEventListener;
 
 public class SSOClientExec implements Runnable {
 
@@ -27,6 +30,8 @@ public class SSOClientExec implements Runnable {
     public static final String STUDIO_CALL_PREFIX = "studioCall:";
 
     private static final String STUDIO_SSO_CLIENT_DEBUG_PORT = "talend.studio.sso.client.debug.port";
+
+    private static final int EXIT_BY_TIMEOUT = -99;
 
     private File execFile;
 
@@ -40,33 +45,37 @@ public class SSOClientExec implements Runnable {
 
     private Exception error;
 
-    public SSOClientExec(File execFile, String clientId, String codeChallenge, int port) {
+    private LoginEventListener listener;
+
+    public SSOClientExec(File execFile, String clientId, String codeChallenge, int port, LoginEventListener listener) {
         this.execFile = execFile;
         this.clientId = clientId;
         this.codeChallenge = codeChallenge;
         this.port = port;
+        this.listener = listener;
     }
 
     @Override
     public void run() {
-        CommandLine cmdLine = new CommandLine(execFile);
-        cmdLine.addArgument(getInvokeParameter(clientId, port));
-        if (getClientDebugPort() != null) {
-            cmdLine.addArgument("-vmargs");
-            cmdLine.addArgument("-Xdebug");
-            String cmd = "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=*:" + getClientDebugPort();
-            cmdLine.addArgument(cmd);
-        }
-        DefaultExecutor executor = new DefaultExecutor();
-        executeWatchdog = new ExecuteWatchdog(600000);
-        executor.setWatchdog(executeWatchdog);
-        executor.setExitValues(new int[] { 0, 24 });
+        int exitValue = 0;
         try {
+            CommandLine cmdLine = new CommandLine(execFile);
+            cmdLine.addArgument(getInvokeParameter(clientId, port));
+            if (getClientDebugPort() != null) {
+                cmdLine.addArgument("-vmargs");
+                cmdLine.addArgument("-Xdebug");
+                String cmd = "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=*:" + getClientDebugPort();
+                cmdLine.addArgument(cmd);
+            }
+            DefaultExecutor executor = new DefaultExecutor();
+            executeWatchdog = new ExecuteWatchdog(600000);
+            executor.setWatchdog(executeWatchdog);
+            executor.setExitValues(new int[] { 0, 24 });
             if (!execFile.canExecute()) {
                 execFile.setExecutable(true);
             }
             executor.setWorkingDirectory(execFile.getParentFile());
-            int exitValue = executor.execute(cmdLine);
+            exitValue = executor.execute(cmdLine);
             if (IApplication.EXIT_RELAUNCH == exitValue) {
                 cmdLine = new CommandLine(execFile);
                 if (getClientDebugPort() != null) {
@@ -79,7 +88,13 @@ public class SSOClientExec implements Runnable {
             }
         } catch (Exception e) {
             error = e;
-            LOGGER.error(e);
+            if (EXIT_BY_TIMEOUT == exitValue) {
+                LOGGER.error("SSO client exited by timeout.");
+                listener.loginFailed(new Exception(Messages.getString("SSOClientExec.error.timeout")));
+            } else {
+                LOGGER.error(e);
+                listener.loginFailed(e);
+            }
         }
     }
 
@@ -87,7 +102,7 @@ public class SSOClientExec implements Runnable {
         return System.getProperty(STUDIO_SSO_CLIENT_DEBUG_PORT);
     }
 
-    private String getInvokeParameter(String clientID, int callbackPort) {
+    private String getInvokeParameter(String clientID, int callbackPort) throws UnsupportedEncodingException {
         return STUDIO_CALL_PREFIX + SSOClientUtil.getInstance().getSignOnURL(clientID, codeChallenge, callbackPort);
     }
 

@@ -1,5 +1,3 @@
-package org.talend.signon.util;
-
 // ============================================================================
 //
 // Copyright (C) 2006-2021 Talend Inc. - www.talend.com
@@ -12,6 +10,7 @@ package org.talend.signon.util;
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
+package org.talend.signon.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
