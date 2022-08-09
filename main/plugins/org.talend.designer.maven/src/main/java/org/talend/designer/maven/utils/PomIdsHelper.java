@@ -45,6 +45,8 @@ public class PomIdsHelper {
 
     private static Map<String, ProjectPreferenceManager> preferenceManagers = new HashMap<>();
 
+    private static final String ARTIFACT_ID = "artifactId";
+    
     /**
      * get current project groupId.
      */
@@ -161,6 +163,27 @@ public class PomIdsHelper {
         return getCodesVersion(projectTechName);
     }
 
+    public static String getGroupId(Property property) {
+        if (null == getOldId(property)) {
+            final String path = property.getItem().getState().getPath();
+            if (null != path) {
+                return path.replace('/', '.');
+            }
+        }
+        return null;
+    }
+
+    private static String getOldId(Property property) {
+        final String oldId = (String) property.getAdditionalProperties().get(ARTIFACT_ID);
+        if (null != oldId) {
+            final String name = property.getLabel();
+            if (oldId.startsWith(name + '_')) {
+                return oldId;
+            }
+        }
+        return null;
+    }
+    
     @Deprecated
     public static String getJobGroupId(String name) {
         if (name != null && !name.trim().isEmpty()) {
