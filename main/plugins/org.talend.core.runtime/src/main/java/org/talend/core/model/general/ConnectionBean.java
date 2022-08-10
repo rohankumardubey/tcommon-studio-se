@@ -68,7 +68,8 @@ public class ConnectionBean implements Cloneable {
 
     public static final String CLOUD_TOKEN_ID ="cloud_token"; //$NON-NLS-1$
     
-    public static final String REPOSITORY_CLOUD_SSO_ID = RepositoryConstants.REPOSITORY_CLOUD_CUSTOM_ID; //$NON-NLS-1$
+    private static final String LOGIN_VIA_CLOUD = "login_via_cloud"; //$NON-NLS-1$
+    
     /**
      * DOC smallet ConnectionBean constructor comment.
      */
@@ -99,7 +100,7 @@ public class ConnectionBean implements Cloneable {
         ConnectionBean newConnection = new ConnectionBean();
         newConnection.setName(Messages.getString("ConnectionBean.Cloud.name", TMCRepositoryUtil.getDisplayNameByDatacenter(dataCenter))); //$NON-NLS-1$
         newConnection.setDescription(Messages.getString("ConnectionBean.CloudConnection.description", TMCRepositoryUtil.getDisplayNameByDatacenter(dataCenter))); //$NON-NLS-1$
-        newConnection.setRepositoryId(REPOSITORY_CLOUD_SSO_ID);
+        newConnection.setRepositoryId(TMCRepositoryUtil.getRepositoryId(dataCenter));
         newConnection.setToken(true);
         newConnection.setStoreCredentials(true);
         newConnection.setComplete(true);
@@ -345,6 +346,25 @@ public class ConnectionBean implements Cloneable {
             conDetails.put(TOKEN, token);
         } catch (JSONException e) {
             ExceptionHandler.process(e);
+        }
+    }
+    
+    public boolean isLoginViaCloud() {
+        try {
+            if (conDetails.has(LOGIN_VIA_CLOUD)) {
+                return (Boolean) conDetails.get(LOGIN_VIA_CLOUD);
+            }
+        } catch (JSONException e) {
+            // do nothing
+        }
+        return false;
+    }
+    
+    public void setLoginViaCloud(boolean isLoginViaCloud) {
+        try {
+            conDetails.put(LOGIN_VIA_CLOUD, isLoginViaCloud);
+        } catch (JSONException e) {
+            // do nothing
         }
     }
 
