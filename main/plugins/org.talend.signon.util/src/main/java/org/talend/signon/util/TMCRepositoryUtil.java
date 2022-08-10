@@ -14,7 +14,18 @@ package org.talend.signon.util;
 import org.talend.signon.util.i18n.Messages;
 
 public class TMCRepositoryUtil {
+    public static final String REPOSITORY_CLOUD_US_ID = "cloud_us"; //$NON-NLS-1$
 
+    public static final String REPOSITORY_CLOUD_EU_ID = "cloud_eu"; //$NON-NLS-1$
+
+    public static final String REPOSITORY_CLOUD_APAC_ID = "cloud_apac"; //$NON-NLS-1$
+
+    public static final String REPOSITORY_CLOUD_US_WEST_ID = "cloud_us_west"; //$NON-NLS-1$
+    
+    public static final String REPOSITORY_CLOUD_AUS_ID = "cloud_aus"; //$NON-NLS-1$
+    
+    public static final String REPOSITORY_CLOUD_CUSTOM_ID = "cloud_custom"; //$NON-NLS-1$
+    
     public static String getBaseLoginURL(String dataCenter) {
         if (dataCenter == null) {
             dataCenter = TMCRepositoryUtil.getDefaultDataCenter();
@@ -67,6 +78,25 @@ public class TMCRepositoryUtil {
         }
     
         return dataCenter;
+    }
+    
+    public static String getRepositoryId(String dataCenter) {
+        if ("ap".equals(dataCenter)) {
+            return REPOSITORY_CLOUD_APAC_ID;
+        }
+        if ("us".equals(dataCenter)) {
+            return REPOSITORY_CLOUD_US_ID;
+        }
+        if ("us-west".equals(dataCenter)) {
+            return REPOSITORY_CLOUD_US_WEST_ID;
+        }
+        if ("eu".equals(dataCenter)) {
+            return REPOSITORY_CLOUD_EU_ID;
+        }
+        if ("au".equals(REPOSITORY_CLOUD_AUS_ID)) {
+            return REPOSITORY_CLOUD_EU_ID;
+        }
+        return REPOSITORY_CLOUD_CUSTOM_ID;
     }
 
 }
