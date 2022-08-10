@@ -104,6 +104,7 @@ public class ConnectionBean implements Cloneable {
         newConnection.setToken(true);
         newConnection.setStoreCredentials(true);
         newConnection.setComplete(true);
+        newConnection.setLoginViaCloud(true);
         newConnection.setWorkSpace(getRecentWorkSpace());
         return newConnection;
     }
