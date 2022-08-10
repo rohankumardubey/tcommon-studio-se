@@ -278,6 +278,19 @@ public class ProcessorUtilities {
         needExportItemsForDQ = false;
     }
 
+    public static void resetExportConfig(boolean noResetDq) {
+        interpreter = null;
+        codeLocation = null;
+        libraryPath = null;
+        exportConfig = false;
+        exportAsOSGI = false;
+        exportTimeStamp = null;
+        exportJobAsMicroService = false;
+        if (!noResetDq) {
+            needExportItemsForDQ = false;
+        }
+    }
+
     public static String getInterpreter() {
         return interpreter;
     }
