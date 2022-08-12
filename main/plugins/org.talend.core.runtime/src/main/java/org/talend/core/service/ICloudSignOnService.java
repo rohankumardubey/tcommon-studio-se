@@ -43,6 +43,8 @@ public interface ICloudSignOnService extends IService {
     boolean isSignViaCloud();
     
     void lastConnectionChanged(ConnectionBean bean);
+    
+    public void showReloginDialog();
 
     public static ICloudSignOnService get() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ICloudSignOnService.class)) {
