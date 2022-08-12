@@ -38,6 +38,10 @@ public interface ICloudSignOnService extends IService {
     
     TokenMode getLatestToken() throws Exception;
     
+    public boolean refreshToken() throws Exception;
+    
+    boolean isSignViaCloud();
+    
     void lastConnectionChanged(ConnectionBean bean);
 
     public static ICloudSignOnService get() {
