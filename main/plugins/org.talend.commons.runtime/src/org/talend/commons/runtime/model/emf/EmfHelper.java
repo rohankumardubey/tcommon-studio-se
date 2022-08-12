@@ -177,6 +177,15 @@ public class EmfHelper {
         resource.save(null);
     }
 
+    public static Resource saveEmfModel(EPackage pkg, EObject model, String file) throws IOException {
+        ResourceSet resourceSet = getResourceSet(pkg);
+        URI uri = URI.createFileURI(file);
+        Resource resource = resourceSet.createResource(uri);
+        resource.getContents().add(model);
+        resource.save(null);
+        return resource;
+    }
+
     private static ResourceSet getResourceSet(EPackage pkg) {
         ResourceSet resourceSet = new ResourceSetImpl();
 
