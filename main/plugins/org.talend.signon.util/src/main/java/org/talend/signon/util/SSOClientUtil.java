@@ -104,21 +104,21 @@ public class SSOClientUtil {
         String clientId = getClientID();
         File execFile = getSSOClientAppFile();
         String codeChallenge = listener.getCodeChallenge();
-        LOGGER.info("Prepare to start sso client monitor");
+        LOGGER.info("Prepare to start login cloud client monitor");
         SSOClientMonitor signOnClientListener = SSOClientMonitor.getInscance();
         signOnClientListener.addLoginEventListener(listener);
         new Thread(signOnClientListener).start();
-        LOGGER.info("Login sso monitor started.");
+        LOGGER.info("Login cloud client monitor started.");
         while (!SSOClientMonitor.isRunning()) {
             TimeUnit.MILLISECONDS.sleep(100);
         }
         if (signOnClientListener.getListenPort() < 0) {
-            throw new Exception("Login sso monitor start failed.");
+            throw new Exception("Login cloud client monitor start failed.");
         }
-        LOGGER.info("Prepare to start sso client on " + signOnClientListener.getListenPort());
+        LOGGER.info("Prepare to start cloud client on " + signOnClientListener.getListenPort());
         signOnClientExec = new SSOClientExec(execFile, clientId, codeChallenge, signOnClientListener.getListenPort(), listener);
         new Thread(signOnClientExec).start();
-        LOGGER.info("Login sso started.");
+        LOGGER.info("Login cloud client started.");
     }
 
     public static SSOClientUtil getInstance() {

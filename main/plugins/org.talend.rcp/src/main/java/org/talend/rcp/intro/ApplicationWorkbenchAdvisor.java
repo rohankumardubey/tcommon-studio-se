@@ -32,6 +32,7 @@ import org.talend.commons.utils.system.EclipseCommandLine;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.LoginTaskRegistryReader;
+import org.talend.core.service.ICloudSignOnService;
 import org.talend.core.ui.branding.IBrandingConfiguration;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.services.IGitUIProviderService;
@@ -139,12 +140,15 @@ public class ApplicationWorkbenchAdvisor extends IDEWorkbenchAdvisor {
         if (!ArrayUtils.contains(Platform.getApplicationArgs(), EclipseCommandLine.TALEND_DISABLE_LOGINDIALOG_COMMAND)) {
             RegisterManagement.getInstance().validateRegistration();
         }
-
+        ICloudSignOnService.get().showReloginDialog();
         // PerspectiveReviewUtil.checkPerspectiveDisplayItems();
     }
 
     @Override
     public boolean preShutdown() {
+        if (ICloudSignOnService.get() != null && ICloudSignOnService.get().isReloginDialogRunning()) {
+            return super.preShutdown();
+        }
         if (IGitUIProviderService.get() != null && IGitUIProviderService.get().checkPendingChanges()) {
             return false;
         }
