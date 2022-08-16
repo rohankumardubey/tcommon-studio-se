@@ -159,6 +159,8 @@ public class ConnectionUserPerReader {
         }
         if (cons == null || cons.size() == 0) {
             proper.remove("connection.users");//$NON-NLS-1$
+            proper.remove("connection.define");//$NON-NLS-1$
+            proper.remove("connection.lastConnection");//$NON-NLS-1$
         } else {
             JSONArray usersJsonArray = new JSONArray();
             for (ConnectionBean currentConnection : cons) {

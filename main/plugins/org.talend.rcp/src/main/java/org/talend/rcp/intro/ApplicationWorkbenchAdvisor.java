@@ -140,7 +140,6 @@ public class ApplicationWorkbenchAdvisor extends IDEWorkbenchAdvisor {
         if (!ArrayUtils.contains(Platform.getApplicationArgs(), EclipseCommandLine.TALEND_DISABLE_LOGINDIALOG_COMMAND)) {
             RegisterManagement.getInstance().validateRegistration();
         }
-        ICloudSignOnService.get().showReloginDialog();
         // PerspectiveReviewUtil.checkPerspectiveDisplayItems();
     }
 
