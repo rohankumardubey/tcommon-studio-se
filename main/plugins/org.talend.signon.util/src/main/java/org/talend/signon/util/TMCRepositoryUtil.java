@@ -34,7 +34,7 @@ public class TMCRepositoryUtil {
     }
 
     public static String getDefaultDataCenter() {
-        String defaultDataCenter = "int";
+        String defaultDataCenter = "us";
         if (System.getProperty(SSOClientUtil.DATA_CENTER_KEY) != null) {
             defaultDataCenter = System.getProperty(SSOClientUtil.DATA_CENTER_KEY);
         }
