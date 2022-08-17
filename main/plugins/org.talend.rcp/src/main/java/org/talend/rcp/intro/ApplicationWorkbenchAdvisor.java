@@ -145,13 +145,18 @@ public class ApplicationWorkbenchAdvisor extends IDEWorkbenchAdvisor {
 
     @Override
     public boolean preShutdown() {
+        boolean preShutwond = super.preShutdown();
+        boolean commitChanges = true;
         if (ICloudSignOnService.get() != null && ICloudSignOnService.get().isReloginDialogRunning()) {
-            return super.preShutdown();
+            commitChanges = false;
         }
-        if (IGitUIProviderService.get() != null && IGitUIProviderService.get().checkPendingChanges()) {
-            return false;
+        if (commitChanges && IGitUIProviderService.get() != null && IGitUIProviderService.get().checkPendingChanges()) {
+            preShutwond = false;
         }
-        return super.preShutdown();
+        if (preShutwond && ICloudSignOnService.get() != null) {
+            ICloudSignOnService.get().stopHeartBeat();
+        }
+        return preShutwond;
     }
 
 }
