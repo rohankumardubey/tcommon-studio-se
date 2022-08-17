@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -177,15 +178,6 @@ public class EmfHelper {
         resource.save(null);
     }
 
-    public static Resource saveEmfModel(EPackage pkg, EObject model, String file) throws IOException {
-        ResourceSet resourceSet = getResourceSet(pkg);
-        URI uri = URI.createFileURI(file);
-        Resource resource = resourceSet.createResource(uri);
-        resource.getContents().add(model);
-        resource.save(null);
-        return resource;
-    }
-
     private static ResourceSet getResourceSet(EPackage pkg) {
         ResourceSet resourceSet = new ResourceSetImpl();
 
@@ -270,6 +262,14 @@ public class EmfHelper {
             }
         } // else return default value
         return result;
+    }
+
+    public static String getEmfModelContent(EObject model) throws Exception {
+        String content = "";
+        CustomXMIResource xmiResource = new CustomXMIResource();
+        xmiResource.getContents().add(model);
+        content = xmiResource.getResourceContent(Collections.EMPTY_MAP);
+        return content;
     }
 
 }
