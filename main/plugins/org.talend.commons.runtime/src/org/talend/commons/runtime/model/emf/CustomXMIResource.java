@@ -28,6 +28,8 @@ import org.eclipse.emf.ecore.xmi.impl.XMLString;
  */
 public class CustomXMIResource extends TalendXMIResource {
 
+    public static final String ENCODING = "UTF-8"; //$NON-NLS-1$
+
     CustomXMISave xmiSave;
 
     public CustomXMIResource() {
@@ -36,6 +38,12 @@ public class CustomXMIResource extends TalendXMIResource {
 
     public CustomXMIResource(URI uri) {
         super(uri);
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        encoding = ENCODING;
     }
 
     @Override
