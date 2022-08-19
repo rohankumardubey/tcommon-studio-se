@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.repository.items.importexport.handlers;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -119,10 +120,12 @@ public final class HandlerUtil {
             if(StringUtils.isNoneEmpty(protocol) && protocol.equalsIgnoreCase("file")) {
                 filePath = filePath.replaceFirst("file://", "").replaceFirst("file:/", "").replaceFirst("file:", "");
             }
-            os = new FileOutputStream(filePath);
-            manager.getPaths().iterator().next();
-            is = manager.getStream(screenshotNeeded, itemRecord);
-            FileCopyUtils.copyStreams(is, os);
+            if(new File(filePath).exists()) {
+                os = new FileOutputStream(filePath);
+                manager.getPaths().iterator().next();
+                is = manager.getStream(screenshotNeeded, itemRecord);
+                FileCopyUtils.copyStreams(is, os);
+            }
         } finally {
             if (os != null) {
                 os.close();
