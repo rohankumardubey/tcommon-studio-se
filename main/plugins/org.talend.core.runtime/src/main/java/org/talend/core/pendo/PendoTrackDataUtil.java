@@ -61,11 +61,7 @@ public class PendoTrackDataUtil {
     }
 
     public static IPendoDataProperties getLoginEventProperties() {
-        String studioPatch = null;
-        IInstalledPatchService installedPatchService = IInstalledPatchService.get();
-        if (installedPatchService != null) {
-            studioPatch = installedPatchService.getLatestInstalledPatchVersion();
-        }
+        String studioPatch = getLatestPatchInstalledVersion();
         PendoLoginProperties loginEvent = new PendoLoginProperties();
         IStudioLiteP2Service studioLiteP2Service = IStudioLiteP2Service.get();
         try {
@@ -91,6 +87,15 @@ public class PendoTrackDataUtil {
         loginEvent.setStudioVersion(VersionUtils.getInternalMajorVersion());
         loginEvent.setStudioPatch(studioPatch);
         return loginEvent;
+    }
+
+    public static String getLatestPatchInstalledVersion() {
+        String studioPatch = "";
+        IInstalledPatchService installedPatchService = IInstalledPatchService.get();
+        if (installedPatchService != null) {
+            studioPatch = installedPatchService.getLatestInstalledVersion(true);
+        }
+        return studioPatch;
     }
 
     private static void setUpRefProjectsStructure(PendoLoginProperties loginEvent) {
@@ -162,7 +167,9 @@ public class PendoTrackDataUtil {
         OPEN_IN_APITester("Open in API Tester"),
         OPEN_API_DOCUMENTATION("Open API Documentation"),
         AUTOMAP("tMap Automap"),
-        TMAP("tMap");
+        TMAP("tMap"),
+        ITEM_IMPORT("Import items"),
+        ITEM_SIGNATURE("Item Signature");
 
         private String event;
 
