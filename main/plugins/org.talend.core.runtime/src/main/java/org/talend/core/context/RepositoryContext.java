@@ -142,7 +142,7 @@ public class RepositoryContext {
      */
     public String getClearPassword() {
         try {
-            if (ICloudSignOnService.get() != null && ICloudSignOnService.get().hasValidToken()) {
+            if (ICloudSignOnService.get() != null && ICloudSignOnService.get().isSignViaCloud()) {
                 return ICloudSignOnService.get().getLatestToken().getAccessToken();
             }
         }catch (Exception ex) {
