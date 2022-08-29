@@ -82,19 +82,15 @@ public class PendoTrackDataUtil {
                 loginEvent.setEnabledFeatures(enabledFeatures);
             }
             setUpRefProjectsStructure(loginEvent);
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-        }
-        loginEvent.setStudioVersion(VersionUtils.getInternalMajorVersion());
-        loginEvent.setStudioPatch(studioPatch);
-        loginEvent.setIsOneClickLogin(Boolean.FALSE.toString());
-        try {
+            loginEvent.setIsOneClickLogin(Boolean.FALSE.toString());
             if (ICloudSignOnService.get() != null && ICloudSignOnService.get().isSignViaCloud()) {
                 loginEvent.setIsOneClickLogin(Boolean.TRUE.toString());
             }
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
+        loginEvent.setStudioVersion(VersionUtils.getInternalMajorVersion());
+        loginEvent.setStudioPatch(studioPatch);
         return loginEvent;
     }
 
