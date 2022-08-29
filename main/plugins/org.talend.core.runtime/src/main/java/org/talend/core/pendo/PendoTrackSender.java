@@ -55,9 +55,9 @@ import org.talend.utils.json.JSONObject;
  */
 public class PendoTrackSender {
     
-    private static final String PROP_PENDO_LOCAL_CHECK = "talend.pendo.localDebug";
+    public static final String PROP_PENDO_LOCAL_CHECK = "talend.pendo.localDebug";
 
-    private static final String PROP_PENDO_LOG_DATA = "talend.pendo.logRuntimeData";
+    public static final String PROP_PENDO_LOG_DATA = "talend.pendo.logRuntimeData";
 
     private static final String PREFIX_API = "api";
 
@@ -79,13 +79,18 @@ public class PendoTrackSender {
 
     private static String pendoInfo;
 
-    public PendoTrackSender() {
+    private PendoTrackSender() {
+    }
+
+    static {
+        instance = new PendoTrackSender();
+        RepositoryContext repositoryContext = getRepositoryContext();
+        if (repositoryContext != null) {
+            adminUrl = repositoryContext.getFields().get(RepositoryConstants.REPOSITORY_URL);
+        }
     }
 
     public static PendoTrackSender getInstance() {
-        if (instance == null) {
-            instance = new PendoTrackSender();
-        }
         if (StringUtils.isBlank(adminUrl)) {
             RepositoryContext repositoryContext = getRepositoryContext();
             if (repositoryContext != null) {
@@ -118,7 +123,7 @@ public class PendoTrackSender {
 
     public void sendTrackData(TrackEvent event, IPendoDataProperties properties) throws Exception {
         if (isPendoLocalDebug()) {
-            ExceptionHandler.log(PendoTrackDataUtil.convertEntityJsonString(properties));
+            ExceptionHandler.log(event.getEvent() + ":" + PendoTrackDataUtil.convertEntityJsonString(properties));
             return;
         }
         DefaultHttpClient client = null;
