@@ -88,6 +88,8 @@ public class EclipseCommandLine {
     static public final String TALEND_CONTINUE_LOGON = "-talendContinueLogon";
 
     static public final String TALEND_CONTINUE_UPDATE = "-talendContinueUpdate";
+    
+    static public final String TALEND_CLEAN_M2 = "-talendCleanM2";
 
     static public final String TALEND_CLEAN_UNINSTALLED_BUNDLES = "-talendCleanUninstalledBundles";
 
