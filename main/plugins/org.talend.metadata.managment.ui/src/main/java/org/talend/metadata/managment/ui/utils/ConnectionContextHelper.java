@@ -241,7 +241,7 @@ public final class ConnectionContextHelper {
      */
     public static String convertContextLabel(String label) {
         if (label != null) {
-            String invalidCharactor = "[\\~\\!\\`\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\+\\=\\{\\[\\]\\}\\:\\;\\'\\|\\<\\,\\>\\.\\?\\/\"ï¿¥ï¼›ï¼šâ€˜â€�ã€�ã€Šï¼Œã€‹ã€‚ï¼Ÿ]";//$NON-NLS-1$
+        	String invalidCharactor = "[\\~\\!\\`\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\+\\=\\{\\[\\]\\}\\:\\;\\'\\|\\<\\,\\>\\.\\?\\/\"￥；：‘”、《，》。？]";//$NON-NLS-1$
             String newLabel = label.replaceAll(invalidCharactor, "_"); //$NON-NLS-1$
             Pattern pattern = Pattern.compile("^[0-9]+.*$"); //$NON-NLS-1$
             Matcher m = pattern.matcher(newLabel);
