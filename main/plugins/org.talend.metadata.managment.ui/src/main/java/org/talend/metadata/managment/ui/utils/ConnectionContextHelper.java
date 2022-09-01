@@ -39,6 +39,7 @@ import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
+import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
@@ -240,7 +241,7 @@ public final class ConnectionContextHelper {
      */
     public static String convertContextLabel(String label) {
         if (label != null) {
-            String invalidCharactor = "[\\~\\!\\`\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\+\\=\\{\\[\\]\\}\\:\\;\\'\\|\\<\\,\\>\\.\\?\\/\"￥；：‘”、《，》。？]";//$NON-NLS-1$
+            String invalidCharactor = "[\\~\\!\\`\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\+\\=\\{\\[\\]\\}\\:\\;\\'\\|\\<\\,\\>\\.\\?\\/\"ï¿¥ï¼›ï¼šâ€˜â€�ã€�ã€Šï¼Œã€‹ã€‚ï¼Ÿ]";//$NON-NLS-1$
             String newLabel = label.replaceAll(invalidCharactor, "_"); //$NON-NLS-1$
             Pattern pattern = Pattern.compile("^[0-9]+.*$"); //$NON-NLS-1$
             Matcher m = pattern.matcher(newLabel);
@@ -285,8 +286,8 @@ public final class ConnectionContextHelper {
         }
         final String label = convertContextLabel(connectionItem.getProperty().getLabel());
         Connection conn = connectionItem.getConnection();
-
         List<IContextParameter> varList = null;
+        ITaCoKitService coKitService = ITaCoKitService.getInstance();
         if(conn.getCompProperties() != null){
             varList = ExtendedNodeConnectionContextUtils.getContextVariables(label, conn, paramSet);
         }else if (conn instanceof DatabaseConnection) {
@@ -311,7 +312,11 @@ public final class ConnectionContextHelper {
             varList = OtherConnectionContextUtils.getFTPSChemaVariables(label, (FTPConnection) conn);
         } else if (conn instanceof SAPConnection) {
             varList = OtherConnectionContextUtils.getSAPContextVariables(label, (SAPConnection) conn, paramSet);
-        } else {
+        }
+        else if(coKitService!=null && coKitService.isTaCoKitConnection(conn)) {
+        	varList = TaCoKitConnectionContextUtils.getContextVariables(label, conn, paramSet);
+        }
+        else {
             varList = ExtendedNodeConnectionContextUtils.getContextVariables(label, conn, paramSet);
         }
 
@@ -348,6 +353,9 @@ public final class ConnectionContextHelper {
             if (param instanceof EHadoopParamName) {
                 varList.add(((EHadoopParamName) param).name());
             }
+            if (param instanceof TaCoKitConnectionContextUtils.ETaCoKitParamName) {
+                varList.add(((TaCoKitConnectionContextUtils.ETaCoKitParamName) param).name());
+            }
             if (param instanceof GenericConnParamName) {
                 varList.add(((GenericConnParamName) param).getName());
             }
@@ -357,15 +365,17 @@ public final class ConnectionContextHelper {
     private static void collectConnVariablesOfAdditionalTable(Set<String> varList, ConnectionItem connectionItem) {
         Connection currentConnection = connectionItem.getConnection();
         // TODO:Maybe later has other type support context for the additional table.Now only sap
-        INOSQLService service = null;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(INOSQLService.class)) {
-            service = GlobalServiceRegister.getDefault().getService(INOSQLService.class);
-        }
-        if (service != null && service.isUseReplicaSet(currentConnection)) {
-            String replicaSets = service.getMongoDBReplicaSets(currentConnection);
-            try {
-                JSONArray jsa = new JSONArray(replicaSets);
-                for (int i = 0; i < jsa.length(); i++) {
+		INOSQLService service = null;
+		if (GlobalServiceRegister.getDefault().isServiceRegistered(INOSQLService.class)) {
+			service = GlobalServiceRegister.getDefault().getService(INOSQLService.class);
+		}
+		ITaCoKitService coKitService = ITaCoKitService.getInstance();
+
+		if (service != null && service.isUseReplicaSet(currentConnection)) {
+			String replicaSets = service.getMongoDBReplicaSets(currentConnection);
+			try {
+				JSONArray jsa = new JSONArray(replicaSets);
+				for (int i = 0; i < jsa.length(); i++) {
                     int paramNum = i + 1;
                     String hostParamName = ExtendedNodeConnectionContextUtils.getReplicaParamName(EHadoopParamName.ReplicaHost,
                             paramNum);
@@ -399,7 +409,17 @@ public final class ConnectionContextHelper {
                     varList.add((String) propertyMap.get("PROPERTY"));
                 }
             }
-        } else {
+        } 
+		
+        else if(coKitService!=null && coKitService.isTaCoKitConnection(currentConnection)){
+        	Set<String> additionPropertyList = TaCoKitConnectionContextUtils.getAdditionalPropertiesVariablesForExistContext(currentConnection);
+        	Iterator<String> it = additionPropertyList.iterator(); 
+        	while (it.hasNext()) {
+                 String additionalConProperty = it.next();
+                 varList.add(additionalConProperty);
+             }
+        } 
+        else{
             Set<String> additionPropertyList = ExtendedNodeConnectionContextUtils
                     .getAdditionalPropertiesVariablesForExistContext(currentConnection);
             Iterator<String> it = additionPropertyList.iterator();
@@ -415,7 +435,7 @@ public final class ConnectionContextHelper {
         if (connectionItem == null || contextItem == null) {
             return;
         }
-
+        ITaCoKitService coKitService = ITaCoKitService.getInstance();
         Connection conn = connectionItem.getConnection();
         if(conn.getCompProperties() != null){
             ExtendedNodeConnectionContextUtils.setConnectionPropertiesForContextMode(defaultContextName, conn, paramSet);
@@ -444,7 +464,11 @@ public final class ConnectionContextHelper {
         } else if (conn instanceof MDMConnection) {
             OtherConnectionContextUtils.setMDMConnectionPropertiesForContextMode(defaultContextName, (MDMConnection) conn,
                     paramSet);
-        } else {
+        }
+        else if(coKitService!=null && coKitService.isTaCoKitConnection(conn)){
+        	TaCoKitConnectionContextUtils.setConnectionPropertiesForContextMode(defaultContextName, conn, paramSet);
+        } 
+        else {
             ExtendedNodeConnectionContextUtils.setConnectionPropertiesForContextMode(defaultContextName, conn, paramSet);
         }
         // set connection for context mode
@@ -638,11 +662,14 @@ public final class ConnectionContextHelper {
         if (node == null || connItem == null) {
             return;
         }
-        IProcess process = node.getProcess();
-        if (process instanceof IProcess2) {
-            addContextForElementParameters((IProcess2) process, connItem, node.getElementParameters(), null, ignoreContextMode);
-        }
-    }
+		IProcess process = node.getProcess();
+		if (process instanceof IProcess2) {
+			Map<Object, Object> contextMap = new HashMap<Object, Object>();
+			contextMap.put("NODE", (INode) node);
+			addContextForElementParameters((IProcess2) process, connItem, node.getElementParameters(), null,
+					ignoreContextMode, contextMap);
+		}
+	}
 
     /**
      *
@@ -658,8 +685,9 @@ public final class ConnectionContextHelper {
         if (process == null || connItem == null) {
             return;
         }
-        addContextForElementParameters(process, connItem, process.getElementParameters(), category, ignoreContextMode);
-    }
+		addContextForElementParameters(process, connItem, process.getElementParameters(), category, ignoreContextMode,
+				new HashMap<Object, Object>());
+	}
 
     /**
      *
@@ -671,9 +699,9 @@ public final class ConnectionContextHelper {
      * @param category
      * @param checked
      */
-    private static void addContextForElementParameters(final IProcess2 process, final ConnectionItem connItem,
-            List<? extends IElementParameter> elementParameters, final EComponentCategory category,
-            final boolean ignoreContextMode) {
+	private static void addContextForElementParameters(final IProcess2 process, final ConnectionItem connItem,
+			List<? extends IElementParameter> elementParameters, final EComponentCategory category,
+			final boolean ignoreContextMode, Map<Object, Object> contextData) {
         if (connItem == null || elementParameters == null || process == null) {
             return;
         }
@@ -686,7 +714,7 @@ public final class ConnectionContextHelper {
         Connection connection = connItem.getConnection();
         if (connection != null && connection.isContextMode()) {
             // get the context variables from the node parameters.
-            Set<String> neededVars = retrieveContextVar(elementParameters, connection, category);
+			Set<String> neededVars = retrieveContextVar(elementParameters, connection, category, contextData);
             boolean isGeneric = isGenericConnection(connection);
             Map<String, String> renamedMap = ContextUtils.getContextParamterRenamedMap(process.getProperty().getItem());
             if (neededVars != null && !neededVars.isEmpty() || isGeneric) {
@@ -1118,7 +1146,15 @@ public final class ConnectionContextHelper {
             if (category == null || category == param.getCategory()) {
                 String repositoryValue = param.getRepositoryValue();
                 if (repositoryValue != null) {
-                    Object objectValue = RepositoryToComponentProperty.getValue(connection, repositoryValue, null, null, contextData);
+					String componentName = null;
+					if (contextData != null) {
+						Object node = contextData.get("NODE");
+						if (node instanceof INode) {
+							componentName = ((INode) node).getComponent().getName();
+						}
+					}
+					Object objectValue = RepositoryToComponentProperty.getValue(connection, repositoryValue, null,
+							componentName, contextData);
 
                     if (objectValue != null) {
                         if (objectValue instanceof List) {
@@ -2041,6 +2077,7 @@ public final class ConnectionContextHelper {
             return;
         }
         Connection conn = connItem.getConnection();
+        ITaCoKitService coKitService = ITaCoKitService.getInstance();
         if(conn.getCompProperties() != null){
             ExtendedNodeConnectionContextUtils.revertPropertiesForContextMode(conn, contextType);
         }else if (conn instanceof DatabaseConnection) {
@@ -2063,7 +2100,9 @@ public final class ConnectionContextHelper {
             OtherConnectionContextUtils.revertMDMConnectionPropertiesForContextMode((MDMConnection) conn, contextType);
         } else if (conn instanceof GenericSchemaConnection) {
             //
-        } else {
+		} else if (coKitService != null && coKitService.isTaCoKitConnection(conn)) {
+			TaCoKitConnectionContextUtils.revertPropertiesForContextMode(conn, contextType);
+		} else {
             ExtendedNodeConnectionContextUtils.revertPropertiesForContextMode(conn, contextType);
         }
         // set connection for context mode
