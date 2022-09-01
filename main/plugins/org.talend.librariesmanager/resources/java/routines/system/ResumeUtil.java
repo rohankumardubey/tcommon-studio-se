@@ -193,11 +193,15 @@ public class ResumeUtil {
             }
         }
     }
-    
+
     public void flush() {
-    	if(csvWriter != null) {
-    		csvWriter.flush(true);
-    	}
+        if (csvWriter == null) {
+            return;
+        }
+
+        synchronized (csvWriter) {
+            csvWriter.flush(true);
+        }
     }
 
     // Util: invoke target check point
