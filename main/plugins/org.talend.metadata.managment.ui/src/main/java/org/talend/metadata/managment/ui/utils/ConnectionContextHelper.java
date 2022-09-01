@@ -241,8 +241,8 @@ public final class ConnectionContextHelper {
      */
     public static String convertContextLabel(String label) {
         if (label != null) {
-        	String invalidCharactor = "[\\~\\!\\`\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\+\\=\\{\\[\\]\\}\\:\\;\\'\\|\\<\\,\\>\\.\\?\\/\"￥；：‘”、《，》。？]";//$NON-NLS-1$
-            String newLabel = label.replaceAll(invalidCharactor, "_"); //$NON-NLS-1$
+			String invalidCharactor = "[\\~\\!\\`\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\+\\=\\{\\[\\]\\}\\:\\;\\'\\|\\<\\,\\>\\.\\?\\/\"￥；：‘”、《，》。？]";//$NON-NLS-1$
+			String newLabel = label.replaceAll(invalidCharactor, "_"); //$NON-NLS-1$
             Pattern pattern = Pattern.compile("^[0-9]+.*$"); //$NON-NLS-1$
             Matcher m = pattern.matcher(newLabel);
             if (m.matches()) {
@@ -312,13 +312,11 @@ public final class ConnectionContextHelper {
             varList = OtherConnectionContextUtils.getFTPSChemaVariables(label, (FTPConnection) conn);
         } else if (conn instanceof SAPConnection) {
             varList = OtherConnectionContextUtils.getSAPContextVariables(label, (SAPConnection) conn, paramSet);
-        }
-        else if(coKitService!=null && coKitService.isTaCoKitConnection(conn)) {
-        	varList = TaCoKitConnectionContextUtils.getContextVariables(label, conn, paramSet);
-        }
-        else {
-            varList = ExtendedNodeConnectionContextUtils.getContextVariables(label, conn, paramSet);
-        }
+		} else if (coKitService != null && coKitService.isTaCoKitConnection(conn)) {
+			varList = TaCoKitConnectionContextUtils.getContextVariables(label, conn, paramSet);
+		} else {
+			varList = ExtendedNodeConnectionContextUtils.getContextVariables(label, conn, paramSet);
+		}
 
         return varList;
     }
@@ -406,23 +404,23 @@ public final class ConnectionContextHelper {
             List<Map<String, Object>> hiveJdbcPropertiesList = DBConnectionContextUtils.getHiveJdbcProperties(dbConn);
             if (!hiveJdbcPropertiesList.isEmpty()) {
                 for (Map<String, Object> propertyMap : hiveJdbcPropertiesList) {
-                    varList.add((String) propertyMap.get("PROPERTY"));
-                }
-            }
-        } 
-		
-        else if(coKitService!=null && coKitService.isTaCoKitConnection(currentConnection)){
-        	Set<String> additionPropertyList = TaCoKitConnectionContextUtils.getAdditionalPropertiesVariablesForExistContext(currentConnection);
-        	Iterator<String> it = additionPropertyList.iterator(); 
-        	while (it.hasNext()) {
-                 String additionalConProperty = it.next();
-                 varList.add(additionalConProperty);
-             }
-        } 
-        else{
-            Set<String> additionPropertyList = ExtendedNodeConnectionContextUtils
-                    .getAdditionalPropertiesVariablesForExistContext(currentConnection);
-            Iterator<String> it = additionPropertyList.iterator();
+					varList.add((String) propertyMap.get("PROPERTY"));
+				}
+			}
+		}
+
+		else if (coKitService != null && coKitService.isTaCoKitConnection(currentConnection)) {
+			Set<String> additionPropertyList = TaCoKitConnectionContextUtils
+					.getAdditionalPropertiesVariablesForExistContext(currentConnection);
+			Iterator<String> it = additionPropertyList.iterator();
+			while (it.hasNext()) {
+				String additionalConProperty = it.next();
+				varList.add(additionalConProperty);
+			}
+		} else {
+			Set<String> additionPropertyList = ExtendedNodeConnectionContextUtils
+					.getAdditionalPropertiesVariablesForExistContext(currentConnection);
+			Iterator<String> it = additionPropertyList.iterator();
             while (it.hasNext()) {
                 String additionalConProperty = it.next();
                 varList.add(additionalConProperty);
@@ -463,17 +461,16 @@ public final class ConnectionContextHelper {
                     paramSet);
         } else if (conn instanceof MDMConnection) {
             OtherConnectionContextUtils.setMDMConnectionPropertiesForContextMode(defaultContextName, (MDMConnection) conn,
-                    paramSet);
-        }
-        else if(coKitService!=null && coKitService.isTaCoKitConnection(conn)){
-        	TaCoKitConnectionContextUtils.setConnectionPropertiesForContextMode(defaultContextName, conn, paramSet);
-        } 
-        else {
-            ExtendedNodeConnectionContextUtils.setConnectionPropertiesForContextMode(defaultContextName, conn, paramSet);
-        }
-        // set connection for context mode
-        connectionItem.getConnection().setContextMode(true);
-        connectionItem.getConnection().setContextId(contextItem.getProperty().getId());
+					paramSet);
+		} else if (coKitService != null && coKitService.isTaCoKitConnection(conn)) {
+			TaCoKitConnectionContextUtils.setConnectionPropertiesForContextMode(defaultContextName, conn, paramSet);
+		} else {
+			ExtendedNodeConnectionContextUtils.setConnectionPropertiesForContextMode(defaultContextName, conn,
+					paramSet);
+		}
+		// set connection for context mode
+		connectionItem.getConnection().setContextMode(true);
+		connectionItem.getConnection().setContextId(contextItem.getProperty().getId());
         connectionItem.getConnection().setContextName(contextItem.getDefaultContext());
 
     }
@@ -680,11 +677,11 @@ public final class ConnectionContextHelper {
      * @param section for EXTRA and STATSANDLOGS
      * @ignoreContextMode if true, only work for jobtemplate plugin(so far).
      */
-    public static void addContextForProcessParameter(final IProcess2 process, final ConnectionItem connItem,
-            final EComponentCategory category, final boolean ignoreContextMode) {
-        if (process == null || connItem == null) {
-            return;
-        }
+	public static void addContextForProcessParameter(final IProcess2 process, final ConnectionItem connItem,
+			final EComponentCategory category, final boolean ignoreContextMode) {
+		if (process == null || connItem == null) {
+			return;
+		}
 		addContextForElementParameters(process, connItem, process.getElementParameters(), category, ignoreContextMode,
 				new HashMap<Object, Object>());
 	}
@@ -1145,7 +1142,7 @@ public final class ConnectionContextHelper {
             }
             if (category == null || category == param.getCategory()) {
                 String repositoryValue = param.getRepositoryValue();
-                if (repositoryValue != null) {
+				if (repositoryValue != null) {
 					String componentName = null;
 					if (contextData != null) {
 						Object node = contextData.get("NODE");
