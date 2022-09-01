@@ -45,6 +45,8 @@ public interface ITaCoKitService {
     boolean isNeedMigration(String componentName, Map<String, String> properties);
 
     boolean isTaCoKitType(Object repoType);
+    
+    boolean isTaCoKitConnection(Object conn);
 
     Object getDatastoreFromDataset(Object repositoryViewObject);
 
