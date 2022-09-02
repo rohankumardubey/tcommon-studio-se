@@ -22,6 +22,7 @@ import org.talend.core.model.properties.ContextItem;
 import org.talend.core.ui.context.model.table.ConectionAdaptContextVariableModel;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.metadata.managment.ui.model.IConnParamName;
+import org.talend.metadata.managment.ui.wizard.AbstractForm;
 
 /**
  * created by ldong on Dec 18, 2014 Detailled comment
@@ -41,4 +42,6 @@ public interface IRepositoryContextHandler {
     public void revertPropertiesForContextMode(Connection connection, ContextType contextType);
 
     public Set<String> getConAdditionPropertiesForContextMode(Connection conn);
+    
+    public void collectConParameters(AbstractForm af);
 }
