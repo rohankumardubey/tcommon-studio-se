@@ -42,6 +42,7 @@ import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.process.ElementParameterParser;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryManager;
@@ -56,6 +57,7 @@ import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.prefs.PreferenceManipulator;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
+import org.talend.core.services.ICoreTisService;
 import org.talend.core.services.IJobCheckService;
 import org.talend.core.utils.KeywordsValidator;
 import org.talend.designer.codegen.ICodeGeneratorService;
@@ -399,5 +401,32 @@ public class CoreService implements ICoreService {
                 ExceptionHandler.process(e);
             }
         });
+    }
+
+    @Override
+    public Integer getSignatureVerifyResult(Property property, IPath resourcePath, boolean considerGP) throws Exception {
+        ICoreTisService coreTisService = ICoreTisService.get();
+        if (coreTisService != null) {
+            return coreTisService.getSignatureVerifyResult(property, resourcePath, considerGP);
+        }
+        return null;
+    }
+
+    @Override
+    public String getLicenseCustomer() {
+        ICoreTisService coreTisService = ICoreTisService.get();
+        if (coreTisService != null) {
+            return coreTisService.getLicenseCustomer();
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isInValidGP() {
+        ICoreTisService coreTisService = ICoreTisService.get();
+        if (coreTisService != null) {
+            return coreTisService.isInValidGP();
+        }
+        return false;
     }
 }

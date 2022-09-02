@@ -2319,6 +2319,7 @@ public final class ProxyRepositoryFactory implements IProxyRepositoryFactory {
                 if (monitor != null && monitor.isCanceled()) {
                     throw new OperationCanceledException(""); //$NON-NLS-1$
                 }
+                PendoItemSignatureManager.getInstance().sendTrackToPendo();
 
                 boolean isCommandLineLocalRefProject = false;
                 CommandLineContext commandLineContext = (CommandLineContext) CoreRuntimePlugin.getInstance().getContext()
