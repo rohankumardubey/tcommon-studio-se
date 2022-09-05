@@ -46,7 +46,10 @@ public class TaCoKitConnectionContextUtils {
         Password,
         RoleId,
         ApplicationId,
-        
+        TokenId,
+        ConsumerKey,
+        ConsumerSecret,
+        TokenSecret,
         
         
         //workday
@@ -55,6 +58,11 @@ public class TaCoKitConnectionContextUtils {
         TenantAlias,
         AuthEndpoint,
         Endpoint,
+        
+        //neo4j
+        ConnectionUri,
+//        Password,
+        Username,
         
     }
 
