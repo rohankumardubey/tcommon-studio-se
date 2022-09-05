@@ -22,6 +22,7 @@ import org.talend.core.model.properties.ContextItem;
 import org.talend.core.ui.context.model.table.ConectionAdaptContextVariableModel;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.metadata.managment.ui.model.IConnParamName;
+import org.talend.metadata.managment.ui.utils.TaCoKitConnectionContextUtils.ETaCoKitParamName;
 import org.talend.metadata.managment.ui.wizard.AbstractForm;
 
 /**
@@ -43,5 +44,5 @@ public interface IRepositoryContextHandler {
 
     public Set<String> getConAdditionPropertiesForContextMode(Connection conn);
     
-    public void collectConParameters(AbstractForm af);
+    public Set<ETaCoKitParamName> collectConParameters();
 }

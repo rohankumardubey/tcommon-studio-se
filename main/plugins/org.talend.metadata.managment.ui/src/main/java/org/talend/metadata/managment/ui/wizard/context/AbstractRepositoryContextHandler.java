@@ -32,6 +32,7 @@ import org.talend.metadata.managment.ui.model.IConnParamName;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.metadata.managment.ui.utils.ExtendedNodeConnectionContextUtils.EHadoopParamName;
 import org.talend.metadata.managment.ui.utils.IRepositoryContextHandler;
+import org.talend.metadata.managment.ui.utils.TaCoKitConnectionContextUtils.ETaCoKitParamName;
 import org.talend.metadata.managment.ui.wizard.AbstractForm;
 
 /**
@@ -116,7 +117,8 @@ public abstract class AbstractRepositoryContextHandler implements IRepositoryCon
         return varList;
     }
     
-	public void collectConParameters(AbstractForm af) {
+	public Set<ETaCoKitParamName> collectConParameters() {
+		return null;
 	}
 
     protected abstract void matchContextForAttribues(Connection conn, IConnParamName param, String contextVariableName);
