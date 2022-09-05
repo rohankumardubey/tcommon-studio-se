@@ -13,6 +13,7 @@
 package org.talend.metadata.managment.ui.convert;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.emf.common.util.EList;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.cwm.helper.CatalogHelper;
 import org.talend.cwm.helper.TaggedValueHelper;
@@ -33,10 +34,11 @@ public class CatalogAdapter {
             return null;
         }
         String catalogName = originalCat.getName();
-        if (StringUtils.isEmpty(catalogName)) {
+        EList<DataManager> dataManagerList = originalCat.getDataManager();
+        if (StringUtils.isEmpty(catalogName) || dataManagerList == null || dataManagerList.isEmpty()) {
             return catalogName;
         }
-        DataManager dataManager = originalCat.getDataManager().get(0);
+        DataManager dataManager = dataManagerList.get(0);
         if (dataManager instanceof DatabaseConnection) {
             DatabaseConnection parentConnection = (DatabaseConnection) dataManager;
             DbConnectionAdapter dbConnectionAdapter =

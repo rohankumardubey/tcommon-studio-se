@@ -71,6 +71,9 @@ public class SwitchContextGroupNameImpl implements ISwitchContext {
      */
     @Override
     public boolean updateContextGroup(ConnectionItem connItem, String selectedContext) {
+        if (connItem == null || connItem.getConnection() == null) {
+            return false;
+        }
         return updateContextGroup(connItem, selectedContext, connItem.getConnection().getContextName());
     }
 

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.emf.common.util.EList;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.cwm.helper.CatalogHelper;
 import org.talend.cwm.helper.SchemaHelper;
@@ -42,7 +43,7 @@ public class SchemaAdapter {
             return schemaName;
         }
         DataManager dataManager = findConnection(originalSch);
-        if (dataManager instanceof DatabaseConnection) {
+        if (dataManager != null && dataManager instanceof DatabaseConnection) {
             DatabaseConnection parentConnection = (DatabaseConnection) dataManager;
             DbConnectionAdapter dbConnectionAdapter =
                     new DbConnectionAdapter(parentConnection);
@@ -60,16 +61,20 @@ public class SchemaAdapter {
     }
 
     protected static DataManager findConnection(Schema originalSch) {
-        DataManager dataManager;
         Catalog originalParentCatalog = CatalogHelper.getParentCatalog(originalSch);
+
+        EList<DataManager> dataManagerList = null;
 
         if (originalParentCatalog != null) {
             // has catalog case
-            dataManager = originalParentCatalog.getDataManager().get(0);
+            dataManagerList = originalParentCatalog.getDataManager();
         } else {
-            dataManager = originalSch.getDataManager().get(0);
+            dataManagerList = originalSch.getDataManager();
         }
-        return dataManager;
+        if (dataManagerList == null || dataManagerList.size() == 0) {
+            return null;
+        }
+        return dataManagerList.get(0);
     }
 
     public Schema getSchema() {
