@@ -37,7 +37,8 @@ import org.talend.metadata.managment.ui.utils.RepositoryContextManager;
 public class TaCoKitConnectionContextUtils {
 
     public enum ETaCoKitParamName implements IConnParamName {
-        
+    	
+    	//netsit
 //    	ApiVersion,
 //    	LoginType,
         Account,
@@ -46,7 +47,15 @@ public class TaCoKitConnectionContextUtils {
         RoleId,
         ApplicationId,
         
-        //add other metadata for example workday....
+        
+        
+        //workday
+        ClientIdentifier,
+        ClientSecret,
+        TenantAlias,
+        AuthEndpoint,
+        Endpoint,
+        
     }
 
     static List<IContextParameter> getContextVariables(final String prefixName, Connection conn, Set<IConnParamName> paramSet) {
