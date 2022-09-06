@@ -25,10 +25,7 @@ import org.talend.core.model.properties.ContextItem;
 import org.talend.core.ui.context.model.table.ConectionAdaptContextVariableModel;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.metadata.managment.ui.model.IConnParamName;
-import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.metadata.managment.ui.utils.ExtendedNodeConnectionContextUtils.EHadoopParamName;
-import org.talend.metadata.managment.ui.utils.IRepositoryContextHandler;
-import org.talend.metadata.managment.ui.utils.RepositoryContextManager;
 
 /**
  * created by ldong on Dec 18, 2014 Detailled comment
@@ -36,107 +33,97 @@ import org.talend.metadata.managment.ui.utils.RepositoryContextManager;
  */
 public class TaCoKitConnectionContextUtils {
 
-    public enum ETaCoKitParamName implements IConnParamName {
-    	
-    	//netsit
+	public enum ETaCoKitParamName implements IConnParamName {
+
+		// netsit
 //    	ApiVersion,
 //    	LoginType,
-        Account,
-        Email,
-        Password,
-        RoleId,
-        ApplicationId,
-        TokenId,
-        ConsumerKey,
-        ConsumerSecret,
-        TokenSecret,
-        
-        
-        //workday
-        ClientIdentifier,
-        ClientSecret,
-        TenantAlias,
-        AuthEndpoint,
-        Endpoint,
-        
-        //neo4j
-        ConnectionUri,
+		Account, Email, Password, RoleId, ApplicationId, TokenId, ConsumerKey, ConsumerSecret, TokenSecret,
+
+		// workday
+		ClientIdentifier, ClientSecret, TenantAlias, AuthEndpoint, Endpoint,
+
+		// neo4j
+		ConnectionUri,
 //        Password,
-        Username,
-        
-        //azure
-        EndpointSuffix,
-        SharedKey,
-        AccountName,
-        Sas,
-        TenantId,
+		Username,
+
+		// azure
+		EndpointSuffix, SharedKey, AccountName, Sas, TenantId,
 //        ClientSecret,
-        ClientId,
-        
-    }
+		ClientId,
 
-    static List<IContextParameter> getContextVariables(final String prefixName, Connection conn, Set<IConnParamName> paramSet) {
-        List<IContextParameter> varList = new ArrayList<IContextParameter>();
-        for (IRepositoryContextHandler handler : RepositoryContextManager.getHandlers()) {
-            if (handler.isRepositoryConType(conn)) {
-                varList = handler.createContextParameters(prefixName, conn, paramSet);
-            }
-        }
-        return varList;
-    }
+		// rabbitMQ
+		Port, Hostname,
+//        Password,
+		UserName,
 
-    static void setConnectionPropertiesForContextMode(String prefixName, Connection conn, Set<IConnParamName> paramSet) {
-        if (conn == null || prefixName == null) {
-            return;
-        }
-        for (IRepositoryContextHandler handler : RepositoryContextManager.getHandlers()) {
-            if (handler.isRepositoryConType(conn)) {
-                handler.setPropertiesForContextMode(prefixName, conn, paramSet);
-            }
-        }
-    }
+	}
 
-    static void setConnectionPropertiesForExistContextMode(Connection conn, Set<IConnParamName> paramSet,
-            Map<ContextItem, List<ConectionAdaptContextVariableModel>> adaptMap) {
-        if (conn == null) {
-            return;
-        }
-        for (IRepositoryContextHandler handler : RepositoryContextManager.getHandlers()) {
-            if (handler.isRepositoryConType(conn)) {
-                handler.setPropertiesForExistContextMode(conn, paramSet, adaptMap);
-            }
-        }
-    }
+	static List<IContextParameter> getContextVariables(final String prefixName, Connection conn,
+			Set<IConnParamName> paramSet) {
+		List<IContextParameter> varList = new ArrayList<IContextParameter>();
+		for (IRepositoryContextHandler handler : RepositoryContextManager.getHandlers()) {
+			if (handler.isRepositoryConType(conn)) {
+				varList = handler.createContextParameters(prefixName, conn, paramSet);
+			}
+		}
+		return varList;
+	}
 
-    static void revertPropertiesForContextMode(Connection conn, ContextType contextType) {
-        if (conn == null) {
-            return;
-        }
-        for (IRepositoryContextHandler handler : RepositoryContextManager.getHandlers()) {
-            if (handler.isRepositoryConType(conn)) {
-                handler.revertPropertiesForContextMode(conn, contextType);
-            }
-        }
-    }
+	static void setConnectionPropertiesForContextMode(String prefixName, Connection conn,
+			Set<IConnParamName> paramSet) {
+		if (conn == null || prefixName == null) {
+			return;
+		}
+		for (IRepositoryContextHandler handler : RepositoryContextManager.getHandlers()) {
+			if (handler.isRepositoryConType(conn)) {
+				handler.setPropertiesForContextMode(prefixName, conn, paramSet);
+			}
+		}
+	}
 
-    static Set<String> getAdditionalPropertiesVariablesForExistContext(Connection conn) {
-        Set<String> varList = new HashSet<String>();
-        if (conn == null) {
-            return Collections.emptySet();
-        }
-        for (IRepositoryContextHandler handler : RepositoryContextManager.getHandlers()) {
-            if (handler.isRepositoryConType(conn)) {
-                varList = handler.getConAdditionPropertiesForContextMode(conn);
-            }
-        }
-        return varList;
-    }
+	static void setConnectionPropertiesForExistContextMode(Connection conn, Set<IConnParamName> paramSet,
+			Map<ContextItem, List<ConectionAdaptContextVariableModel>> adaptMap) {
+		if (conn == null) {
+			return;
+		}
+		for (IRepositoryContextHandler handler : RepositoryContextManager.getHandlers()) {
+			if (handler.isRepositoryConType(conn)) {
+				handler.setPropertiesForExistContextMode(conn, paramSet, adaptMap);
+			}
+		}
+	}
 
-    public static String getReplicaParamName(EHadoopParamName param, int number) {
-        if (param == EHadoopParamName.ReplicaHost || param == EHadoopParamName.ReplicaPort) {
-            return param.name() + ConnectionContextHelper.LINE + number;
-        }
-        return null;
-    }
+	static void revertPropertiesForContextMode(Connection conn, ContextType contextType) {
+		if (conn == null) {
+			return;
+		}
+		for (IRepositoryContextHandler handler : RepositoryContextManager.getHandlers()) {
+			if (handler.isRepositoryConType(conn)) {
+				handler.revertPropertiesForContextMode(conn, contextType);
+			}
+		}
+	}
+
+	static Set<String> getAdditionalPropertiesVariablesForExistContext(Connection conn) {
+		Set<String> varList = new HashSet<String>();
+		if (conn == null) {
+			return Collections.emptySet();
+		}
+		for (IRepositoryContextHandler handler : RepositoryContextManager.getHandlers()) {
+			if (handler.isRepositoryConType(conn)) {
+				varList = handler.getConAdditionPropertiesForContextMode(conn);
+			}
+		}
+		return varList;
+	}
+
+	public static String getReplicaParamName(EHadoopParamName param, int number) {
+		if (param == EHadoopParamName.ReplicaHost || param == EHadoopParamName.ReplicaPort) {
+			return param.name() + ConnectionContextHelper.LINE + number;
+		}
+		return null;
+	}
 
 }
