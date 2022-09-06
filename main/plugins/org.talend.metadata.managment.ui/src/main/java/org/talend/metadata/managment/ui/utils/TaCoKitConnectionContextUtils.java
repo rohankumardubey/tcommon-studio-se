@@ -58,6 +58,9 @@ public class TaCoKitConnectionContextUtils {
 //        Password,
 		UserName,
 
+		// zendesk
+		AuthenticationLogin, ServerUrl, ApiToken,
+
 	}
 
 	static List<IContextParameter> getContextVariables(final String prefixName, Connection conn,
