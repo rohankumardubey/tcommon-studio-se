@@ -64,6 +64,8 @@ public class TaCoKitConnectionContextUtils {
 		// samba
 		Host, Domain,
 //		Password,Username
+		// cyberark
+		CredProviderServicePort,
 
 	}
 
