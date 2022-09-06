@@ -64,6 +64,15 @@ public class TaCoKitConnectionContextUtils {
 //        Password,
         Username,
         
+        //azure
+        EndpointSuffix,
+        SharedKey,
+        AccountName,
+        Sas,
+        TenantId,
+//        ClientSecret,
+        ClientId,
+        
     }
 
     static List<IContextParameter> getContextVariables(final String prefixName, Connection conn, Set<IConnParamName> paramSet) {
