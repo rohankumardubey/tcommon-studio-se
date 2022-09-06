@@ -72,6 +72,9 @@ public class TaCoKitConnectionContextUtils {
 		Site, BasicAuthUsername, BasicAuthPassword, AccessTokenAuthTokenSecret, AccessTokenAuthTokenName,
 //		ServerUrl,
 
+		// analytics
+		JsonCredentials,
+
 	}
 
 	static List<IContextParameter> getContextVariables(final String prefixName, Connection conn,
