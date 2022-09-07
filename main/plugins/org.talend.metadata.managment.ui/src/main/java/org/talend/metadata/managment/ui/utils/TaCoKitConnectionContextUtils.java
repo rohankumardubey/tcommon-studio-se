@@ -75,6 +75,9 @@ public class TaCoKitConnectionContextUtils {
 		// analytics
 		JsonCredentials,
 
+		// kudu
+		MasterAddresses,
+
 	}
 
 	static List<IContextParameter> getContextVariables(final String prefixName, Connection conn,
