@@ -162,6 +162,10 @@ public class ExtendedNodeConnectionContextUtils {
         DataBricksClusterId,
         DataBricksToken,
         DataBricksDBFSDepFolder,
+        DataBricksClusterType,
+        DataBricksRuntimeVersion,
+        DataBricksDriverNodeType,
+        DataBricksNodeType,
         
         //Knox
         SparkMode,
