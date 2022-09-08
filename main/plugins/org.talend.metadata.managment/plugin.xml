@@ -86,6 +86,14 @@
               name="ojdbc6.jar"
               required="true">
         </libraryNeeded>
+            <libraryNeeded
+                  context="plugin:org.talend.libraries.jdbc.oracle"
+                  language="java"
+                  message="Needed for Oracle jdbc plugin National Language Support (NLS)."
+                  mvn_uri="mvn:com.oracle.database.nls/orai18n/19.3.0.0/jar"
+                  name="orai18n-19.3.0.0.jar"
+                  required="true">
+            </libraryNeeded>
       <libraryNeeded
               context="plugin:org.talend.libraries.jdbc.as400"
               language="java"
