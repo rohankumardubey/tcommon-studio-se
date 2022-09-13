@@ -9,6 +9,14 @@
     font-family: '#org-eclipse-ui-workbench-TAB_TEXT_FONT';
 }
 
+Shell {
+    REPO_STABLE_SECONDARY_ENTRY_COLOR: #646464;
+    REPO_STABLE_PRIMARY_ENTRY_COLOR: #000000;
+    REPO_INACTIVE_ENTRY_COLOR: #c8c8c8;
+    REPO_LOCKED_ENTRY: #c80000;
+    REPO_MERGED_REFERENCED_ITEMS_COLOR: #787878;
+}
+
 /**************************************************
  * Global Color Setting
  **************************************************/
@@ -648,7 +656,10 @@ CTabFolder.org-talend-rcp-abstractMultiPageEditor-footer CTabItem:selected {
 .TalendStagingView StyledText {
     background-color: COLOR-LIST-BACKGROUND;
 }
-
+Table {
+    background-color: #ff0000;
+swt-header-color: #00ff00;
+}
 /**************************************************
  * Palette
  **************************************************/

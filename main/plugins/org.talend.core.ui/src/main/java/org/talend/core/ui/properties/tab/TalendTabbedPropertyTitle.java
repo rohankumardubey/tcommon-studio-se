@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.forms.IFormColors;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
+import org.talend.commons.runtime.service.ITalendThemeService;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.GlobalServiceRegister;
@@ -72,6 +73,8 @@ public class TalendTabbedPropertyTitle extends Composite implements ITalendTabbe
     private TabbedPropertySheetWidgetFactory factory;
 
     private TalendTabbedPropertyColorHelper colorHelper;
+
+    private static ITalendThemeService theme;
 
     /**
      * Constructor for TabbedPropertyTitle.
@@ -173,15 +176,46 @@ public class TalendTabbedPropertyTitle extends Composite implements ITalendTabbe
         helpComp.setVisible(false);
 
         if (colorHelper.getTitleBackground() == null) {
-            label.setBackground(new Color[] { factory.getColors().getColor(IFormColors.H_GRADIENT_END),
-                    factory.getColors().getColor(IFormColors.H_GRADIENT_START) }, new int[] { 100 }, true);
-            titleLabelComp.setBackground(factory.getColors().getColor(IFormColors.H_GRADIENT_START));
-            helpComp.setBackground(factory.getColors().getColor(IFormColors.H_GRADIENT_START));
+            label.setBackground(new Color[] { getStartColor(),
+                    getEndColor() }, new int[] { 100 }, true);
+            titleLabelComp.setBackground(getEndColor());
+            helpComp.setBackground(getEndColor());
         } else {
             label.setBackground(colorHelper.getTitleBackground());
             titleLabelComp.setBackground(colorHelper.getTitleBackground());
             helpComp.setBackground(colorHelper.getTitleBackground());
         }
+    }
+
+    private static ITalendThemeService getTheme() {
+        if (theme == null) {
+            theme = ITalendThemeService.get();
+        }
+        return theme;
+    }
+
+    private Color getColor(String prop) {
+        ITalendThemeService themeServ = getTheme();
+        if (themeServ == null) {
+            return null;
+        }
+        return (Color) themeServ.getGlobalThemeColor(prop);
+    }
+
+    private Color getStartColor() {
+        Color color = getColor("TAB_START_COLOR");
+        if (color == null) {
+            color = factory.getColors().getColor(IFormColors.H_GRADIENT_END);
+        }
+        return color;
+    }
+
+    private Color getEndColor() {
+        Color color = getColor("TAB_END_COLOR");
+        if (color == null) {
+            color = factory.getColors().getColor(IFormColors.H_GRADIENT_START);
+        }
+        return color;
     }
 
     /**
@@ -190,17 +224,17 @@ public class TalendTabbedPropertyTitle extends Composite implements ITalendTabbe
     protected void drawTitleBackground(PaintEvent e) {
         Rectangle bounds = getClientArea();
         if (colorHelper.getTitleBackground() == null) {
-            label.setBackground(new Color[] { factory.getColors().getColor(IFormColors.H_GRADIENT_END),
-                    factory.getColors().getColor(IFormColors.H_GRADIENT_START) }, new int[] { 100 }, true);
-            titleLabelComp.setBackground(factory.getColors().getColor(IFormColors.H_GRADIENT_START));
-            helpComp.setBackground(factory.getColors().getColor(IFormColors.H_GRADIENT_START));
+            label.setBackground(new Color[] { getStartColor(),
+                    getEndColor() }, new int[] { 100 }, true);
+            titleLabelComp.setBackground(getEndColor());
+            helpComp.setBackground(getEndColor());
         } else {
             label.setBackground(colorHelper.getTitleBackground());
             titleLabelComp.setBackground(colorHelper.getTitleBackground());
             helpComp.setBackground(colorHelper.getTitleBackground());
         }
-        Color bg = factory.getColors().getColor(IFormColors.H_GRADIENT_END);
-        Color gbg = factory.getColors().getColor(IFormColors.H_GRADIENT_START);
+        Color bg = getStartColor();
+        Color gbg = getEndColor();
         GC gc = e.gc;
         gc.setForeground(bg);
         gc.setBackground(gbg);

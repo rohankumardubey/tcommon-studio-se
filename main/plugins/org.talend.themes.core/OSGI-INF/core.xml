@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="TalendThemeService">
+  <implementation class="org.talend.themes.core.TalendThemeService"/>
+  <service>
+    <provide interface="org.talend.commons.runtime.service.ITalendThemeService"/>
+  </service>
+</component>
