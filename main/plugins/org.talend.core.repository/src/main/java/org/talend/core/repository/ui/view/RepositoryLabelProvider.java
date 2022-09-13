@@ -15,10 +15,6 @@ package org.talend.core.repository.ui.view;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.e4.ui.css.swt.theme.ITheme;
-import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
-import org.eclipse.e4.ui.css.swt.theme.IThemeManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.IColorProvider;
@@ -27,13 +23,9 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.PlatformUI;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.talend.commons.runtime.model.repository.ECDCStatus;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
+import org.talend.commons.runtime.service.ITalendThemeService;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.IImage;
@@ -58,7 +50,6 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryContentManager;
 import org.talend.core.model.repository.RepositoryNodeProviderRegistryReader;
 import org.talend.core.model.repository.RepositoryViewObject;
-import org.talend.core.repository.CoreRepositoryPlugin;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.model.repositoryObject.MetadataTableRepositoryObject;
 import org.talend.core.runtime.CoreRuntimePlugin;
@@ -97,11 +88,11 @@ public class RepositoryLabelProvider extends LabelProvider implements IColorProv
 
     private static final Color MERGED_REFERENCED_ITEMS_COLOR = new Color(null, 120, 120, 120);
 
-    private static final Color WHITE = new Color(null, 255, 255, 255);
-
     private IRepositoryView view;
 
     private static boolean refreshProperty = true;
+
+    private static ITalendThemeService themeServ;
 
     public RepositoryLabelProvider(IRepositoryView view) {
         super();
@@ -110,6 +101,61 @@ public class RepositoryLabelProvider extends LabelProvider implements IColorProv
 
     protected IRepositoryView getView() {
         return view;
+    }
+
+    private static ITalendThemeService getThemeServ() {
+        if (themeServ == null) {
+            themeServ = ITalendThemeService.get();
+        }
+        return themeServ;
+    }
+
+    private Color getColor(String prop) {
+        ITalendThemeService theme = getThemeServ();
+        if (theme != null) {
+            return (Color) theme.getGlobalThemeColor(prop);
+        }
+        return null;
+    }
+
+    private Color getStableSecondaryEntryColor() {
+        Color color = getColor("REPO_STABLE_SECONDARY_ENTRY_COLOR");
+        if (color == null) {
+            color = STABLE_SECONDARY_ENTRY_COLOR;
+        }
+        return color;
+    }
+
+    private Color getStablePrimaryEntryColor() {
+        Color color = getColor("REPO_STABLE_PRIMARY_ENTRY_COLOR");
+        if (color == null) {
+            color = STABLE_PRIMARY_ENTRY_COLOR;
+        }
+        return color;
+    }
+
+    private Color getInactiveEntryColor() {
+        Color color = getColor("REPO_INACTIVE_ENTRY_COLOR");
+        if (color == null) {
+            color = INACTIVE_ENTRY_COLOR;
+        }
+        return color;
+    }
+
+    private Color getLockedEntryColor() {
+        Color color = getColor("REPO_LOCKED_ENTRY");
+        if (color == null) {
+            color = LOCKED_ENTRY;
+        }
+        return color;
+    }
+
+    private Color getMergedReferencedItemsColor() {
+        Color color = getColor("REPO_MERGED_REFERENCED_ITEMS_COLOR");
+        if (color == null) {
+            color = MERGED_REFERENCED_ITEMS_COLOR;
+        }
+        return color;
     }
 
     public String getText(IRepositoryViewObject object) {
@@ -492,40 +538,25 @@ public class RepositoryLabelProvider extends LabelProvider implements IColorProv
     @Override
     public Color getForeground(Object element) {
         RepositoryNode node = (RepositoryNode) element;
-        try {
-            Bundle bundle = Platform.getBundle(CoreRepositoryPlugin.PLUGIN_ID);
-            BundleContext context = bundle.getBundleContext();
-            ServiceReference ref = context.getServiceReference(IThemeManager.class.getName());
-            IThemeManager manager = (IThemeManager) context.getService(ref);
-            IThemeEngine engine = manager
-                    .getEngineForDisplay(PlatformUI.getWorkbench().getActiveWorkbenchWindow() == null ? Display.getCurrent()
-                            : PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().getDisplay());
-            ITheme curTheme = engine.getActiveTheme();
-            if (curTheme.getId().contains("dark")) {
-                return null;
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
         switch (node.getType()) {
         case REFERENCED_PROJECT:
-            return STABLE_PRIMARY_ENTRY_COLOR;
+            return getStablePrimaryEntryColor();
         case STABLE_SYSTEM_FOLDER:
             if (node.getLabel().equals(ERepositoryObjectType.SNIPPETS.toString())) {
-                return INACTIVE_ENTRY_COLOR;
+                return getInactiveEntryColor();
             }
             if (node.getContentType() == ERepositoryObjectType.METADATA) {
-                return STABLE_PRIMARY_ENTRY_COLOR;
+                return getStablePrimaryEntryColor();
             }
         case SYSTEM_FOLDER:
             if (node.getContentType() == ERepositoryObjectType.PROCESS) {
-                return STABLE_PRIMARY_ENTRY_COLOR;
+                return getStablePrimaryEntryColor();
             }
-            return STABLE_SECONDARY_ENTRY_COLOR;
+            return getStableSecondaryEntryColor();
         default:
             ERepositoryStatus repositoryStatus = node.getObject().getRepositoryStatus();
             if (repositoryStatus == ERepositoryStatus.LOCK_BY_OTHER) {
-                return LOCKED_ENTRY;
+                return getLockedEntryColor();
             } else {
                 if (PluginChecker.isRefProjectLoaded()) {
                     IReferencedProjectService service = (IReferencedProjectService) GlobalServiceRegister.getDefault()
@@ -537,7 +568,7 @@ public class RepositoryLabelProvider extends LabelProvider implements IColorProv
                                     .getCurrentProject().getEmfProject();
                             String projectLabel = object.getProjectLabel();
                             if (!mainProject.getLabel().equals(projectLabel)) {
-                                return MERGED_REFERENCED_ITEMS_COLOR;
+                                return getMergedReferencedItemsColor();
                             }
                         }
                     }
