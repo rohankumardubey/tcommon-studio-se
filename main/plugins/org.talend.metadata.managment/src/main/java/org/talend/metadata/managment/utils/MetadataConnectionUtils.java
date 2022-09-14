@@ -202,7 +202,7 @@ public class MetadataConnectionUtils {
                 }
                 list = ExtractMetaDataUtils.getInstance().connect(metadataBean.getDbType(), metadataBean.getUrl(),
                         metadataBean.getUsername(), metadataBean.getPassword(), metadataBean.getDriverClass(),
-                        metadataBean.getDriverJarPath(), metadataBean.getDbVersionString(), metadataBean.getAdditionalParams());
+                        metadataBean.getDriverJarPath(), metadataBean.getDbVersionString(), metadataBean.getAdditionalParams(), metadataBean.isSupportNLS());
             } catch (Exception e) {
                 rc.setMessage("fail to connect database!"); //$NON-NLS-1$
                 CommonExceptionHandler.process(e);
@@ -1326,7 +1326,7 @@ public class MetadataConnectionUtils {
         return ExtractMetaDataUtils.getInstance().getConnection(metadataBean.getDbType(), metadataBean.getUrl(),
                 metadataBean.getUsername(), metadataBean.getPassword(), metadataBean.getDatabase(), metadataBean.getSchema(),
                 metadataBean.getDriverClass(), metadataBean.getDriverJarPath(), metadataBean.getDbVersionString(),
-                metadataBean.getAdditionalParams());
+                metadataBean.getAdditionalParams(), metadataBean.isSupportNLS());
     }
 
     /**
