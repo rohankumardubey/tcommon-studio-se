@@ -291,39 +291,11 @@ public class PomIdsHelper {
     public static String getJobVersion(Property property) {
         String version = null;
         if (property != null) {
-            boolean useSnapshot = false;
-            if (property.getAdditionalProperties() != null) {
-                version = (String) property.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
-                useSnapshot = property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
-            }
-            if (version == null) {
-                version = VersionUtils.getPublishVersion(property.getVersion());
-            }
-            if (useSnapshot) {
-                version += MavenConstants.SNAPSHOT;
-            }
-        }
-        return version;
-    }
-
-    /**
-     * @return "<version>".
-     */
-    public static String getVersion(Property property, String bundleVersion) {
-        String version = null;
-        if (property != null) {
             boolean useSnapshot = false; 
             if (property.getAdditionalProperties() != null) {
                 version = (String) property.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
                 useSnapshot = property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
             }
-            if(version == null) {
-//              APPINT-34581 - try to take cloud version if custom does not persist(CI cloud publish)
-            	version = (String) property.getAdditionalProperties().get(MavenConstants.CLOUD_VERSION);
-            }
-            if(version == null) {
-                version = bundleVersion;
-            }
             if (version == null) {
                 version = VersionUtils.getPublishVersion(property.getVersion());
             }
@@ -333,7 +305,7 @@ public class PomIdsHelper {
         }
         return version;
     }
-
+    
     public static String getJobVersion(JobInfo jobInfo) {
         if (jobInfo != null) {
             return jobInfo.getJobVersion();
@@ -349,6 +321,50 @@ public class PomIdsHelper {
             filter = "";
         }
         return filter;
+    }
+    
+    /**
+     * @return "<bundleVersion>".
+     */
+    public static String getBundleVersion(Property property, String bundleVersion) {
+        String version = null;
+        if (property != null) {
+            boolean useSnapshot = false; 
+            if (property.getAdditionalProperties() != null) {
+                version = (String) property.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
+                useSnapshot = property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
+            }
+            if(version == null) {
+                version = bundleVersion;
+            }
+            if (version == null) {
+                version = VersionUtils.getPublishVersion(property.getVersion());
+            }
+            if (useSnapshot) {
+                version += MavenConstants.SNAPSHOT;
+            }
+        }
+        return version;
+    }
+
+    /**
+     * @return "<featureVersion>".
+     */
+    public static String getFeatureVersion(Property property, String bundleVersion) {
+        String version = null;
+        if (property != null) {
+            boolean useSnapshot = false; 
+            if(version == null) {
+                version = bundleVersion;
+            }
+            if (version == null) {
+                version = VersionUtils.getPublishVersion(property.getVersion());
+            }
+            if (useSnapshot) {
+                version += MavenConstants.SNAPSHOT;
+            }
+        }
+        return version;
     }
 
     public static boolean useProfileModule() {
