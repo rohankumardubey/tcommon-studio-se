@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2022 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,7 +25,6 @@ import org.talend.core.model.properties.ContextItem;
 import org.talend.core.ui.context.model.table.ConectionAdaptContextVariableModel;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.metadata.managment.ui.model.IConnParamName;
-import org.talend.metadata.managment.ui.utils.ExtendedNodeConnectionContextUtils.EHadoopParamName;
 
 /**
  * created by ldong on Dec 18, 2014 Detailled comment
@@ -36,8 +35,6 @@ public class TaCoKitConnectionContextUtils {
 	public enum ETaCoKitParamName implements IConnParamName {
 
 		// netsit
-//    	ApiVersion,
-//    	LoginType,
 		Account, Email, Password, RoleId, ApplicationId, TokenId, ConsumerKey, ConsumerSecret, TokenSecret,
 
 		// workday
@@ -45,17 +42,14 @@ public class TaCoKitConnectionContextUtils {
 
 		// neo4j
 		ConnectionUri,
-//        Password,
 		Username,
 
 		// azure
 		EndpointSuffix, SharedKey, AccountName, Sas, TenantId,
-//        ClientSecret,
 		ClientId,
 
 		// rabbitMQ
 		Port, Hostname,
-//        Password,
 		UserName,
 
 		// zendesk
@@ -63,14 +57,12 @@ public class TaCoKitConnectionContextUtils {
 
 		// samba
 		Host, Domain,
-//		Password,Username
 
 		// cyberark
 		CredProviderServicePort,
 
 		// tableau
 		Site, BasicAuthUsername, BasicAuthPassword, AccessTokenAuthTokenSecret, AccessTokenAuthTokenName,
-//		ServerUrl,
 
 		// analytics
 		JsonCredentials,
@@ -137,13 +129,6 @@ public class TaCoKitConnectionContextUtils {
 			}
 		}
 		return varList;
-	}
-
-	public static String getReplicaParamName(EHadoopParamName param, int number) {
-		if (param == EHadoopParamName.ReplicaHost || param == EHadoopParamName.ReplicaPort) {
-			return param.name() + ConnectionContextHelper.LINE + number;
-		}
-		return null;
 	}
 
 }
