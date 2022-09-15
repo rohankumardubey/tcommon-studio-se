@@ -56,14 +56,14 @@ public enum EDatabaseVersion4Drivers {
     HSQLDB_SERVER(new DbVersion4Drivers(EDatabaseTypeName.HSQLDB_SERVER, "hsqldb.jar")), //$NON-NLS-1$
     HSQLDB_WEBSERVER(new DbVersion4Drivers(EDatabaseTypeName.HSQLDB_WEBSERVER, "hsqldb.jar")), //$NON-NLS-1$
 
-    H2(new DbVersion4Drivers(EDatabaseTypeName.H2, "h2-2.1.210.jar")), //$NON-NLS-1$
+    H2(new DbVersion4Drivers(EDatabaseTypeName.H2, "h2-2.1.214.jar")), //$NON-NLS-1$
 
     //
     JAVADB_EMBEDED(new DbVersion4Drivers(EDatabaseTypeName.JAVADB_EMBEDED, "derby.jar")), //$NON-NLS-1$
     SQLITE(new DbVersion4Drivers(EDatabaseTypeName.SQLITE, "sqlitejdbc-v056.jar")), //$NON-NLS-1$
     FIREBIRD(new DbVersion4Drivers(EDatabaseTypeName.FIREBIRD, "jaybird-full-2.1.1.jar")), //$NON-NLS-1$
     TERADATA(new DbVersion4Drivers(EDatabaseTypeName.TERADATA,
-            new String[] { "terajdbc4-17.10.00.27.jar" })), //$NON-NLS-1$ //$NON-NLS-2$
+            new String[] { "terajdbc4-17.10.00.27.jar" })), //$NON-NLS-1$
     JAVADB_DERBYCLIENT(new DbVersion4Drivers(EDatabaseTypeName.JAVADB_DERBYCLIENT, "derbyclient.jar")), //$NON-NLS-1$
     NETEZZA(new DbVersion4Drivers(EDatabaseTypeName.NETEZZA, "nzjdbc.jar")), //$NON-NLS-1$
     INFORMIX(new DbVersion4Drivers(EDatabaseTypeName.INFORMIX, "ifxjdbc.jar")), //$NON-NLS-1$
@@ -83,8 +83,7 @@ public enum EDatabaseVersion4Drivers {
             "Microsoft SQL Server 2012", "Microsoft SQL Server 2012", "jtds-1.3.1-patch-20190523.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     MSSQL_PROP(new DbVersion4Drivers(EDatabaseTypeName.MSSQL,
             "Microsoft", "MSSQL_PROP", //$NON-NLS-1$ //$NON-NLS-2$
-            new String[] { "mssql-jdbc-actual.jar", "slf4j-api-1.7.29.jar", "slf4j-log4j12-1.7.29.jar", //$NON-NLS-1$
-                    "msal4j-1.11.0.jar", 
+            new String[] { "mssql-jdbc.jar", "slf4j-api-1.7.29.jar", "slf4j-log4j12-1.7.29.jar", "msal4j-1.11.0.jar", //$NON-NLS-1$
                     "oauth2-oidc-sdk-9.7.jar", "reload4j-1.2.19.jar", "jackson-core-2.13.2.jar",
                     "jackson-databind-2.13.2.2.jar", "jackson-annotations-2.13.2.jar", "jcip-annotations-1.0-1.jar",
                     "json-smart-2.4.7.jar", "nimbus-jose-jwt-9.22.jar", "accessors-smart-2.4.7.jar", "asm-9.1.jar",
@@ -96,12 +95,12 @@ public enum EDatabaseVersion4Drivers {
     GREENPLUM_PSQL(new DbVersion4Drivers(EDatabaseTypeName.GREENPLUM,"PostgreSQL", "POSTGRESQL", "postgresql-8.4-703.jdbc4.jar")), //$NON-NLS-1$
     GREENPLUM(new DbVersion4Drivers(EDatabaseTypeName.GREENPLUM,"Greenplum", "GREENPLUM", "greenplum-5.1.4.000275.jar")), //$NON-NLS-1$
 //    PSQL_V10(new DbVersion4Drivers(EDatabaseTypeName.PSQL, "v10", "V10", "postgresql-42.2.5.jar")),
-    PSQL_V9_X(new DbVersion4Drivers(EDatabaseTypeName.PSQL, "v9 and later", "V9_X", "postgresql-42.2.25.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    PSQL_V9_X(new DbVersion4Drivers(EDatabaseTypeName.PSQL, "v9 and later", "V9_X", "postgresql-42.2.26.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     PSQL_PRIOR_TO_V9(new DbVersion4Drivers(EDatabaseTypeName.PSQL, "Prior to v9", "PRIOR_TO_V9", "postgresql-8.4-703.jdbc4.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
     PLUSPSQL_PRIOR_TO_V9(new DbVersion4Drivers(EDatabaseTypeName.PLUSPSQL,
             "Prior to v9", "PRIOR_TO_V9", "postgresql-8.4-703.jdbc4.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    PLUSPSQL_V9_X(new DbVersion4Drivers(EDatabaseTypeName.PLUSPSQL, "v9 and later", "V9_X", "postgresql-42.2.25.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    PLUSPSQL_V9_X(new DbVersion4Drivers(EDatabaseTypeName.PLUSPSQL, "v9 and later", "V9_X", "postgresql-42.2.26.jar")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     IBMDB2(new DbVersion4Drivers(EDatabaseTypeName.IBMDB2, new String[] { "db2jcc4.jar", "db2jcc_license_cu.jar", //$NON-NLS-1$ //$NON-NLS-2$
             "db2jcc_license_cisuz.jar" })), //$NON-NLS-1$
     IBMDB2ZOS(new DbVersion4Drivers(EDatabaseTypeName.IBMDB2ZOS, new String[] { "db2jcc4.jar", "db2jcc_license_cu.jar", //$NON-NLS-1$ //$NON-NLS-2$
