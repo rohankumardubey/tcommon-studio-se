@@ -141,14 +141,12 @@ public class SwitchContextWithTaggedValue extends AbstractSwitchContextStrategy 
         }
         // case2 original value is in the context group then do nothing
 
-        // case3 original value is not in the context group clear original record and save new original
-        // record(switch more than more than
-        // two times .e.g. DQ->DQ2->DQ3 the second time switch will change original value to DQ2
-        // two times .e.g. DQ->DQ2->DQ the second time switch will keep original value to DQ and switch target value as
+        // case3 originalContext same with selectedContext(
+        // .e.g. DQ->DQ2->DQ2 the second time switch will change original value to DQ2
+        // DQ->DQ2->DQ the second time switch will keep original value to DQ and switch target value as
         // DQ
 
-        if (extractorInstance.hasCatalog() && !StringUtils.isEmpty(taggedOriSid) && !taggedOriSid.equals(originalSid)
-                && !taggedOriSid.equals(targetSid)) {
+        if (extractorInstance.hasCatalog() && !StringUtils.isEmpty(taggedOriSid) && originalContext.equals(selectedContext)) {
             // change original catalog need to judge schema is not empty with same time
             if (!StringUtils.isEmpty(originalSid)
                     && (!extractorInstance.hasSchema() || !StringUtils.isEmpty(originalUiSchema))) {
@@ -157,7 +155,7 @@ public class SwitchContextWithTaggedValue extends AbstractSwitchContextStrategy 
             }
         }
         if (extractorInstance.hasSchema() && !StringUtils.isEmpty(taggedOriUiShchema)
-                && !taggedOriUiShchema.equals(originalUiSchema) && !taggedOriUiShchema.equals(targetUiSchema)) {
+                && originalContext.equals(selectedContext)) {
             // change original schema need to judge catalog is not empty with same time
             if (!StringUtils.isEmpty(originalUiSchema)
                     && (!extractorInstance.hasCatalog()
