@@ -28,6 +28,10 @@ public interface IGitUIProviderService extends IService {
     public void openPushFailedDialog(Object pushResult);
 
     boolean migrateOption(IProgressMonitor monitor, String newVersion, boolean hasUpdate) throws Exception;
+    
+    boolean openSwitchGitModeDialog();
+    
+    boolean canSwitchGitMode();
 
     public static IGitUIProviderService get() {
         GlobalServiceRegister register = GlobalServiceRegister.getDefault();
