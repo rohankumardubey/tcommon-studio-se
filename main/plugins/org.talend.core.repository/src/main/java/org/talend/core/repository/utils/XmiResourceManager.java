@@ -349,7 +349,7 @@ public class XmiResourceManager {
         return itemResource;
     }
 
-    private Resource createItemResource(boolean byteArrayResource, URI itemResourceURI) {
+    public Resource createItemResource(boolean byteArrayResource, URI itemResourceURI) {
         Resource itemResource;
         itemResource = getResourceSet().getResource(itemResourceURI, false);
         if (itemResource != null) {
