@@ -168,7 +168,9 @@ public class SwitchContextWithTaggedValue extends AbstractSwitchContextStrategy 
         // case4 both has catalog and schema case then schema maybe set null when both original and target are null with
         // same time
         if (isSpecial4Case(targetUiSchema, extractorInstance, originalUiSchema, taggedOriUiShchema)) {
-            TaggedValueHelper.setTaggedValue(dbConn, TaggedValueHelper.ORIGINAL_SID, originalSid);
+            if (originalContext.equals(selectedContext)) {
+                TaggedValueHelper.setTaggedValue(dbConn, TaggedValueHelper.ORIGINAL_SID, originalSid);
+            }
             TaggedValueHelper.setTaggedValue(dbConn, TaggedValueHelper.ORIGINAL_UISCHEMA, originalUiSchema);
             hasChanged = true;
         }
