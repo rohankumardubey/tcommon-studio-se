@@ -128,7 +128,9 @@ public class TokenMode {
         TokenMode token = new TokenMode();
         token.setAccessToken(jsonObj.getString(TokenMode.ACCESS_TOKEN_KEY));
         token.setExpiresIn(jsonObj.getLong(TokenMode.EXPIRES_IN_KEY));
-        token.setIdToken(jsonObj.getString(TokenMode.ID_TOKEN_KEY));
+        if (jsonObj.has(TokenMode.ID_TOKEN_KEY)) {
+            token.setIdToken(jsonObj.getString(TokenMode.ID_TOKEN_KEY));
+        }
         token.setRefreshToken(jsonObj.getString(TokenMode.REFRESH_TOKEN_KEY));
         token.setScope(jsonObj.getString(TokenMode.SCOPE_KEY));
         token.setTokenType(jsonObj.getString(TokenMode.TOKEN_TYPE_KEY));
