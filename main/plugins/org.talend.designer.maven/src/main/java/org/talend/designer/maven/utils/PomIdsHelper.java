@@ -291,7 +291,7 @@ public class PomIdsHelper {
     public static String getJobVersion(Property property) {
         String version = null;
         if (property != null) {
-            boolean useSnapshot = false; 
+            boolean useSnapshot = false;
             if (property.getAdditionalProperties() != null) {
                 version = (String) property.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
                 useSnapshot = property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
@@ -305,7 +305,39 @@ public class PomIdsHelper {
         }
         return version;
     }
+<<<<<<< Upstream, based on efd27e4ec95c7a5edcd430f1a8f975b6f9f9b1cb
     
+=======
+
+    /**
+     * @return "<version>".
+     */
+    public static String getVersion(Property property, String bundleVersion) {
+        String version = null;
+        if (property != null) {
+            boolean useSnapshot = false; 
+            if (property.getAdditionalProperties() != null) {
+                version = (String) property.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
+                useSnapshot = property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
+            }
+            if(version == null) {
+//              APPINT-34581 - try to take cloud version if custom does not persist(CI cloud publish)
+            	version = (String) property.getAdditionalProperties().get(MavenConstants.CLOUD_VERSION);
+            }
+            if(version == null) {
+                version = bundleVersion;
+            }
+            if (version == null) {
+                version = VersionUtils.getPublishVersion(property.getVersion());
+            }
+            if (useSnapshot) {
+                version += MavenConstants.SNAPSHOT;
+            }
+        }
+        return version;
+    }
+
+>>>>>>> b1fca5a fix(APPINT-34581) - code refactoring for getting versions
     public static String getJobVersion(JobInfo jobInfo) {
         if (jobInfo != null) {
             return jobInfo.getJobVersion();
