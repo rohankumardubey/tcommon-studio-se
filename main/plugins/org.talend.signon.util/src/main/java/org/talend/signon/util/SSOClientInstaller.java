@@ -63,7 +63,7 @@ public class SSOClientInstaller {
         }
         File targetFolder = getInstallDir();
         if (targetFolder.exists()) {
-            targetFolder.delete();
+            FilesUtils.deleteFolder(targetFolder, true);
             LOGGER.info("Deleted target folder:" + targetFolder.getAbsolutePath());
         }
         targetFolder.mkdirs();
