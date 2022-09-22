@@ -17,7 +17,6 @@ import java.nio.charset.Charset;
 import java.security.Provider;
 import java.sql.Connection;
 import java.sql.Driver;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -59,13 +58,17 @@ public class JDBCDriverLoader {
         boolean flag = EDatabaseVersion4Drivers.containTypeAndVersion(dbType, dbVersion);
         HotClassLoader loader = null;
         if (flag) {
-            loader = getHotClassLoaderFromCache(dbType, dbVersion);
+            String[] sortedLibrariesPaths = Arrays.copyOf(libraries.toArray(new String[0]), libraries.size());
+            Arrays.sort(sortedLibrariesPaths);
+            String concatSortedLibrariesPaths = concat(sortedLibrariesPaths);
+            
+            loader = getHotClassLoaderFromCache(dbType, dbVersion, concatSortedLibrariesPaths);
             if (loader == null) {
                 loader = new HotClassLoader();
                 for (int i = 0; i < libraries.size(); i++) {
                     loader.addPath(libraries.get(i));
                 }
-                classLoadersMap.put(dbType, dbVersion, loader);
+                classLoadersMap.put(dbType, dbVersion, concatSortedLibrariesPaths, loader);
             } else {
                 URL[] urls = loader.getURLs();
                 if (urls != null && urls.length > 0) {
@@ -90,8 +93,8 @@ public class JDBCDriverLoader {
      * @param dbVersion
      * @return
      */
-    public HotClassLoader getHotClassLoaderFromCache(String dbType, String dbVersion) {
-        Object obj = classLoadersMap.get(dbType, dbVersion);
+    public HotClassLoader getHotClassLoaderFromCache(String dbType, String dbVersion, String concatSortedlibraries) {
+        Object obj = classLoadersMap.get(dbType, dbVersion, concatSortedlibraries);
         return obj == null ? null : (HotClassLoader) obj;
     }
 
@@ -102,13 +105,7 @@ public class JDBCDriverLoader {
         String[] sortedLibrariesPaths = Arrays.copyOf(librariesPaths, librariesPaths.length);
         Arrays.sort(sortedLibrariesPaths);
         HotClassLoader cLoader = null;
-        String key = ""; //$NON-NLS-1$
-        for (String library : sortedLibrariesPaths) {
-            if (library == null || (library = library.trim()).isEmpty()) {
-                continue;
-            }
-            key = key + ";" + library; //$NON-NLS-1$
-        }
+        String key = concat(sortedLibrariesPaths);
 
         cLoader = classLoadersMapBasedOnLibraries.get(key);
 
@@ -119,6 +116,17 @@ public class JDBCDriverLoader {
         }
 
         return cLoader;
+    }
+
+    private String concat(String[] sortedLibrariesPaths) {
+        String key = ""; //$NON-NLS-1$
+        for (String library : sortedLibrariesPaths) {
+            if (library == null || (library = library.trim()).isEmpty()) {
+                continue;
+            }
+            key = key + ";" + library; //$NON-NLS-1$
+        }
+        return key;
     }
 
     public Driver getDriver(HotClassLoader loader, String[] jarPath, String driverClassName, String dbType, String dbVersion)
@@ -148,13 +156,16 @@ public class JDBCDriverLoader {
         DriverShim wapperDriver = null;
         Connection connection = null;
         try {
-            HotClassLoader loader = (HotClassLoader) classLoadersMap.get(dbType, dbVersion);
-            if(driverShimCacheMap.containsKey(driverClassName, dbType, dbVersion)) {
-                wapperDriver = (DriverShim) driverShimCacheMap.get(driverClassName, dbType, dbVersion);
+            String[] sortedLibrariesPaths = Arrays.copyOf(jarPath, jarPath.length);
+            Arrays.sort(sortedLibrariesPaths);
+            String concatSortedLibrariesPaths = concat(sortedLibrariesPaths);
+            HotClassLoader loader = (HotClassLoader) classLoadersMap.get(dbType, dbVersion, concatSortedLibrariesPaths);
+            if(driverShimCacheMap.containsKey(driverClassName, dbType, dbVersion, concatSortedLibrariesPaths)) {
+                wapperDriver = (DriverShim) driverShimCacheMap.get(driverClassName, dbType, dbVersion, concatSortedLibrariesPaths);
             } else {
                 loader = getHotClassLoader(jarPath, dbType, dbVersion);
                 wapperDriver = new DriverShim((getDriver(loader, jarPath, driverClassName, dbType, dbVersion)));
-                driverShimCacheMap.put(driverClassName, dbType, dbVersion, wapperDriver);
+                driverShimCacheMap.put(driverClassName, dbType, dbVersion, concatSortedLibrariesPaths, wapperDriver);
             }
             // Object driver = loader.loadClass(driverClassName).newInstance();
             // wapperDriver = new DriverShim((Driver) (driver));
@@ -210,14 +221,6 @@ public class JDBCDriverLoader {
                 connection = wapperDriver.connect(url, info);
             }
             
-            try {
-                ResultSet schemas = connection.getMetaData().getSchemas();
-                if(schemas.next()) {
-                    schemas.getString(1);
-                }
-            } catch (Exception e) {
-            }
-            
             // }
             // DriverManager.deregisterDriver(wapperDriver);
             // bug 9162
@@ -248,10 +251,13 @@ public class JDBCDriverLoader {
         HotClassLoader loader;
         boolean flag = EDatabaseVersion4Drivers.containTypeAndVersion(dbType, dbVersion);
         if (flag || ExtractMetaDataUtils.SNOWFLAKE.equals(dbType)) {
-            loader = getHotClassLoaderFromCache(dbType, dbVersion);
+            String[] sortedLibrariesPaths = Arrays.copyOf(jarPath, jarPath.length);
+            Arrays.sort(sortedLibrariesPaths);
+            String concatSortedlibraries = concat(sortedLibrariesPaths);
+            loader = getHotClassLoaderFromCache(dbType, dbVersion, concatSortedlibraries);
             if (loader == null) {
                 loader = new HotClassLoader();
-                classLoadersMap.put(dbType, dbVersion, loader);
+                classLoadersMap.put(dbType, dbVersion, concatSortedlibraries, loader);
             }
         } else {
             loader = new HotClassLoader();
