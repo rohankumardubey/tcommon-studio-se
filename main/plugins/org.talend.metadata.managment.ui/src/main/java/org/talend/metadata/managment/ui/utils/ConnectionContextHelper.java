@@ -409,9 +409,7 @@ public final class ConnectionContextHelper {
 					varList.add((String) propertyMap.get("PROPERTY"));
 				}
 			}
-		}
-
-		else if (coKitService != null && coKitService.isTaCoKitConnection(currentConnection)) {
+		} else if (coKitService != null && coKitService.isTaCoKitConnection(currentConnection)) {
 			Set<String> additionPropertyList = TaCoKitConnectionContextUtils
 					.getAdditionalPropertiesVariablesForExistContext(currentConnection);
 			Iterator<String> it = additionPropertyList.iterator();
