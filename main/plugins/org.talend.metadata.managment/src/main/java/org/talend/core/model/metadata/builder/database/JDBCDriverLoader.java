@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.core.model.metadata.builder.database;
 
+import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.Provider;
@@ -23,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections.map.MultiKeyMap;
 import org.apache.commons.lang.StringUtils;
@@ -58,17 +61,13 @@ public class JDBCDriverLoader {
         boolean flag = EDatabaseVersion4Drivers.containTypeAndVersion(dbType, dbVersion);
         HotClassLoader loader = null;
         if (flag) {
-            String[] sortedLibrariesPaths = Arrays.copyOf(libraries.toArray(new String[0]), libraries.size());
-            Arrays.sort(sortedLibrariesPaths);
-            String concatSortedLibrariesPaths = concat(sortedLibrariesPaths);
-            
-            loader = getHotClassLoaderFromCache(dbType, dbVersion, concatSortedLibrariesPaths);
+            loader = getHotClassLoaderFromCache(dbType, dbVersion);
             if (loader == null) {
                 loader = new HotClassLoader();
                 for (int i = 0; i < libraries.size(); i++) {
                     loader.addPath(libraries.get(i));
                 }
-                classLoadersMap.put(dbType, dbVersion, concatSortedLibrariesPaths, loader);
+                classLoadersMap.put(dbType, dbVersion, loader);
             } else {
                 URL[] urls = loader.getURLs();
                 if (urls != null && urls.length > 0) {
@@ -93,8 +92,8 @@ public class JDBCDriverLoader {
      * @param dbVersion
      * @return
      */
-    public HotClassLoader getHotClassLoaderFromCache(String dbType, String dbVersion, String concatSortedlibraries) {
-        Object obj = classLoadersMap.get(dbType, dbVersion, concatSortedlibraries);
+    public HotClassLoader getHotClassLoaderFromCache(String dbType, String dbVersion) {
+        Object obj = classLoadersMap.get(dbType, dbVersion);
         return obj == null ? null : (HotClassLoader) obj;
     }
 
@@ -156,16 +155,19 @@ public class JDBCDriverLoader {
         DriverShim wapperDriver = null;
         Connection connection = null;
         try {
-            String[] sortedLibrariesPaths = Arrays.copyOf(jarPath, jarPath.length);
-            Arrays.sort(sortedLibrariesPaths);
-            String concatSortedLibrariesPaths = concat(sortedLibrariesPaths);
-            HotClassLoader loader = (HotClassLoader) classLoadersMap.get(dbType, dbVersion, concatSortedLibrariesPaths);
-            if(driverShimCacheMap.containsKey(driverClassName, dbType, dbVersion, concatSortedLibrariesPaths)) {
-                wapperDriver = (DriverShim) driverShimCacheMap.get(driverClassName, dbType, dbVersion, concatSortedLibrariesPaths);
+            HotClassLoader loader = (HotClassLoader) classLoadersMap.get(dbType, dbVersion);
+            if (!isJarPathSame(jarPath, loader)) {
+                releaseClassLoaderIfJarPathChanged(jarPath, dbType, dbVersion, loader);
+                loader = null;
+                driverShimCacheMap.remove(driverClassName, dbType, dbVersion);
+            }
+            
+            if(driverShimCacheMap.containsKey(driverClassName, dbType, dbVersion)) {
+                wapperDriver = (DriverShim) driverShimCacheMap.get(driverClassName, dbType, dbVersion);
             } else {
                 loader = getHotClassLoader(jarPath, dbType, dbVersion);
                 wapperDriver = new DriverShim((getDriver(loader, jarPath, driverClassName, dbType, dbVersion)));
-                driverShimCacheMap.put(driverClassName, dbType, dbVersion, concatSortedLibrariesPaths, wapperDriver);
+                driverShimCacheMap.put(driverClassName, dbType, dbVersion, wapperDriver);
             }
             // Object driver = loader.loadClass(driverClassName).newInstance();
             // wapperDriver = new DriverShim((Driver) (driver));
@@ -251,19 +253,53 @@ public class JDBCDriverLoader {
         HotClassLoader loader;
         boolean flag = EDatabaseVersion4Drivers.containTypeAndVersion(dbType, dbVersion);
         if (flag || ExtractMetaDataUtils.SNOWFLAKE.equals(dbType)) {
-            String[] sortedLibrariesPaths = Arrays.copyOf(jarPath, jarPath.length);
-            Arrays.sort(sortedLibrariesPaths);
-            String concatSortedlibraries = concat(sortedLibrariesPaths);
-            loader = getHotClassLoaderFromCache(dbType, dbVersion, concatSortedlibraries);
+            loader = getHotClassLoaderFromCache(dbType, dbVersion);
+            if(!isJarPathSame(jarPath, loader)) {
+                releaseClassLoaderIfJarPathChanged(jarPath, dbType, dbVersion, loader);
+                loader = null;
+            }
             if (loader == null) {
                 loader = new HotClassLoader();
-                classLoadersMap.put(dbType, dbVersion, concatSortedlibraries, loader);
+                classLoadersMap.put(dbType, dbVersion, loader);
             }
         } else {
             loader = new HotClassLoader();
         }
         addPathsForClassLoader(jarPath, loader);
         return loader;
+    }
+    
+    private void releaseClassLoaderIfJarPathChanged(String[] jarPath, String dbType, String dbVersion, HotClassLoader loader) {
+        classLoadersMap.remove(dbType, dbVersion);
+        if (loader != null) {
+            try {
+                loader.close();
+            } catch (IOException e) {
+                //
+            } 
+        }
+    }
+    
+    private boolean isJarPathSame(String[] jarPath, HotClassLoader loader) {
+        if (jarPath == null || loader == null) {
+            return false;
+        }
+
+        String[] sortedLibrariesPaths = Arrays.copyOf(jarPath, jarPath.length);
+        Arrays.sort(sortedLibrariesPaths);
+
+        URL[] urLs = loader.getURLs();
+        String[] fromURLs = Stream.of(urLs).map(url -> {
+            String file = url.getFile();
+            if(file.startsWith("/")) {
+                file = file.substring(1);
+            }
+            
+            return file;
+        }).collect(Collectors.toList()).toArray(new String[0]);
+        Arrays.sort(fromURLs);
+
+        return Arrays.equals(sortedLibrariesPaths, fromURLs);
     }
 
     private void addPathsForClassLoader(String[] jarPath, HotClassLoader loader) {
