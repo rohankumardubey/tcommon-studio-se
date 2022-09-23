@@ -25,6 +25,7 @@ import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.pendo.properties.IPendoDataProperties;
 import org.talend.core.pendo.properties.PendoLoginProperties;
+import org.talend.core.service.ICloudSignOnService;
 import org.talend.core.service.IStudioLiteP2Service;
 import org.talend.core.ui.IInstalledPatchService;
 import org.talend.repository.ProjectManager;
@@ -61,11 +62,7 @@ public class PendoTrackDataUtil {
     }
 
     public static IPendoDataProperties getLoginEventProperties() {
-        String studioPatch = null;
-        IInstalledPatchService installedPatchService = IInstalledPatchService.get();
-        if (installedPatchService != null) {
-            studioPatch = installedPatchService.getLatestInstalledPatchVersion();
-        }
+        String studioPatch = getLatestPatchInstalledVersion();
         PendoLoginProperties loginEvent = new PendoLoginProperties();
         IStudioLiteP2Service studioLiteP2Service = IStudioLiteP2Service.get();
         try {
@@ -85,12 +82,25 @@ public class PendoTrackDataUtil {
                 loginEvent.setEnabledFeatures(enabledFeatures);
             }
             setUpRefProjectsStructure(loginEvent);
+            loginEvent.setIsOneClickLogin(Boolean.FALSE.toString());
+            if (ICloudSignOnService.get() != null && ICloudSignOnService.get().isSignViaCloud()) {
+                loginEvent.setIsOneClickLogin(Boolean.TRUE.toString());
+            }
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
         loginEvent.setStudioVersion(VersionUtils.getInternalMajorVersion());
         loginEvent.setStudioPatch(studioPatch);
         return loginEvent;
+    }
+
+    public static String getLatestPatchInstalledVersion() {
+        String studioPatch = "";
+        IInstalledPatchService installedPatchService = IInstalledPatchService.get();
+        if (installedPatchService != null) {
+            studioPatch = installedPatchService.getLatestInstalledVersion(true);
+        }
+        return studioPatch;
     }
 
     private static void setUpRefProjectsStructure(PendoLoginProperties loginEvent) {
@@ -162,7 +172,9 @@ public class PendoTrackDataUtil {
         OPEN_IN_APITester("Open in API Tester"),
         OPEN_API_DOCUMENTATION("Open API Documentation"),
         AUTOMAP("tMap Automap"),
-        TMAP("tMap");
+        TMAP("tMap"),
+        ITEM_IMPORT("Import items"),
+        ITEM_SIGNATURE("Item Signature");
 
         private String event;
 

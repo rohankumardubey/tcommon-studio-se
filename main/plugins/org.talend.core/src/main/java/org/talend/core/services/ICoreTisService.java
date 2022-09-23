@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.osgi.service.prefs.BackingStoreException;
@@ -83,6 +84,12 @@ public interface ICoreTisService extends IService {
     String getStandardNodeLabel();
 
     public void afterImport (Property property) throws PersistenceException;  
+
+    Integer getSignatureVerifyResult(Property property, IPath resourcePath, boolean considerGP) throws Exception;
+
+    String getLicenseCustomer();
+
+    boolean isInValidGP();
 
     boolean hasNewPatchInPatchesFolder();
 
