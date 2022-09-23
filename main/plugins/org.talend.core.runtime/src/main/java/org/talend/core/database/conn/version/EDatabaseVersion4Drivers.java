@@ -87,7 +87,7 @@ public enum EDatabaseVersion4Drivers {
     MSSQL_PROP(new DbVersion4Drivers(EDatabaseTypeName.MSSQL,
             "Microsoft", "MSSQL_PROP", //$NON-NLS-1$ //$NON-NLS-2$
             new String[] { "mssql-jdbc.jar", "slf4j-api-1.7.25.jar", "slf4j-log4j12-1.7.25.jar", "adal4j-1.6.7.jar", //$NON-NLS-1$
-                    "commons-lang3-3.10.jar", "commons-codec-1.14.jar", "gson-2.8.6.jar", "oauth2-oidc-sdk-9.7.jar",
+                    "commons-lang3-3.10.jar", "commons-codec-1.14.jar", "gson-2.8.9.jar", "oauth2-oidc-sdk-9.7.jar",
                     "json-smart-2.4.7.jar", "nimbus-jose-jwt-9.22.jar", "javax.mail-1.6.2.jar", "reload4j-1.2.19.jar",
                     "accessors-smart-2.4.7.jar", "asm-9.1.jar", "content-type-2.1.jar" })),
 
