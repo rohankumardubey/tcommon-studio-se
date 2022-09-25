@@ -310,9 +310,9 @@ public class PomIdsHelper {
 =======
 
     /**
-     * @return "<version>".
+     * @return "<bundleVersion>".
      */
-    public static String getVersion(Property property, String bundleVersion) {
+    public static String getBundleVersion(Property property, String bundleVersion) {
         String version = null;
         if (property != null) {
             boolean useSnapshot = false; 
@@ -333,7 +333,30 @@ public class PomIdsHelper {
         return version;
     }
 
+<<<<<<< Upstream, based on efd27e4ec95c7a5edcd430f1a8f975b6f9f9b1cb
 >>>>>>> b1fca5a fix(APPINT-34581) - code refactoring for getting versions
+=======
+    /**
+     * @return "<featureVersion>".
+     */
+    public static String getFeatureVersion(Property property, String bundleVersion) {
+        String version = null;
+        if (property != null) {
+            boolean useSnapshot = false; 
+            if(version == null) {
+                version = bundleVersion;
+            }
+            if (version == null) {
+                version = VersionUtils.getPublishVersion(property.getVersion());
+            }
+            if (useSnapshot) {
+                version += MavenConstants.SNAPSHOT;
+            }
+        }
+        return version;
+    }
+
+>>>>>>> be4baae fix(APPINT-34581) - added get version methods for feature and bundle
     public static String getJobVersion(JobInfo jobInfo) {
         if (jobInfo != null) {
             return jobInfo.getJobVersion();
