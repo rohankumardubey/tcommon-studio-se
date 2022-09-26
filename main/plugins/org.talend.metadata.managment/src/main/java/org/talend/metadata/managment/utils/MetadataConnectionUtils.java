@@ -288,6 +288,7 @@ public class MetadataConnectionUtils {
             String dataBase = databaseConnection.getSID();
             String dbVersionString = databaseConnection.getDbVersionString();
             String additionalParams = databaseConnection.getAdditionalParams();
+            boolean supportNLS = databaseConnection.isSupportNLS();
 
             // MOD qiongli 2011-9-6,TDQ 3317.handle context mode
             if (databaseConnection.isContextMode()) {
@@ -327,6 +328,7 @@ public class MetadataConnectionUtils {
             metadataConnection.setUsername(userName);
             metadataConnection.setPassword(password);
             metadataConnection.setUrl(dbUrl);
+            metadataConnection.setSupportNLS(supportNLS);            
 
             // TDQ-12299: transfer the OtherParameters to metadataConnection, because create impala connection use that
             // values

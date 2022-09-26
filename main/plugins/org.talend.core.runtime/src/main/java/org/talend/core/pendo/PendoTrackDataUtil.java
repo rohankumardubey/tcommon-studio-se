@@ -25,6 +25,7 @@ import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.pendo.properties.IPendoDataProperties;
 import org.talend.core.pendo.properties.PendoLoginProperties;
+import org.talend.core.service.ICloudSignOnService;
 import org.talend.core.service.IStudioLiteP2Service;
 import org.talend.core.ui.IInstalledPatchService;
 import org.talend.repository.ProjectManager;
@@ -81,6 +82,10 @@ public class PendoTrackDataUtil {
                 loginEvent.setEnabledFeatures(enabledFeatures);
             }
             setUpRefProjectsStructure(loginEvent);
+            loginEvent.setIsOneClickLogin(Boolean.FALSE.toString());
+            if (ICloudSignOnService.get() != null && ICloudSignOnService.get().isSignViaCloud()) {
+                loginEvent.setIsOneClickLogin(Boolean.TRUE.toString());
+            }
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }

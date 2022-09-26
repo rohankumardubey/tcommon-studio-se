@@ -88,12 +88,22 @@ public interface ICoreTisService extends IService {
     Integer getSignatureVerifyResult(Property property, IPath resourcePath, boolean considerGP) throws Exception;
 
     String getLicenseCustomer();
+    
+    void storeLicenseAndUpdateConfig(String licenseString) throws IOException;
 
     boolean isInValidGP();
 
     boolean hasNewPatchInPatchesFolder();
 
     boolean isDefaultLicenseAndProjectType();
+    
+    String getLicenseProductName(String licenseString) throws Exception;
+    
+    String getLicenseProductEdition(String licenseString) throws Exception; 
+    
+    boolean isLicenseExpired(String licenseString) throws Exception;
+    
+    boolean isLicenseVersionCorrect(String licenseString) throws Exception;
 
     void syncProjectUpdateSettingsFromServer(IProgressMonitor monitor, Project proj) throws Exception;
 
