@@ -15,6 +15,10 @@ package org.talend.core.repository.ui.view;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.ui.css.swt.theme.ITheme;
+import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
+import org.eclipse.e4.ui.css.swt.theme.IThemeManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.IColorProvider;
@@ -23,6 +27,11 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.talend.commons.runtime.model.repository.ECDCStatus;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.commons.ui.runtime.image.ECoreImage;
@@ -49,6 +58,7 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryContentManager;
 import org.talend.core.model.repository.RepositoryNodeProviderRegistryReader;
 import org.talend.core.model.repository.RepositoryViewObject;
+import org.talend.core.repository.CoreRepositoryPlugin;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.model.repositoryObject.MetadataTableRepositoryObject;
 import org.talend.core.runtime.CoreRuntimePlugin;
@@ -86,6 +96,8 @@ public class RepositoryLabelProvider extends LabelProvider implements IColorProv
     private static final Color LOCKED_ENTRY = new Color(null, 200, 0, 0);
 
     private static final Color MERGED_REFERENCED_ITEMS_COLOR = new Color(null, 120, 120, 120);
+
+    private static final Color WHITE = new Color(null, 255, 255, 255);
 
     private IRepositoryView view;
 
@@ -480,6 +492,21 @@ public class RepositoryLabelProvider extends LabelProvider implements IColorProv
     @Override
     public Color getForeground(Object element) {
         RepositoryNode node = (RepositoryNode) element;
+        try {
+            Bundle bundle = Platform.getBundle(CoreRepositoryPlugin.PLUGIN_ID);
+            BundleContext context = bundle.getBundleContext();
+            ServiceReference ref = context.getServiceReference(IThemeManager.class.getName());
+            IThemeManager manager = (IThemeManager) context.getService(ref);
+            IThemeEngine engine = manager
+                    .getEngineForDisplay(PlatformUI.getWorkbench().getActiveWorkbenchWindow() == null ? Display.getCurrent()
+                            : PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().getDisplay());
+            ITheme curTheme = engine.getActiveTheme();
+            if (curTheme.getId().contains("dark")) {
+                return null;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         switch (node.getType()) {
         case REFERENCED_PROJECT:
             return STABLE_PRIMARY_ENTRY_COLOR;
