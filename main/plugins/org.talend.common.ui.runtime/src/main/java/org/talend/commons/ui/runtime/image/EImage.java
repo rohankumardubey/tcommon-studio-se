@@ -151,9 +151,7 @@ public enum EImage implements IImage {
 
     OPEN_DATA_PREP("/icons/favicon.png"),
 
-    CHESS_GRAY("/icons/gray.gif"), //$NON-NLS-1$
-    
-    MANAGE_CONNECTION("/icons/manage_connection.gif");
+    CHESS_GRAY("/icons/gray.gif"); //$NON-NLS-1$
 
     private String path;
 
