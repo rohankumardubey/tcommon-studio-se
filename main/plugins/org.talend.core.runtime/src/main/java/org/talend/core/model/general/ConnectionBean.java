@@ -247,7 +247,7 @@ public class ConnectionBean implements Cloneable {
         try {       
             if (conDetails.has(USER)) {
                 String user = conDetails.getString(USER);
-                if (isToken() && StringUtils.isEmpty(user)) {
+                if (isToken()) {
                     String url = getDynamicFields().get(RepositoryConstants.REPOSITORY_URL);
                     user = PendoTrackSender.getInstance().getTmcUser(url, getPassword());
                     if (StringUtils.isNotBlank(user)) {
