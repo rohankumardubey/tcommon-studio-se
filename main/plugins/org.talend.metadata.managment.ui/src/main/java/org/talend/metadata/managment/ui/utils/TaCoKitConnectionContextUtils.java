@@ -26,51 +26,8 @@ import org.talend.core.ui.context.model.table.ConectionAdaptContextVariableModel
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.metadata.managment.ui.model.IConnParamName;
 
-/**
- * created by ldong on Dec 18, 2014 Detailled comment
- *
- */
+
 public class TaCoKitConnectionContextUtils {
-
-	public enum ETaCoKitParamName implements IConnParamName {
-
-		// netsit
-		Account, Email, Password, RoleId, ApplicationId, TokenId, ConsumerKey, ConsumerSecret, TokenSecret,
-
-		// workday
-		ClientIdentifier, ClientSecret, TenantAlias, AuthEndpoint, Endpoint,
-
-		// neo4j
-		ConnectionUri,
-		Username,
-
-		// azure
-		EndpointSuffix, SharedKey, AccountName, Sas, TenantId,
-		ClientId,
-
-		// rabbitMQ
-		Port, Hostname,
-		UserName,
-
-		// zendesk
-		AuthenticationLogin, ServerUrl, ApiToken,
-
-		// samba
-		Host, Domain,
-
-		// cyberark
-		CredProviderServicePort,
-
-		// tableau
-		Site, BasicAuthUsername, BasicAuthPassword, AccessTokenAuthTokenSecret, AccessTokenAuthTokenName,
-
-		// analytics
-		JsonCredentials,
-
-		// kudu
-		MasterAddresses,
-
-	}
 
 	static List<IContextParameter> getContextVariables(final String prefixName, Connection conn,
 			Set<IConnParamName> paramSet) {
