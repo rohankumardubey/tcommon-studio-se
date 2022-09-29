@@ -73,7 +73,7 @@ public class SSOClientExec implements Runnable {
             DefaultExecutor executor = new DefaultExecutor();
             executeWatchdog = new ExecuteWatchdog(900000);
             executor.setWatchdog(executeWatchdog);
-            executor.setExitValues(new int[] { 0, 24 });
+            executor.setExitValues(new int[] { 0, 24, 143 }); // normal, restart, process existed
             if (!execFile.canExecute()) {
                 execFile.setExecutable(true);
             }
@@ -91,13 +91,8 @@ public class SSOClientExec implements Runnable {
             }
         } catch (Exception e) {
             error = e;
-            if ((e instanceof ExecuteException) && ((ExecuteException)e).getExitValue() == 143) {
-                LOGGER.error("SSO client exited by timeout.");
-                listener.loginFailed(new Exception(Messages.getString("SSOClientExec.error.timeout")));
-            } else {
-                LOGGER.error(e);
-                listener.loginFailed(e);
-            }
+            LOGGER.error(e);
+            listener.loginFailed(e);
         }
     }
 

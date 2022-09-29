@@ -145,16 +145,16 @@ public class SSOClientUtil {
         String dataCenter = TMCRepositoryUtil.getDefaultDataCenter();
         StringBuffer urlSB = new StringBuffer();
         urlSB.append(TMCRepositoryUtil.getBaseLoginURL(dataCenter)).append("?");
-        urlSB.append("client_id=").append(clientID).append("&");
+        urlSB.append("client_id=").append(URLEncoder.encode(clientID, StandardCharsets.UTF_8.name())).append("&");
         urlSB.append("redirect_uri=")
                 .append(URLEncoder.encode(TMCRepositoryUtil.getRedirectURL(dataCenter), StandardCharsets.UTF_8.name()))
                 .append("&");
-        urlSB.append("scope=openid refreshToken&");
-        urlSB.append("response_type=code&");
-        urlSB.append("code_challenge_method=S256&");
-        urlSB.append("code_challenge=").append(codeChallenge).append("&");
-        urlSB.append("state=").append(callbackPort).append(SSOUtil.STATE_PARAM_SEPARATOR)
-                .append(TMCRepositoryUtil.getDefaultDataCenter());
+        urlSB.append("scope=").append(URLEncoder.encode("openid refreshToken", StandardCharsets.UTF_8.name())).append("&");
+        urlSB.append("response_type=").append(URLEncoder.encode("code", StandardCharsets.UTF_8.name())).append("&");
+        urlSB.append("code_challenge_method=").append(URLEncoder.encode("S256", StandardCharsets.UTF_8.name())).append("&");
+        urlSB.append("code_challenge=").append(URLEncoder.encode(codeChallenge, StandardCharsets.UTF_8.name())).append("&");        
+        String state = String.valueOf(callbackPort) + SSOUtil.STATE_PARAM_SEPARATOR + TMCRepositoryUtil.getDefaultDataCenter();
+        urlSB.append("state=").append(URLEncoder.encode(state, StandardCharsets.UTF_8.name()));        
         return urlSB.toString();
     }
 
