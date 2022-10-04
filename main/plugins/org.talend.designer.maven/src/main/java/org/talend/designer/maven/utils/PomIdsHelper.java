@@ -329,7 +329,7 @@ public class PomIdsHelper {
     public static String getBundleVersion(Property property, String bundleVersion) {
         String version = null;
         if (property != null) {
-            boolean useSnapshot = false; 
+            boolean useSnapshot = false;
             if (property.getAdditionalProperties() != null) {
                 version = (String) property.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
                 useSnapshot = property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
@@ -350,12 +350,16 @@ public class PomIdsHelper {
     /**
      * @return "<featureVersion>".
      */
-    public static String getFeatureVersion(Property property, String bundleVersion) {
+    public static String getFeatureVersion(Property property, String featureVersion) {
         String version = null;
         if (property != null) {
-            boolean useSnapshot = false; 
+            boolean useSnapshot = false;
+            if (property.getAdditionalProperties() != null) {
+                version = (String) property.getAdditionalProperties().get(MavenConstants.NAME_USER_VERSION);
+                useSnapshot = property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
+            }
             if(version == null) {
-                version = bundleVersion;
+                version = featureVersion;
             }
             if (version == null) {
                 version = VersionUtils.getPublishVersion(property.getVersion());
