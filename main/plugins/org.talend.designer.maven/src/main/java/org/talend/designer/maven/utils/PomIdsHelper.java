@@ -44,7 +44,7 @@ public class PomIdsHelper {
     public static final String PREFIX_DEFAULT_GROUPID = "org.example."; //$NON-NLS-1$
 
     private static Map<String, ProjectPreferenceManager> preferenceManagers = new HashMap<>();
-    
+
     /**
      * get current project groupId.
      */
@@ -160,7 +160,7 @@ public class PomIdsHelper {
     public static String getCodesJarVersion(String projectTechName) {
         return getCodesVersion(projectTechName);
     }
-    
+
     @Deprecated
     public static String getJobGroupId(String name) {
         if (name != null && !name.trim().isEmpty()) {
