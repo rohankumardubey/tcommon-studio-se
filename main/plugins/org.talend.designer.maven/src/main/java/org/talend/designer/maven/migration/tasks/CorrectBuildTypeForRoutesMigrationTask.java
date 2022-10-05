@@ -29,7 +29,7 @@ import org.talend.repository.ProjectManager;
  * -Manage child jobs for jobs ( parent, target BUILD_TYPE = STANDALONE )
  */
 
-public class CorrectBuildTypeForRoutesMigrationTask extends AbstractDataServiceJobMigrationTask {
+public class CorrectBuildTypeForRoutesMigrationTask extends AbstractRouteMigrationTask {
 
 	private static final String C_TALEND_JOB = "cTalendJob";
 
@@ -50,12 +50,6 @@ public class CorrectBuildTypeForRoutesMigrationTask extends AbstractDataServiceJ
 		final ProcessType processType = getProcessType(item);
 
 		boolean modified = false;
-
-//		IComponentFilter filter = new NameComponentFilter(C_TALEND_JOB);
-//
-//		List<NodeType> c = searchComponent(processType, filter);
-//
-//		if (!c.isEmpty()) {
 
 		/*
 		 * If no BUILD_TYPE is set then default BUILD_TYPE must be ROUTE
