@@ -74,6 +74,7 @@ public class CorrectBuildTypeForDIJobMigrationTask extends AbstractDataServiceJo
 					}
 					return ExecutionResult.SUCCESS_NO_ALERT;
 				}
+				return ExecutionResult.NOTHING_TO_DO;
 			}
 		}
 
