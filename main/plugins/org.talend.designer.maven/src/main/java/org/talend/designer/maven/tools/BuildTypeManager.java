@@ -6,7 +6,7 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Display;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.general.Project;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.designer.maven.migration.common.MigrationReportHelper;
 import org.talend.designer.maven.migration.tasks.CorrectBuildTypeForDIJobMigrationTask;
 import org.talend.designer.maven.migration.tasks.CorrectBuildTypeForDsRestMigrationTask;
 import org.talend.designer.maven.migration.tasks.CorrectBuildTypeForRoutesMigrationTask;
@@ -72,14 +73,18 @@ public class BuildTypeManager {
 
 		Project project = ProjectManager.getInstance().getCurrentProject();
 
-		final SubProgressMonitor subProgressMonitor = new SubProgressMonitor(monitor, 3);
+		SubMonitor subMonitor = SubMonitor.convert(monitor, syncBuildTypeMigrationTasks.length);
 
 		for (IProjectMigrationTask task : syncBuildTypeMigrationTasks) {
-			monitor.subTask(task.getDescription());
+			subMonitor.beginTask(task.getDescription(), syncBuildTypeMigrationTasks.length);
 			task.execute(project);
-			subProgressMonitor.worked(1);
+			subMonitor.worked(1);
+
 		}
 
-		subProgressMonitor.done();
+		subMonitor.beginTask("Generate migration report", syncBuildTypeMigrationTasks.length);
+		MigrationReportHelper.getInstance().generateMigrationReport(project.getTechnicalLabel());
+
+		monitor.done();
 	}
 }
