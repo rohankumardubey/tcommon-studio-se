@@ -85,4 +85,9 @@ public class CorrectBuildTypeForSOAPServiceJobMigrationTask extends AbstractData
 		return ExecutionResult.NOTHING_TO_DO;
 	}
 
+	@Override
+	public String getDescription() {
+		return "Synchronize build types for SOAP service Jobs";
+	}
+	
 }
