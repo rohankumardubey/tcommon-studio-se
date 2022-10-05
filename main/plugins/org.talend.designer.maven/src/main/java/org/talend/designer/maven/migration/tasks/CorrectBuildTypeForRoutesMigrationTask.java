@@ -168,5 +168,10 @@ public class CorrectBuildTypeForRoutesMigrationTask extends AbstractRouteMigrati
 		return ExecutionResult.NOTHING_TO_DO;
 
 	}
+	
+	@Override
+	public String getDescription() {
+		return "Synchronize build types for Routes (incuding child jobs)";
+	}
 
 }
