@@ -34,6 +34,7 @@ import org.talend.core.runtime.projectsetting.AbstractProjectSettingPage;
 import org.talend.core.runtime.services.IFilterService;
 import org.talend.designer.maven.DesignerMavenPlugin;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
+import org.talend.designer.maven.tools.BuildTypeManager;
 import org.talend.designer.maven.ui.i18n.Messages;
 
 /**
@@ -164,6 +165,22 @@ public class MavenProjectSettingPage extends AbstractProjectSettingPage {
                     if ("filter_parse_error".equals(e.getMessage())) { //$NON-NLS-1$
                         setErrorMessage(Messages.getString("ProjectPomProjectSettingPage_FilterErrorMessage")); //$NON-NLS-1$
 					}
+				}
+			}
+
+		});
+
+		Button syncBuildTypes = new Button(parent, SWT.NONE);
+		syncBuildTypes.setText(Messages.getString("ProjectPomProjectSettingPage.syncBuildTypesButtonText")); //$NON-NLS-1$
+
+		syncBuildTypes.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				try {
+					new BuildTypeManager().syncBuildTypes();
+				} catch (Exception e) {
+					ExceptionHandler.process(e);
 				}
 			}
 
