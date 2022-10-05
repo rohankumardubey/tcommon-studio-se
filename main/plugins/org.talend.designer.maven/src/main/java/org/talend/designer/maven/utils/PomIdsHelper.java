@@ -322,7 +322,7 @@ public class PomIdsHelper {
         }
         return filter;
     }
-    
+
     /**
      * @return "<bundleVersion>".
      */
