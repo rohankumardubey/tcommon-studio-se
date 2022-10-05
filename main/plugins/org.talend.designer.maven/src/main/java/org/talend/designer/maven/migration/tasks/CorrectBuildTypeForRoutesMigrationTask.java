@@ -63,7 +63,7 @@ public class CorrectBuildTypeForRoutesMigrationTask extends AbstractRouteMigrati
 				modified |= true;
 				generateReportRecord(
 						new MigrationReportRecorder(this, MigrationReportRecorder.MigrationOperationType.MODIFY, item,
-								null, "Build Type", null, BUILD_TYPE_OSGI));
+								null, "Build Type", "null", BUILD_TYPE_OSGI));
 			} catch (PersistenceException e) {
 				ExceptionHandler.process(e);
 				return ExecutionResult.FAILURE;
