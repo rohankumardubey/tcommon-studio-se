@@ -81,5 +81,10 @@ public class CorrectBuildTypeForDsRestMigrationTask extends AbstractDataServiceJ
 			return ExecutionResult.NOTHING_TO_DO;
 		}
 	}
+	
+	@Override
+	public String getDescription() {
+		return "Synchronize build types for DS Rest jobs";
+	}
 
 }
