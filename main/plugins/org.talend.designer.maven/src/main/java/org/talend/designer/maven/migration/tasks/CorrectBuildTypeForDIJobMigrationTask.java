@@ -48,6 +48,21 @@ public class CorrectBuildTypeForDIJobMigrationTask extends AbstractDataServiceJo
 
 		Object originalBuildType = item.getProperty().getAdditionalProperties().get(BUILD_TYPE_PROPERTY);
 
+		/*
+		 * If BUILD_TYPE is ROUTE > EXCEPTION: need warning message! BUILD_TYPE was
+		 * wrongly set to ROUTE from a previous migration task and has to be manually
+		 * updated (all subjobs have to be checked manually). Value should be either
+		 * STANDALONE (in most cases) or OSGI.
+		 */
+
+		if (originalBuildType != null && BUILD_TYPE_ROUTE.equalsIgnoreCase((String) originalBuildType)) {
+			String jobName = item.getProperty().getLabel();
+			ExceptionHandler.process(new RuntimeException("Job [" + jobName + "] has incorrect BUILD_TYPE ["
+					+ BUILD_TYPE_ROUTE
+					+ "] which has to be manually updated  (all subjobs have to be checked manually). Value should be either STANDALONE (in most cases) or OSGI"));
+			return ExecutionResult.FAILURE;
+		}
+
 		for (String name : ESB_COMPONENTS) {
 			IComponentFilter filter = new NameComponentFilter(name);
 
@@ -108,9 +123,9 @@ public class CorrectBuildTypeForDIJobMigrationTask extends AbstractDataServiceJo
 	public String getDescription() {
 		return "Synchronize build types for DI jobs";
 	}
-	
+
 	@Override
-	public void clear () {
-		
+	public void clear() {
+
 	}
 }
