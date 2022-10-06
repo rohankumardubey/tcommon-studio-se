@@ -86,5 +86,10 @@ public class CorrectBuildTypeForDsRestMigrationTask extends AbstractDataServiceJ
 	public String getDescription() {
 		return "Synchronize build types for DS Rest jobs";
 	}
+	
+	@Override
+	public void clear () {
+		
+	}
 
 }
