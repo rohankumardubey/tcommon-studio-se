@@ -70,12 +70,17 @@ public class CorrectBuildTypeForSOAPServiceJobMigrationTask extends AbstractData
 					generateReportRecord(new MigrationReportRecorder(this,
 							MigrationReportRecorder.MigrationOperationType.MODIFY, item, null, "Build Type",
 							(null == originalBuildType) ? null : originalBuildType.toString(), BUILD_TYPE_OSGI));
+					storeMigratedJob(item.getProperty().getLabel(), this.getClass().getName());
 				} catch (PersistenceException e) {
 					ExceptionHandler.process(e);
 					return ExecutionResult.FAILURE;
 				}
 				return ExecutionResult.SUCCESS_NO_ALERT;
-			}
+			} else if (BUILD_TYPE_OSGI.equalsIgnoreCase((String)originalBuildType)){
+				// current job has correct build type 
+				// skip this job during next migrations
+				skipMigrationForJob(item.getProperty().getLabel(), this.getClass().getName());
+			} 
 		}
 
 		if (modified) {
@@ -92,7 +97,7 @@ public class CorrectBuildTypeForSOAPServiceJobMigrationTask extends AbstractData
 	
 	@Override
 	public void clear () {
-		
+		clearMigratedJobs();
 	}
 	
 }
