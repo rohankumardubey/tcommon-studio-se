@@ -80,7 +80,7 @@ public class BuildTypeManager {
 		if (hasErrors) {
 			page.setErrorMessage("Build types synchronization finished with errors. Check Studio logs for details.");
 		} else {
-			page.setErrorMessage("");
+			page.setErrorMessage(null);
 		}
 	}
 
