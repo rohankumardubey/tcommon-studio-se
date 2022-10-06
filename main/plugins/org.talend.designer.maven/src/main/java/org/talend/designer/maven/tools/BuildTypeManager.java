@@ -78,7 +78,7 @@ public class BuildTypeManager {
 		new ProgressMonitorDialog(Display.getDefault().getActiveShell()).run(true, true, runnableWithProgress);
 		
 		if (hasErrors) {
-			page.setErrorMessage("Build types synchronization finished with errors. Check Studio logs for details.");
+			page.setErrorMessage("Build types synchronization finished with errors. Check workspace logs for details.");
 		} else {
 			page.setErrorMessage(null);
 		}
