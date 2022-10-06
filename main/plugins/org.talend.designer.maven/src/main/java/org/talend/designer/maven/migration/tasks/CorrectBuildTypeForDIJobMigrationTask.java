@@ -8,10 +8,14 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.components.filters.IComponentFilter;
 import org.talend.core.model.components.filters.NameComponentFilter;
+import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.maven.migration.common.MigrationReportRecorder;
+import org.talend.designer.runprocess.ItemCacheManager;
+import org.talend.repository.ProjectManager;
 
 /*
  * If Job does not contain any of the following components: "tRouteInput", "tRESTClient", "tESBConsumer" 
@@ -28,6 +32,10 @@ public class CorrectBuildTypeForDIJobMigrationTask extends AbstractDataServiceJo
 
 	private static final String[] ESB_COMPONENTS = { "tRouteInput", "tRESTClient", "tESBConsumer" };
 
+	private static final String T_RUB_JOB_COMPONENT = "tRunJob";
+
+	boolean failure = false;
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -43,8 +51,6 @@ public class CorrectBuildTypeForDIJobMigrationTask extends AbstractDataServiceJo
 	@Override
 	public ExecutionResult execute(Item item) {
 		final ProcessType processType = getProcessType(item);
-
-		boolean modified = false;
 
 		Object originalBuildType = item.getProperty().getAdditionalProperties().get(BUILD_TYPE_PROPERTY);
 
@@ -64,6 +70,9 @@ public class CorrectBuildTypeForDIJobMigrationTask extends AbstractDataServiceJo
 		}
 
 		for (String name : ESB_COMPONENTS) {
+
+			boolean modified = false;
+
 			IComponentFilter filter = new NameComponentFilter(name);
 
 			List<NodeType> c = searchComponent(processType, filter);
@@ -87,8 +96,26 @@ public class CorrectBuildTypeForDIJobMigrationTask extends AbstractDataServiceJo
 						ExceptionHandler.process(e);
 						return ExecutionResult.FAILURE;
 					}
+				}
+
+				/*
+				 * Manage child jobs for jobs ( parent, target BUILD_TYPE = STANDALONE )
+				 */
+				String currentParentJobBuildType = (String) item.getProperty().getAdditionalProperties()
+						.get(BUILD_TYPE_PROPERTY);
+
+				if (BUILD_TYPE_STANDALONE.equalsIgnoreCase(currentParentJobBuildType)) {
+					updateBuildTypeForSubJobs(item, currentParentJobBuildType);
+				}
+
+				if (failure) {
+					return ExecutionResult.FAILURE;
+				}
+
+				if (modified) {
 					return ExecutionResult.SUCCESS_NO_ALERT;
 				}
+
 				return ExecutionResult.NOTHING_TO_DO;
 			}
 		}
@@ -100,6 +127,7 @@ public class CorrectBuildTypeForDIJobMigrationTask extends AbstractDataServiceJo
 
 		if (null == originalBuildType || !BUILD_TYPE_STANDALONE.equalsIgnoreCase(originalBuildType.toString())) {
 			item.getProperty().getAdditionalProperties().put(BUILD_TYPE_PROPERTY, BUILD_TYPE_STANDALONE);
+			boolean modified = false;
 			try {
 				save(item);
 				modified |= true;
@@ -108,6 +136,10 @@ public class CorrectBuildTypeForDIJobMigrationTask extends AbstractDataServiceJo
 						(null == originalBuildType) ? null : originalBuildType.toString(), BUILD_TYPE_STANDALONE));
 			} catch (PersistenceException e) {
 				ExceptionHandler.process(e);
+				return ExecutionResult.FAILURE;
+			}
+
+			if (failure) {
 				return ExecutionResult.FAILURE;
 			}
 
@@ -127,5 +159,73 @@ public class CorrectBuildTypeForDIJobMigrationTask extends AbstractDataServiceJo
 	@Override
 	public void clear() {
 
+	}
+
+	@SuppressWarnings("unchecked")
+	private void updateBuildTypeForSubJobs(Item parentJobItem, String parentJobBuiltType) {
+		IComponentFilter filter = new NameComponentFilter(T_RUB_JOB_COMPONENT);
+
+		ProcessType processType = getProcessType(parentJobItem);
+
+		List<NodeType> c = searchComponent(processType, filter);
+
+		if (!c.isEmpty()) {
+
+			for (NodeType tRunJobComponent : c) {
+				String processID = findElementParameterByName("SELECTED_JOB_NAME:PROCESS_TYPE_PROCESS",
+						tRunJobComponent) == null ? null
+								: findElementParameterByName("SELECTED_JOB_NAME:PROCESS_TYPE_PROCESS", tRunJobComponent)
+										.getValue();
+				String processVersion = findElementParameterByName("SELECTED_JOB_NAME:PROCESS_TYPE_VERSION",
+						tRunJobComponent) == null ? null
+								: findElementParameterByName("SELECTED_JOB_NAME:PROCESS_TYPE_VERSION", tRunJobComponent)
+										.getValue();
+
+				if (processID != null && processVersion != null) {
+					ProcessItem childItem = ItemCacheManager.getProcessItem(processID, processVersion);
+					Project childItemProject = ProjectManager.getInstance().getCurrentProject();
+
+					if (childItem == null) {
+						for (Project refProject : ProjectManager.getInstance().getAllReferencedProjects()) {
+							childItem = ItemCacheManager.getRefProcessItem(getProject(), processID);
+							if (childItem != null) {
+								childItemProject = refProject;
+								break;
+							}
+						}
+					}
+
+					if (childItem != null) {
+
+						Object currentChildBuildType = childItem.getProperty().getAdditionalProperties()
+								.get(BUILD_TYPE_PROPERTY);
+
+//						String jobID = childItem.getProperty().getLabel();
+
+						String currentChildBuildTypeStr = (null == currentChildBuildType) ? null
+								: (String) currentChildBuildType;
+
+						if (BUILD_TYPE_STANDALONE.equalsIgnoreCase(parentJobBuiltType)
+								&& !BUILD_TYPE_STANDALONE.equalsIgnoreCase(currentChildBuildTypeStr)) {
+
+							childItem.getProperty().getAdditionalProperties().put(BUILD_TYPE_PROPERTY,
+									BUILD_TYPE_STANDALONE);
+
+							try {
+								save(childItem);
+								generateReportRecord(new MigrationReportRecorder(this,
+										MigrationReportRecorder.MigrationOperationType.MODIFY, childItem, null,
+										"Build Type", currentChildBuildTypeStr, BUILD_TYPE_STANDALONE));
+							} catch (PersistenceException e) {
+								ExceptionHandler.process(e);
+								failure = true;
+							}
+						}
+
+						updateBuildTypeForSubJobs(childItem, parentJobBuiltType);
+					}
+				}
+			}
+		}
 	}
 }
