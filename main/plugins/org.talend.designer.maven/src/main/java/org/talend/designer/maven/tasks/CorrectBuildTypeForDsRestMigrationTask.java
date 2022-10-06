@@ -67,12 +67,24 @@ public class CorrectBuildTypeForDsRestMigrationTask extends AbstractDataServiceJ
 					generateReportRecord(
 							new MigrationReportRecorder(this, MigrationReportRecorder.MigrationOperationType.MODIFY,
 									item, null, "Build Type", null, BUILD_TYPE_OSGI));
+					storeMigratedJob(item.getProperty().getLabel(), this.getClass().getName());
 				} catch (PersistenceException e) {
 					ExceptionHandler.process(e);
 					return ExecutionResult.FAILURE;
 				}
 				return ExecutionResult.SUCCESS_NO_ALERT;
+			} else if (BUILD_TYPE_OSGI.equalsIgnoreCase((String)buildType)){
+				// current job has correct build type 
+				// skip this job during next migrations
+				skipMigrationForJob(item.getProperty().getLabel(), this.getClass().getName());
+			} else if (REST_MS.equalsIgnoreCase((String)buildType)){
+				// current job has correct build type 
+				// skip this job during next migrations
+				skipMigrationForJob(item.getProperty().getLabel(), this.getClass().getName());
 			}
+			
+			
+			
 		}
 
 		if (modified) {
@@ -89,7 +101,7 @@ public class CorrectBuildTypeForDsRestMigrationTask extends AbstractDataServiceJ
 	
 	@Override
 	public void clear () {
-		
+		clearMigratedJobs();
 	}
 
 }
