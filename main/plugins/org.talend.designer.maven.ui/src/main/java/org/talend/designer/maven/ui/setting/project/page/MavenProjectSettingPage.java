@@ -179,7 +179,7 @@ public class MavenProjectSettingPage extends AbstractProjectSettingPage {
                 @Override
                 public void widgetSelected(SelectionEvent event) {
                     try {
-                        new BuildTypeManager().syncBuildTypes();
+                        new BuildTypeManager().syncBuildTypes(getCurrentPage());
                     } catch (Exception e) {
                         ExceptionHandler.process(e);
                     }
@@ -224,6 +224,10 @@ public class MavenProjectSettingPage extends AbstractProjectSettingPage {
 
 	private static boolean isSyncBuildTypeAllowed() {
 		return Boolean.getBoolean("talend.builtype.syncallowed");
+	}
+	
+	private MavenProjectSettingPage getCurrentPage() {
+		return this;
 	}
 
 }
