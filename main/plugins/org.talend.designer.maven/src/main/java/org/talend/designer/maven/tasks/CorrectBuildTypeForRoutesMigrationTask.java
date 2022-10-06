@@ -249,6 +249,7 @@ public class CorrectBuildTypeForRoutesMigrationTask extends AbstractRouteMigrati
 	@Override
 	public void clear() {
 		clearMigratedChildJobs();
+		clearMigratedJobs();
 	}
 
 }
