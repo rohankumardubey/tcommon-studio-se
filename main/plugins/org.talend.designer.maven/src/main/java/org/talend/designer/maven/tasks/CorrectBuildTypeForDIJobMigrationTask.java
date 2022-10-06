@@ -50,8 +50,18 @@ public class CorrectBuildTypeForDIJobMigrationTask extends AbstractDataServiceJo
 	@SuppressWarnings("unchecked")
 	@Override
 	public ExecutionResult execute(Item item) {
+		
 		final ProcessType processType = getProcessType(item);
-
+		String jobName = item.getProperty().getLabel();
+		
+		/*
+		 * Migrating remaining jobs only (which was not migrated previously)
+		 */
+		if (isJobMigrated(jobName)) {
+			return ExecutionResult.NOTHING_TO_DO;
+		}
+		
+		
 		Object originalBuildType = item.getProperty().getAdditionalProperties().get(BUILD_TYPE_PROPERTY);
 
 		/*
@@ -62,7 +72,6 @@ public class CorrectBuildTypeForDIJobMigrationTask extends AbstractDataServiceJo
 		 */
 
 		if (originalBuildType != null && BUILD_TYPE_ROUTE.equalsIgnoreCase((String) originalBuildType)) {
-			String jobName = item.getProperty().getLabel();
 			ExceptionHandler.process(new RuntimeException("Job [" + jobName + "] has incorrect BUILD_TYPE ["
 					+ BUILD_TYPE_ROUTE
 					+ "] which has to be manually updated  (all subjobs have to be checked manually). Value should be either STANDALONE (in most cases) or OSGI"));
@@ -158,7 +167,7 @@ public class CorrectBuildTypeForDIJobMigrationTask extends AbstractDataServiceJo
 
 	@Override
 	public void clear() {
-
+		clearMigratedJobs();
 	}
 
 	@SuppressWarnings("unchecked")
