@@ -170,23 +170,25 @@ public class MavenProjectSettingPage extends AbstractProjectSettingPage {
 
 		});
 
-		Button syncBuildTypes = new Button(parent, SWT.NONE);
-		syncBuildTypes.setText(Messages.getString("ProjectPomProjectSettingPage.syncBuildTypesButtonText")); //$NON-NLS-1$
+		if (isSyncBuildTypeAllowed()) {
+                    Button syncBuildTypes = new Button(parent, SWT.NONE);
+                    syncBuildTypes.setText(Messages.getString("ProjectPomProjectSettingPage.syncBuildTypesButtonText")); //$NON-NLS-1$
 
-		syncBuildTypes.addSelectionListener(new SelectionAdapter() {
+                    syncBuildTypes.addSelectionListener(new SelectionAdapter() {
 
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				try {
-					new BuildTypeManager().syncBuildTypes();
-				} catch (Exception e) {
-					ExceptionHandler.process(e);
-				}
-			}
+                        @Override
+                        public void widgetSelected(SelectionEvent event) {
+                            try {
+                                new BuildTypeManager().syncBuildTypes();
+                            } catch (Exception e) {
+                                ExceptionHandler.process(e);
+                            }
+                        }
 
-		});
+                    });
+                }
 
-	}
+    }
 
     private void addSyncWarning() {
         setMessage(Messages.getString("MavenProjectSettingPage.syncAllPomsWarning"), IMessage.WARNING); //$NON-NLS-1$
@@ -219,5 +221,9 @@ public class MavenProjectSettingPage extends AbstractProjectSettingPage {
         }
         return displayVersion;
     }
+
+	private static boolean isSyncBuildTypeAllowed() {
+		return Boolean.getBoolean("talend.builtype.syncallowed");
+	}
 
 }
