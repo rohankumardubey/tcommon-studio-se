@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.swt.widgets.Display;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.general.Project;
@@ -19,17 +20,22 @@ import org.talend.designer.maven.migration.tasks.CorrectBuildTypeForDIJobMigrati
 import org.talend.designer.maven.migration.tasks.CorrectBuildTypeForDsRestMigrationTask;
 import org.talend.designer.maven.migration.tasks.CorrectBuildTypeForRoutesMigrationTask;
 import org.talend.designer.maven.migration.tasks.CorrectBuildTypeForSOAPServiceJobMigrationTask;
+import org.talend.designer.maven.migration.tasks.ICorrectBuildTypeMigrationTask;
+import org.talend.migration.IMigrationTask;
 import org.talend.migration.IProjectMigrationTask;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
 
 public class BuildTypeManager {
 
-	private IProjectMigrationTask[] syncBuildTypeMigrationTasks = { new CorrectBuildTypeForRoutesMigrationTask(),
-			new CorrectBuildTypeForSOAPServiceJobMigrationTask(), new CorrectBuildTypeForDsRestMigrationTask(),
-			new CorrectBuildTypeForDIJobMigrationTask() };
+	private ICorrectBuildTypeMigrationTask[] syncBuildTypeMigrationTasks = {
+			new CorrectBuildTypeForRoutesMigrationTask(), new CorrectBuildTypeForSOAPServiceJobMigrationTask(),
+			new CorrectBuildTypeForDsRestMigrationTask(), new CorrectBuildTypeForDIJobMigrationTask() };
+	
+	
+	private boolean hasErrors = false;
 
-	public void syncBuildTypes() throws Exception {
+	public void syncBuildTypes(FieldEditorPreferencePage page) throws Exception {
 
 		IRunnableWithProgress runnableWithProgress = new IRunnableWithProgress() {
 
@@ -45,7 +51,7 @@ public class BuildTypeManager {
 							@Override
 							public void run(final IProgressMonitor monitor) throws CoreException {
 								try {
-									syncAllBuildTypesWithProgress(monitor);
+									syncAllBuildTypesWithProgress(monitor, page);
 								} catch (Exception e) {
 									ExceptionHandler.process(e);
 								}
@@ -66,18 +72,37 @@ public class BuildTypeManager {
 				ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(workUnit);
 			}
 		};
+		
+		hasErrors = false;
+		
 		new ProgressMonitorDialog(Display.getDefault().getActiveShell()).run(true, true, runnableWithProgress);
+		
+		if (hasErrors) {
+			page.setErrorMessage("Build types synchronization finished with errors. Check Studio logs for details.");
+		} else {
+			page.setErrorMessage("");
+		}
 	}
 
-	public void syncAllBuildTypesWithProgress(IProgressMonitor monitor) throws Exception {
+	public void syncAllBuildTypesWithProgress(IProgressMonitor monitor, FieldEditorPreferencePage page)
+			throws Exception {
 
 		Project project = ProjectManager.getInstance().getCurrentProject();
 
 		SubMonitor subMonitor = SubMonitor.convert(monitor, syncBuildTypeMigrationTasks.length);
 
-		for (IProjectMigrationTask task : syncBuildTypeMigrationTasks) {
+		for (ICorrectBuildTypeMigrationTask task : syncBuildTypeMigrationTasks) {
+			task.clear();
+
+		}
+
+
+		for (ICorrectBuildTypeMigrationTask task : syncBuildTypeMigrationTasks) {
 			subMonitor.beginTask(task.getDescription(), syncBuildTypeMigrationTasks.length);
-			task.execute(project);
+			IMigrationTask.ExecutionResult result = task.execute(project);
+			if (IMigrationTask.ExecutionResult.FAILURE.equals(result)) {
+				hasErrors = true;
+			}
 			subMonitor.worked(1);
 
 		}
@@ -86,5 +111,8 @@ public class BuildTypeManager {
 		MigrationReportHelper.getInstance().generateMigrationReport(project.getTechnicalLabel());
 
 		monitor.done();
+
+
+
 	}
 }
