@@ -1,7 +1,10 @@
 package org.talend.designer.maven.migration.tasks;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.EmfHelper;
 import org.talend.core.GlobalServiceRegister;
@@ -27,25 +30,30 @@ public abstract class AbstractCorrectBuildItemMigrationTask extends AbstractItem
 	protected static final String BUILD_TYPE_OSGI = "OSGI";
 	protected static final String BUILD_TYPE_ROUTE = "ROUTE";
 	protected static final String BUILD_TYPE_ROUTE_MICROSERVICE = "ROUTE_MICROSERVICE";
+	protected static final String REST_MS = "REST_MS";
 	
 	
-//	protected Map<String, String> migratedModels = new HashMap<String, String>();
-//	
-//	protected void clearMigratedModels (String modelName, String migrationTask) {
-//		migratedModels.clear();
-//	}
-//	
-//	protected void storeMigratedModel (String modelName, String migrationTask) {
-//		migratedModels.put(modelName, migrationTask);
-//	}
-//	
-//	protected boolean isModelMigrated (String modelName) {
-//		return migratedModels.containsKey(modelName);
-//	}
-//	
-//	protected String getStoredModelMigraionTask (String modelName) {
-//		return migratedModels.get(modelName);
-//	}
+	protected static Map<String, String> migratedJobs = new HashMap<String, String>();
+	
+	protected static void clearMigratedJobs () {
+		migratedJobs.clear();
+	}
+	
+	protected static void skipMigrationForJob (String jobName, String migrationTask) {
+		migratedJobs.put(jobName, migrationTask);
+	}
+	
+	protected static void storeMigratedJob (String jobName, String migrationTask) {
+		migratedJobs.put(jobName, migrationTask);
+	}
+	
+	protected static boolean isJobMigrated (String jobName) {
+		return migratedJobs.containsKey(jobName);
+	}
+	
+	protected static String getStoredJobMigraionTask (String jobName) {
+		return migratedJobs.get(jobName);
+	}
 
 	public void generateReportRecord(MigrationReportRecorder recorder) {
 		MigrationReportHelper.getInstance().addRecorder(recorder);
