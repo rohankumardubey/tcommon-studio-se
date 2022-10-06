@@ -108,4 +108,9 @@ public class CorrectBuildTypeForDIJobMigrationTask extends AbstractDataServiceJo
 	public String getDescription() {
 		return "Synchronize build types for DI jobs";
 	}
+	
+	@Override
+	public void clear () {
+		
+	}
 }
